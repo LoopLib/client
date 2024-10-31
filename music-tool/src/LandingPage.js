@@ -17,7 +17,26 @@ const LandingPage = () => {
   };
 
   return (
-    
+    <Box className="landing-page-container">
+      <Typography className="landing-page-title">Welcome to Your Project Portal</Typography>
+      <Typography className="landing-page-subtitle">
+        Select a previous project or create a new one to get started.
+      </Typography>
+      <Box className="landing-page-buttons">
+        <Button
+          className="landing-page-button primary"
+          onClick={handleCreateNewProject}
+        >
+          Create New Project
+        </Button>
+        <Button
+          className="landing-page-button secondary"
+          onClick={handleSelectPreviousProject}
+        >
+          Select Previous Project
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
