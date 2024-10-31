@@ -11,7 +11,7 @@
     margin: auto;
     margin-top: 2rem;
   }
-  
+
  /* Styles for the Drop Zone */
  .file-upload-dropzone {
     width: 100%;
@@ -22,4 +22,15 @@
     transition: all 0.3s ease;
     cursor: pointer;
     background-color: #ffffff;
+  }
+
+  .file-upload-dropzone.dragging {
+    border-color: #4a90e2;
+    background-color: #e3f2fd;
+  }
+  
+  /* File upload icon styling */
+  .file-upload-icon {
+    font-size: 50px;
+    color: #999;
   }
