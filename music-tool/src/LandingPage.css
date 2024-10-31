@@ -27,6 +27,7 @@
 .landing-page-buttons {
     display: flex;
     gap: 16px;
+    margin: 20px;
   }
   
   /* Button styling */
