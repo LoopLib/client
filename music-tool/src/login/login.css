@@ -11,3 +11,30 @@
     margin: auto;
     margin-top: 2rem;
 }
+
+.login-paper {
+    width: 100%;
+    padding: 32px;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 8px;
+}
+
+/* Title Styling */
+.login-title {
+    margin-bottom: 24px;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Button Styling */
+.login-button {
+    margin-top: 16px;
+    background-color: #4a90e2;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #357ab7;
+}
