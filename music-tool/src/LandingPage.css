@@ -36,4 +36,26 @@
     border-radius: 8px;
     transition: background-color 0.3s ease;
   }
+
+  .landing-page-button.primary {
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+  }
+  
+  .landing-page-button.primary:hover {
+    background-color: #357abd;
+  }
+  
+  .landing-page-button.secondary {
+    background-color: transparent;
+    color: #4a90e2;
+    border: 2px solid #4a90e2;
+  }
+  
+  .landing-page-button.secondary:hover {
+    background-color: #e3f2fd;
+    color: #357abd;
+    border-color: #357abd;
+  }
   
