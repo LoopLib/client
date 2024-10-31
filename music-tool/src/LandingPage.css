@@ -22,3 +22,18 @@
     color: #666;
     margin-bottom: 32px;
   }
+
+/* Button container */
+.landing-page-buttons {
+    display: flex;
+    gap: 16px;
+  }
+  
+  /* Button styling */
+  .landing-page-button {
+    font-size: 1rem;
+    padding: 10px 24px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
