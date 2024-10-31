@@ -1,14 +1,14 @@
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LandingPage from "./LandingPage";
 import FileUpload from "./upload/upload";
+import HomePage from "./homepage/homepage";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/upload" element={<FileUpload />} />
       </Routes>
     </Router>

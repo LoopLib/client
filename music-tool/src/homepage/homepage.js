@@ -1,11 +1,10 @@
 // src/LandingPage.js
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
-import "./LandingPage.css"; // Import the CSS file
+import "./homepage.css"; // Import the CSS file
 
-const LandingPage = () => {
+const HomePage = () => {
   const navigate = useNavigate();
 
   const handleCreateNewProject = () => {
@@ -40,4 +39,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage;
+export default HomePage;
