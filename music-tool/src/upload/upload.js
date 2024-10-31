@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, Paper } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import "./FileUpload.css"; // Import the CSS file
+import "./upload.css";
 
 
 // FileUpload component

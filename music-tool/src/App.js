@@ -2,7 +2,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./LandingPage";
-import FileUpload from "./FileUpload";
+import FileUpload from "./upload/upload";
 
 function App() {
   return (
