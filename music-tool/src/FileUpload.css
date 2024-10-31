@@ -34,3 +34,8 @@
     font-size: 50px;
     color: #999;
   }
+
+  /* Button styling */
+  .file-upload-button {
+    margin-top: 16px;
+  }
