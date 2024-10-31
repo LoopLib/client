@@ -14,6 +14,7 @@ const FileUpload = () => {
 
     // Function to handle the file input change
     const handleFileChange = (event) => {
+        // Set the selected file in the state
         setSelectedFile(event.target.files[0]);
     };
 
@@ -41,6 +42,13 @@ const FileUpload = () => {
     const handleDragLeave = () => {
         // Set isDragging to false to hide the dropzone border
         setIsDragging(false);
+    };
+
+    // Function to handle the upload and analyze action
+    const handleUploadAndAnalyze = () => {
+        // Placeholder for upload and analyze logic
+        console.log("File uploaded and analyzing:", selectedFile);
+        // You can add additional processing or API calls here
     };
 
 
@@ -76,9 +84,19 @@ const FileUpload = () => {
                             {(selectedFile.size / 1024).toFixed(2)} KB
                         </Typography>
                     </Paper>
+
+                    {/* Conditionally rendered "Upload and Analyze" Button */}
+                    <Button
+                         variant="contained"
+                         color="primary"
+                         component="label"
+                         className="file-upload-button"
+                    >
+                        Upload and Analyze
+                    </Button>
                 </Box>
             )}
-
+ 
         </Box>
     );
 };
