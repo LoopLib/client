@@ -17,7 +17,7 @@ const Login = () => {
         <Box className="login-container">
             <Paper className="login-paper">
                 <Typography variant="h5" className="login-title">
-                    Login
+                    LOGIN
                 </Typography>
 
                 <TextField
