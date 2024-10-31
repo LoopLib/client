@@ -39,3 +39,15 @@
   .file-upload-button {
     margin-top: 16px;
   }
+
+  /* File preview section */
+  .file-upload-preview {
+    width: 100%;
+    margin-top: 24px;
+  }
+  
+  /* File preview details */
+  .file-preview-details {
+    padding: 16px;
+    margin-top: 8px;
+  }
