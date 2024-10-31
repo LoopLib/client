@@ -11,3 +11,15 @@
     margin: auto;
     margin-top: 2rem;
   }
+  
+ /* Styles for the Drop Zone */
+ .file-upload-dropzone {
+    width: 100%;
+    padding: 32px;
+    text-align: center;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: #ffffff;
+  }
