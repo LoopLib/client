@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, Paper, TextField } from "@mui/material";
-import "./login.css";
+import "../login/login.css";
 
 const Register = () => {
     // State to store the username, email, and password
@@ -16,7 +16,7 @@ const Register = () => {
         <Box className="login-container">
             <Paper className="login-paper">
                 <Typography variant="h5" className="login-title">
-                    Register
+                    REGISTER
                 </Typography>
 
                 <TextField
