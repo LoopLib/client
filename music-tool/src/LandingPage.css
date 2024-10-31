@@ -7,3 +7,11 @@
     min-height: 100vh;
     background-color: #f0f2f5;
   }
+
+/* Title styling */
+.landing-page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+  }
