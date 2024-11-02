@@ -62,16 +62,12 @@ const FileUpload = () => {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            
             console.log("File uploaded and analyzed:", response.data);
         } catch (error) {
             console.error("Error uploading file:", error);
         }
     };
     
-    
-
-
     return (
         // Reference: https://stackoverflow.com/questions/68900012/how-to-fix-an-upload-icon-to-a-file-upload-input-material-ui
         <Box className="file-upload-container">
