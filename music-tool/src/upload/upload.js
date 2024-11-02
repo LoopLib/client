@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, Paper } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import axios from 'axios'; // Import axios for making HTTP requests
 import "./upload.css";
 
 
@@ -44,12 +45,31 @@ const FileUpload = () => {
         setIsDragging(false);
     };
 
-    // Function to handle the upload and analyze action
-    const handleUploadAndAnalyze = () => {
-        // Placeholder for upload and analyze logic
-        console.log("File uploaded and analyzing:", selectedFile);
-        // You can add additional processing or API calls here
+    // Function to handle the file upload and analysis
+    const handleUploadAndAnalyze = async () => {
+        // If no file is selected, return
+        if (!selectedFile) return;
+        
+        // Create a FormData object to store the file
+        const formData = new FormData();
+        // Append the file to the FormData object
+        formData.append("file", selectedFile);
+    
+        try {
+            // Send a POST request to the backend
+            const response = await axios.post("http://localhost:5000/upload", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            
+            console.log("File uploaded and analyzed:", response.data);
+        } catch (error) {
+            console.error("Error uploading file:", error);
+        }
     };
+    
+    
 
 
     return (
@@ -87,10 +107,7 @@ const FileUpload = () => {
 
                     {/* Conditionally rendered "Upload and Analyze" Button */}
                     <Button
-                         variant="contained"
-                         color="primary"
-                         component="label"
-                         className="file-upload-button"
+                        onClick={handleUploadAndAnalyze}
                     >
                         Upload and Analyze
                     </Button>
