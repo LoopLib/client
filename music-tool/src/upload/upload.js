@@ -63,6 +63,7 @@ const FileUpload = () => {
                 },
             });
             console.log("File uploaded and analyzed:", response.data);
+            setBpm(response.data.bpm); // Store the BPM in the state
         } catch (error) {
             console.error("Error uploading file:", error);
         }
@@ -107,6 +108,12 @@ const FileUpload = () => {
                     >
                         Upload and Analyze
                     </Button>
+                     {/* Display the detected BPM if available */}
+                    {bpm && (
+                        <Typography variant="body1" color="primary">
+                            Detected BPM: {bpm}
+                        </Typography>
+                    )}
                 </Box>
             )}
  
