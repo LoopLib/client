@@ -12,6 +12,7 @@ const FileUpload = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     // State to store whether the user is dragging a file over the dropzone
     const [isDragging, setIsDragging] = useState(false);
+    const [bpm, setBpm] = useState(null); // State to store the BPM
 
     // Function to handle the file input change
     const handleFileChange = (event) => {
