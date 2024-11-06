@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Button, Typography, Paper } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import axios from 'axios'; // Import axios for making HTTP requests
+import WaveSurfer from "wavesurfer.js";
 import "./upload.css";
 
 
@@ -15,6 +16,39 @@ const FileUpload = () => {
     const [bpm, setBpm] = useState(null); // State to store the BPM
     const [key, setKey] = useState(null); // State to store the key
     const [error, setError] = useState(null); // State to store any error message
+    const [waveform, setWaveform] = useState(null); // State to store waveform instance
+    const waveformRef = useRef(null); // Ref to attach waveform container
+
+   useEffect(() => {
+        let wavesurfer; // Declare waveSurfer instance inside useEffect to manage cleanup
+
+        if (selectedFile && waveformRef.current) {
+            console.log("Initializing WaveSurfer");
+
+            // Create WaveSurfer instance and attach it to the ref container
+            wavesurfer = WaveSurfer.create({
+                container: waveformRef.current,
+                waveColor: "#d9dcff",
+                progressColor: "#4353ff",
+                cursorColor: "#4353ff",
+                barWidth: 2,
+                responsive: true,
+                height: 100,
+                autoCenter: true,
+                backend: "MediaElement",
+            });
+
+            // Create an object URL for the audio file and load it into WaveSurfer
+            const objectUrl = URL.createObjectURL(selectedFile);
+            wavesurfer.load(objectUrl);
+
+            return () => {
+                // Clean up WaveSurfer instance and revoke object URL
+                wavesurfer.destroy();
+                URL.revokeObjectURL(objectUrl);
+            };
+        }
+    }, [selectedFile]);
 
 
     // Function to handle the file input change
@@ -108,6 +142,9 @@ const FileUpload = () => {
                         </Typography>
                     </Paper>
 
+                    {/* Waveform container */}
+                    <div ref={waveformRef} className="waveform-container" style={{ width: "100%", height: "100px" }}></div>
+
                     {/* Conditionally rendered "Upload and Analyze" Button */}
                     <Button
                         onClick={handleUploadAndAnalyze}
@@ -134,6 +171,7 @@ const FileUpload = () => {
             )}
 
         </Box>
+        
     );
 };
 
