@@ -148,47 +148,76 @@ const FileUpload = () => {
 
 
     return (
-        // Reference: https://stackoverflow.com/questions/68900012/how-to-fix-an-upload-icon-to-a-file-upload-input-material-ui
-        <Box className="file-upload-container">
-            <Paper
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                className={`file-upload-dropzone ${isDragging ? "dragging" : ""}`}
-            >
-                <UploadFileIcon className="file-upload-icon" />
-                <Typography variant="body1" color="textSecondary">
-                    Drag & Drop your file here or
-                </Typography>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    component="label"
-                    className="file-upload-button"
+        <>
+            {/* Main File Upload Container */}
+            <Box className="file-upload-container">
+                <Paper
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    className={`file-upload-dropzone ${isDragging ? "dragging" : ""}`}
                 >
-                    Browse Files
-                    <input type="file" hidden onChange={handleFileChange} />
-                </Button>
-            </Paper>
-            {selectedFile && (
-                <Box className="file-upload-preview">
-                    <Typography variant="body2">Selected File:</Typography>
-                    <Paper className="file-preview-details">
-                        <Typography variant="subtitle1">{selectedFile.name}</Typography>
-                        <Typography variant="caption" color="textSecondary">
-                            {(selectedFile.size / 1024).toFixed(2)} KB
-                        </Typography>
-                    </Paper>
+                    <UploadFileIcon className="file-upload-icon" />
+                    <Typography variant="body1" color="textSecondary">
+                        Drag & Drop your file here or
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        component="label"
+                        className="file-upload-button"
+                    >
+                        Browse Files
+                        <input type="file" hidden onChange={handleFileChange} />
+                    </Button>
+                </Paper>
 
-                     {/* Waveform container and Play/Stop button */}
-                     <Box display="flex" alignItems="center" marginTop="16px">
-                        <div ref={waveformRef} className="waveform-container"></div>
+                {selectedFile && (
+                    <Box className="file-upload-preview">
+                        <Typography variant="body2">Selected File:</Typography>
+                        <Paper className="file-preview-details">
+                            <Typography variant="subtitle1">{selectedFile.name}</Typography>
+                            <Typography variant="caption" color="textSecondary">
+                                {(selectedFile.size / 1024).toFixed(2)} KB
+                            </Typography>
+                        </Paper>
+
+                        {/* Conditionally rendered "Upload and Analyze" Button */}
+                        <Button onClick={handleUploadAndAnalyze}>
+                            Upload and Analyze
+                        </Button>
+
+                        {bpm && (
+                            <Typography variant="body1" color="primary">
+                                Detected BPM: {bpm}
+                            </Typography>
+                        )}
+                        {key && (
+                            <Typography variant="body1" color="primary">
+                                Detected Key: {key}
+                            </Typography>
+                        )}
+                        {error && (
+                            <Typography variant="body1" color="error">
+                                {error}
+                            </Typography>
+                        )}
+                    </Box>
+                )}
+            </Box>
+
+            {/* Completely Separate Box for Waveform Display */}
+            {selectedFile && (
+                <Box className="waveform-display-container" marginTop="24px" padding="16px" border="1px solid #ddd" borderRadius="8px" boxShadow="0px 4px 12px rgba(0, 0, 0, 0.1)">
+                    <Typography variant="h6" marginBottom="16px">
+                        Audio Playback
+                    </Typography>
+                    <Box display="flex" alignItems="center">
+                        <div ref={waveformRef} className="waveform-container" style={{ flex: 1, height: "100px", marginRight: "16px" }}></div>
                         <IconButton onClick={togglePlay} color="primary" aria-label="play/pause">
                             {isPlaying ? <StopIcon /> : <PlayArrowIcon />}
                         </IconButton>
                     </Box>
-
-                    {/* Display audio duration and current time */}
                     <Box display="flex" justifyContent="space-between" marginTop="8px">
                         <Typography variant="body2">
                             Current Time: {formatTime(currentTime)}
@@ -197,34 +226,9 @@ const FileUpload = () => {
                             Duration: {formatTime(duration)}
                         </Typography>
                     </Box>
-
-                    {/* Conditionally rendered "Upload and Analyze" Button */}
-                    <Button
-                        onClick={handleUploadAndAnalyze}
-                    >
-                        Upload and Analyze
-                    </Button>
-                    {/* Display the detected BPM if available */}
-                    {bpm && (
-                        <Typography variant="body1" color="primary">
-                            Detected BPM: {bpm}
-                        </Typography>
-                    )}
-                    {key && (
-                        <Typography variant="body1" color="primary">
-                            Detected Key: {key}
-                        </Typography>
-                    )}
-                    {error && (
-                        <Typography variant="body1" color="error">
-                            {error}
-                        </Typography>
-                    )}
                 </Box>
             )}
-        </Box>
-
-
+        </>
     );
 };
 
