@@ -25,12 +25,12 @@ const FileUpload = () => {
     const [waveform, setWaveform] = useState(null); // State to store waveform instance
     const waveformRef = useRef(null); // Ref to attach waveform container
     const wavesurferRef = useRef(null); // Ref to store WaveSurfer instance
-
+    
     useEffect(() => {
         if (selectedFile && waveformRef.current) {
             const wavesurfer = WaveSurfer.create({
                 container: waveformRef.current,
-                waveColor: "#d9dcff",
+                waveColor: "#4a90e2",
                 progressColor: "#4353ff",
                 cursorColor: "#4353ff",
                 barWidth: 2,
