@@ -211,7 +211,7 @@ const FileUpload = () => {
             {selectedFile && (
                 <Box className="waveform-display-container" marginTop="24px" padding="16px" border="1px solid #ddd" borderRadius="8px" boxShadow="0px 4px 12px rgba(0, 0, 0, 0.1)">
                     <Typography variant="h6" marginBottom="16px">
-                        Audio Playback
+                        AUDIO PLAYBACK
                     </Typography>
                     <Box display="flex" alignItems="center">
                         <div ref={waveformRef} className="waveform-container" style={{ flex: 1, height: "100px", marginRight: "16px" }}></div>
