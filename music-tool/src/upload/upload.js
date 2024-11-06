@@ -19,19 +19,16 @@ const FileUpload = () => {
     const [bpm, setBpm] = useState(null); // State to store the BPM
     const [key, setKey] = useState(null); // State to store the key
     const [isPlaying, setIsPlaying] = useState(false); // Track if audio is playing
+    const [duration, setDuration] = useState(0); // Duration of the audio file
+    const [currentTime, setCurrentTime] = useState(0); // Current playback time
     const [error, setError] = useState(null); // State to store any error message
     const [waveform, setWaveform] = useState(null); // State to store waveform instance
     const waveformRef = useRef(null); // Ref to attach waveform container
     const wavesurferRef = useRef(null); // Ref to store WaveSurfer instance
 
     useEffect(() => {
-        let wavesurfer; // Declare WaveSurfer instance
-
         if (selectedFile && waveformRef.current) {
-            console.log("Initializing WaveSurfer");
-
-            // Create WaveSurfer instance and attach it to the ref container
-            wavesurfer = WaveSurfer.create({
+            const wavesurfer = WaveSurfer.create({
                 container: waveformRef.current,
                 waveColor: "#d9dcff",
                 progressColor: "#4353ff",
@@ -46,6 +43,22 @@ const FileUpload = () => {
             const objectUrl = URL.createObjectURL(selectedFile);
             wavesurfer.load(objectUrl);
             wavesurferRef.current = wavesurfer;
+
+            // Event listener to handle when the audio is ready
+            wavesurfer.on("ready", () => {
+                console.log("WaveSurfer is ready");
+                setDuration(wavesurfer.getDuration()); // Set the duration
+            });
+
+            // Event listener to handle play/pause state update
+            wavesurfer.on("play", () => setIsPlaying(true));
+            wavesurfer.on("pause", () => setIsPlaying(false));
+            wavesurfer.on("finish", () => setIsPlaying(false));
+
+            // Update current time as the audio plays
+            wavesurfer.on("audioprocess", () => {
+                setCurrentTime(wavesurfer.getCurrentTime());
+            });
 
             // Clean up
             return () => {
@@ -114,17 +127,25 @@ const FileUpload = () => {
         }
     };
 
-    // Toggle play/pause for the audio
+    // Function to toggle play/pause
     const togglePlay = () => {
+        // Toggle the isPlaying state
         if (wavesurferRef.current) {
-            if (isPlaying) {
+            if (wavesurferRef.current.isPlaying()) {
                 wavesurferRef.current.pause();
             } else {
                 wavesurferRef.current.play();
             }
-            setIsPlaying(!isPlaying);
         }
     };
+
+    // Helper function to format time in mm:ss
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
 
     return (
         // Reference: https://stackoverflow.com/questions/68900012/how-to-fix-an-upload-icon-to-a-file-upload-input-material-ui
@@ -159,12 +180,22 @@ const FileUpload = () => {
                         </Typography>
                     </Paper>
 
-                    {/* Waveform container and Play/Stop button */}
-                    <Box display="flex" alignItems="center" marginTop="16px">
+                     {/* Waveform container and Play/Stop button */}
+                     <Box display="flex" alignItems="center" marginTop="16px">
                         <div ref={waveformRef} className="waveform-container"></div>
                         <IconButton onClick={togglePlay} color="primary" aria-label="play/pause">
                             {isPlaying ? <StopIcon /> : <PlayArrowIcon />}
                         </IconButton>
+                    </Box>
+
+                    {/* Display audio duration and current time */}
+                    <Box display="flex" justifyContent="space-between" marginTop="8px">
+                        <Typography variant="body2">
+                            Current Time: {formatTime(currentTime)}
+                        </Typography>
+                        <Typography variant="body2">
+                            Duration: {formatTime(duration)}
+                        </Typography>
                     </Box>
 
                     {/* Conditionally rendered "Upload and Analyze" Button */}
