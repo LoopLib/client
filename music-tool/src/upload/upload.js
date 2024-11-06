@@ -1,7 +1,10 @@
+
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Button, Typography, Paper } from "@mui/material";
+import { Box, Button, Typography, Paper, IconButton } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import axios from 'axios'; // Import axios for making HTTP requests
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import StopIcon from "@mui/icons-material/Stop";
+import axios from 'axios';
 import WaveSurfer from "wavesurfer.js";
 import "./upload.css";
 
@@ -15,12 +18,14 @@ const FileUpload = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [bpm, setBpm] = useState(null); // State to store the BPM
     const [key, setKey] = useState(null); // State to store the key
+    const [isPlaying, setIsPlaying] = useState(false); // Track if audio is playing
     const [error, setError] = useState(null); // State to store any error message
     const [waveform, setWaveform] = useState(null); // State to store waveform instance
     const waveformRef = useRef(null); // Ref to attach waveform container
+    const wavesurferRef = useRef(null); // Ref to store WaveSurfer instance
 
-   useEffect(() => {
-        let wavesurfer; // Declare waveSurfer instance inside useEffect to manage cleanup
+    useEffect(() => {
+        let wavesurfer; // Declare WaveSurfer instance
 
         if (selectedFile && waveformRef.current) {
             console.log("Initializing WaveSurfer");
@@ -38,12 +43,12 @@ const FileUpload = () => {
                 backend: "MediaElement",
             });
 
-            // Create an object URL for the audio file and load it into WaveSurfer
             const objectUrl = URL.createObjectURL(selectedFile);
             wavesurfer.load(objectUrl);
+            wavesurferRef.current = wavesurfer;
 
+            // Clean up
             return () => {
-                // Clean up WaveSurfer instance and revoke object URL
                 wavesurfer.destroy();
                 URL.revokeObjectURL(objectUrl);
             };
@@ -109,6 +114,18 @@ const FileUpload = () => {
         }
     };
 
+    // Toggle play/pause for the audio
+    const togglePlay = () => {
+        if (wavesurferRef.current) {
+            if (isPlaying) {
+                wavesurferRef.current.pause();
+            } else {
+                wavesurferRef.current.play();
+            }
+            setIsPlaying(!isPlaying);
+        }
+    };
+
     return (
         // Reference: https://stackoverflow.com/questions/68900012/how-to-fix-an-upload-icon-to-a-file-upload-input-material-ui
         <Box className="file-upload-container">
@@ -142,6 +159,14 @@ const FileUpload = () => {
                         </Typography>
                     </Paper>
 
+                    {/* Waveform container and Play/Stop button */}
+                    <Box display="flex" alignItems="center" marginTop="16px">
+                        <div ref={waveformRef} className="waveform-container"></div>
+                        <IconButton onClick={togglePlay} color="primary" aria-label="play/pause">
+                            {isPlaying ? <StopIcon /> : <PlayArrowIcon />}
+                        </IconButton>
+                    </Box>
+
                     {/* Conditionally rendered "Upload and Analyze" Button */}
                     <Button
                         onClick={handleUploadAndAnalyze}
@@ -166,11 +191,9 @@ const FileUpload = () => {
                     )}
                 </Box>
             )}
-            {/* Waveform container */}
-            <div ref={waveformRef} className="waveform-container" style={{ width: "100%", height: "100px" }}></div>
         </Box>
 
-        
+
     );
 };
 
