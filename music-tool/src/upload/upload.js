@@ -142,9 +142,6 @@ const FileUpload = () => {
                         </Typography>
                     </Paper>
 
-                    {/* Waveform container */}
-                    <div ref={waveformRef} className="waveform-container" style={{ width: "100%", height: "100px" }}></div>
-
                     {/* Conditionally rendered "Upload and Analyze" Button */}
                     <Button
                         onClick={handleUploadAndAnalyze}
@@ -169,8 +166,10 @@ const FileUpload = () => {
                     )}
                 </Box>
             )}
-
+            {/* Waveform container */}
+            <div ref={waveformRef} className="waveform-container" style={{ width: "100%", height: "100px" }}></div>
         </Box>
+
         
     );
 };
