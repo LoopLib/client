@@ -13,6 +13,9 @@ const FileUpload = () => {
     // State to store whether the user is dragging a file over the dropzone
     const [isDragging, setIsDragging] = useState(false);
     const [bpm, setBpm] = useState(null); // State to store the BPM
+    const [key, setKey] = useState(null); // State to store the key
+    const [error, setError] = useState(null); // State to store any error message
+
 
     // Function to handle the file input change
     const handleFileChange = (event) => {
@@ -50,12 +53,12 @@ const FileUpload = () => {
     const handleUploadAndAnalyze = async () => {
         // If no file is selected, return
         if (!selectedFile) return;
-        
+
         // Create a FormData object to store the file
         const formData = new FormData();
         // Append the file to the FormData object
         formData.append("file", selectedFile);
-    
+
         try {
             // Send a POST request to the backend
             const response = await axios.post("http://localhost:5000/upload", formData, {
@@ -65,11 +68,13 @@ const FileUpload = () => {
             });
             console.log("File uploaded and analyzed:", response.data);
             setBpm(response.data.bpm); // Store the BPM in the state
+            setKey(response.data.key); // Store the key in the state
+            setError(null); // Clear any previous error
         } catch (error) {
             console.error("Error uploading file:", error);
         }
     };
-    
+
     return (
         // Reference: https://stackoverflow.com/questions/68900012/how-to-fix-an-upload-icon-to-a-file-upload-input-material-ui
         <Box className="file-upload-container">
@@ -109,15 +114,25 @@ const FileUpload = () => {
                     >
                         Upload and Analyze
                     </Button>
-                     {/* Display the detected BPM if available */}
+                    {/* Display the detected BPM if available */}
                     {bpm && (
                         <Typography variant="body1" color="primary">
                             Detected BPM: {bpm}
                         </Typography>
                     )}
+                    {key && (
+                        <Typography variant="body1" color="primary">
+                            Detected Key: {key}
+                        </Typography>
+                    )}
+                    {error && (
+                        <Typography variant="body1" color="error">
+                            {error}
+                        </Typography>
+                    )}
                 </Box>
             )}
- 
+
         </Box>
     );
 };
