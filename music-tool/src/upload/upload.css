@@ -64,3 +64,41 @@
 .waveform-container .wave {
   height: 100%; /* Ensure the waveform covers the container fully */
 }
+
+.waveform-display-container {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e8ebf2 0%, #f5f7fa 100%);
+  border-radius: 12px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.waveform-display-container:hover {
+  box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.waveform-container {
+  flex: 1;
+  height: 100px;
+  margin-right: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.file-upload-preview .file-preview-details {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: #f1f3f8;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.iconButton {
+  transform: scale(1.2);
+  transition: transform 0.2s ease;
+}
+
+.iconButton:hover {
+  transform: scale(1.4);
+}
