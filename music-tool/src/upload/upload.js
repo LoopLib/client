@@ -38,6 +38,7 @@ const FileUpload = () => {
                 height: 100,
                 autoCenter: true,
                 backend: "MediaElement",
+                pixelRatio: 1,
             });
 
             const objectUrl = URL.createObjectURL(selectedFile);
@@ -206,7 +207,7 @@ const FileUpload = () => {
                 )}
             </Box>
 
-            {/* Completely Separate Box for Waveform Display */}
+            {/* Separate Box for Waveform Display */}
             {selectedFile && (
                 <Box className="waveform-display-container" marginTop="24px" padding="16px" border="1px solid #ddd" borderRadius="8px" boxShadow="0px 4px 12px rgba(0, 0, 0, 0.1)">
                     <Typography variant="h6" marginBottom="16px">
