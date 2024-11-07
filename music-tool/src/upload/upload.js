@@ -199,9 +199,9 @@ const FileUpload = () => {
 
             {bpm && key && (
                 <Box className="bpm-key-display">
-                    <Typography variant="body1" className="bpm-key-title">Detected BPM</Typography>
+                    <Typography variant="body1" className="bpm-key-title">BPM</Typography>
                     <Typography variant="h6" className="bpm-key-text">{bpm}</Typography>
-                    <Typography variant="body1" className="bpm-key-title">Detected Key</Typography>
+                    <Typography variant="body1" className="bpm-key-title">KEY</Typography>
                     <Typography variant="h6" className="bpm-key-text">{key}</Typography>
                 </Box>
             )}
