@@ -74,6 +74,9 @@ const FileUpload = () => {
     const handleFileChange = (event) => {
         // Set the selected file in the state
         setSelectedFile(event.target.files[0]);
+        // Reset bpm and key to hide them until analysis completes
+        setBpm(null);
+        setKey(null);
     };
 
     // Function to handle the form submission
@@ -84,9 +87,11 @@ const FileUpload = () => {
         setIsDragging(false);
         if (event.dataTransfer.files.length) {
             setSelectedFile(event.dataTransfer.files[0]);
+            // Reset bpm and key to hide them until analysis completes
+            setBpm(null);
+            setKey(null);
         }
     };
-
     // Function to handle the file upload
     // This function will be called when the user clicks the upload button
     const handleDragOver = (event) => {
