@@ -193,22 +193,23 @@ const FileUpload = () => {
                             Upload and Analyze
                         </Button>
 
-                        {bpm && key && (
-                            <Box className="bpm-key-display">
-                                <Typography variant="body1" className="bpm-key-title">Detected BPM</Typography>
-                                <Typography variant="h6" className="bpm-key-text">{bpm}</Typography>
-                                <Typography variant="body1" className="bpm-key-title">Detected Key</Typography>
-                                <Typography variant="h6" className="bpm-key-text">{key}</Typography>
-                            </Box>
-                        )}
-                        {error && (
-                            <Typography variant="body1" color="error">
-                                {error}
-                            </Typography>
-                        )}
                     </Box>
                 )}
             </Box>
+
+            {bpm && key && (
+                <Box className="bpm-key-display">
+                    <Typography variant="body1" className="bpm-key-title">Detected BPM</Typography>
+                    <Typography variant="h6" className="bpm-key-text">{bpm}</Typography>
+                    <Typography variant="body1" className="bpm-key-title">Detected Key</Typography>
+                    <Typography variant="h6" className="bpm-key-text">{key}</Typography>
+                </Box>
+            )}
+            {error && (
+                <Typography variant="body1" color="error">
+                    {error}
+                </Typography>
+            )}
 
             {/* Separate Box for Waveform Display */}
             {selectedFile && (
@@ -232,6 +233,7 @@ const FileUpload = () => {
                     </Box>
                 </Box>
             )}
+
         </>
     );
 };
