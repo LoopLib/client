@@ -25,7 +25,7 @@ const FileUpload = () => {
     const [waveform, setWaveform] = useState(null); // State to store waveform instance
     const waveformRef = useRef(null); // Ref to attach waveform container
     const wavesurferRef = useRef(null); // Ref to store WaveSurfer instance
-    
+
     useEffect(() => {
         if (selectedFile && waveformRef.current) {
             const wavesurfer = WaveSurfer.create({
@@ -188,15 +188,13 @@ const FileUpload = () => {
                             Upload and Analyze
                         </Button>
 
-                        {bpm && (
-                            <Typography variant="body1" color="primary">
-                                Detected BPM: {bpm}
-                            </Typography>
-                        )}
-                        {key && (
-                            <Typography variant="body1" color="primary">
-                                Detected Key: {key}
-                            </Typography>
+                        {bpm && key && (
+                            <Box className="bpm-key-display">
+                                <Typography variant="body1" className="bpm-key-title">Detected BPM</Typography>
+                                <Typography variant="h6" className="bpm-key-text">{bpm}</Typography>
+                                <Typography variant="body1" className="bpm-key-title">Detected Key</Typography>
+                                <Typography variant="h6" className="bpm-key-text">{key}</Typography>
+                            </Box>
                         )}
                         {error && (
                             <Typography variant="body1" color="error">
