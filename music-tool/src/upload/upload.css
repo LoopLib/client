@@ -117,13 +117,13 @@
 
 .bpm-key-display .bpm-key-text {
   font-size: 1.2rem;
-  color: #333;
+  color: #4a90e2;
   font-weight: 500;
   margin: 8px 0;
 }
 
 .bpm-key-display .bpm-key-title {
   font-size: 1rem;
-  color: #4a90e2;
+  color: #333;
   font-weight: 400;
 }
