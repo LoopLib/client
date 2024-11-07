@@ -116,20 +116,15 @@
   margin: 24px auto;
 }
 
-.bpm-key-display:hover {
-  box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.2);
-  transform: translateY(-2px);
-}
-
 .bpm-key-display .bpm-key-text {
   font-size: 1.2rem;
-  color: #333;
+  color: #4a90e2;
   font-weight: 500;
   margin: 8px 0;
 }
 
 .bpm-key-display .bpm-key-title {
   font-size: 1rem;
-  color: #666;
+  color: #4a90e2;
   font-weight: 400;
 }
