@@ -25,6 +25,7 @@ const FileUpload = () => {
     const [waveform, setWaveform] = useState(null); // State to store waveform instance
     const waveformRef = useRef(null); // Ref to attach waveform container
     const wavesurferRef = useRef(null); // Ref to store WaveSurfer instance
+    const [isLoading, setIsLoading] = useState(false); // New loading state
 
     useEffect(() => {
         if (selectedFile && waveformRef.current) {
@@ -117,6 +118,8 @@ const FileUpload = () => {
         // Append the file to the FormData object
         formData.append("file", selectedFile);
 
+        setIsLoading(true); // Start loading
+
         try {
             // Send a POST request to the backend
             const response = await axios.post("http://localhost:5000/upload", formData, {
@@ -130,6 +133,8 @@ const FileUpload = () => {
             setError(null); // Clear any previous error
         } catch (error) {
             console.error("Error uploading file:", error);
+        } finally {
+            setIsLoading(false); // End loading
         }
     };
 
@@ -196,6 +201,13 @@ const FileUpload = () => {
                     </Box>
                 )}
             </Box>
+
+            {isLoading && (
+                <Box display="flex" justifyContent="center" marginTop="16px">
+                    <CircularProgress /> {/* Loading indicator */}
+                    <Typography variant="body1" marginLeft="8px">Analyzing...</Typography>
+                </Box>
+            )}
 
             {bpm && key && (
                 <Box className="bpm-key-display">
