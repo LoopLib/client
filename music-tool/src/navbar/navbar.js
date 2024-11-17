@@ -6,7 +6,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/" className="navbar-logo">BrandName</Link>
+        <Link to="/" className="navbar-logo">LoopLib</Link>
       </div>
       <ul className="navbar-list">
         <li className="navbar-item">
