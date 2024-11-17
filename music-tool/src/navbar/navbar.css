@@ -64,11 +64,6 @@ body {
   transform: translateY(-3px);
 }
 
-/* Hover animation for brand and links */
-.navbar:hover {
-  transform: scale(1.01);
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .navbar {
