@@ -157,6 +157,17 @@ const FileUpload = () => {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
+    // Function to handle publishing the audio file
+    const handlePublish = () => {
+        if (!selectedFile) {
+            setError("No file to publish.");
+            return;
+        }
+        console.log("Publishing file:", selectedFile.name);
+        // You can replace the below logic with your actual publish functionality
+        alert("Audio has been published successfully!");
+    };
+
 
     return (
         <>
@@ -242,6 +253,12 @@ const FileUpload = () => {
                         <Typography variant="body2">
                             Duration: {formatTime(duration)}
                         </Typography>
+                    </Box>
+                    {/* Publish Button */}
+                    <Box display="flex" justifyContent="center" marginTop="16px">
+                        <Button variant="contained" color="secondary" onClick={handlePublish}>
+                            Publish
+                        </Button>
                     </Box>
                 </Box>
             )}
