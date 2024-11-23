@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext"; // Import AuthContext
 import "./navbar.css";
 import { FaSignOutAlt } from "react-icons/fa"; // Import logout icon
@@ -14,10 +14,18 @@ function Navbar() {
         navigate("/"); // Navigate to '/' after logout
     };
 
+    const handleLogoClick = () => {
+        if (isLoggedIn) {
+            navigate("/homepage"); // Navigate to the homepage if logged in
+        } else {
+            navigate("/"); // Navigate to the login page if not logged in
+        }
+    };
+
     return (
         <nav className="navbar">
-            <div className="navbar-brand">
-                <Link to="/" className="navbar-logo">LoopLib</Link>
+            <div className="navbar-brand" onClick={handleLogoClick} style={{ cursor: "pointer" }}>
+                <span className="navbar-logo">LoopLib</span>
             </div>
             <ul className="navbar-list">
                 {isLoggedIn ? (
@@ -35,10 +43,10 @@ function Navbar() {
                             {user.firstName}
                         </li>
                         <li className="navbar-item">
-                            <FaSignOutAlt 
-                                className="navbar-logout-icon" 
+                            <FaSignOutAlt
+                                className="navbar-logout-icon"
                                 onClick={handleLogout} // Use handleLogout
-                                title="Logout" 
+                                title="Logout"
                             />
                         </li>
                     </>

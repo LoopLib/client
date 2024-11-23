@@ -42,17 +42,11 @@
     width: 100%;
   }
   
-  .audio-files-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-    text-align: left;
-  }
-  
   .audio-card {
-    border-radius: 8px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
     padding: 16px;
+    border: solid, 2px;
+    max-height: 80%;
   }
   
   .audio-card audio {

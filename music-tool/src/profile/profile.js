@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Typography,
@@ -8,11 +8,13 @@ import {
   List,
   Grid,
   IconButton,
-  Button,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AWS from "aws-sdk"; // AWS SDK for accessing S3
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import StopIcon from "@mui/icons-material/Stop";
+import AWS from "aws-sdk";
+import WaveSurfer from "wavesurfer.js";
 import { auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -22,6 +24,8 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [audioFiles, setAudioFiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const waveSurferRefs = useRef({}); // Store WaveSurfer instances for each track
+  const [activeIndex, setActiveIndex] = useState(null); // Track currently playing file
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -37,6 +41,15 @@ const Profile = () => {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      // Clean up WaveSurfer instances on unmount
+      Object.values(waveSurferRefs.current).forEach((waveSurfer) => {
+        waveSurfer.destroy();
+      });
+    };
   }, []);
 
   const fetchProfileData = async (userId) => {
@@ -57,8 +70,12 @@ const Profile = () => {
 
   const fetchAudioFilesFromAWS = async (userId) => {
     try {
-
+      const s3 = new AWS.S3({
+        accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+        region: process.env.REACT_APP_AWS_REGION,
       });
+      
 
       const params = {
         Bucket: "looplib-audio-bucket",
@@ -77,13 +94,62 @@ const Profile = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Box className="profile-container">
-        <CircularProgress color="primary" />
-      </Box>
-    );
-  }
+  const initializeWaveSurfer = (url, index) => {
+    if (!waveSurferRefs.current[index]) {
+      const waveSurfer = WaveSurfer.create({
+        container: `#waveform-${index}`,
+        waveColor: "#6a11cb",
+        progressColor: "#000000",
+        cursorColor: "#000000",
+        barWidth: 2,
+        responsive: true,
+        height: 100,
+        backend: "MediaElement",
+      });
+
+      waveSurfer.load(url);
+      waveSurferRefs.current[index] = waveSurfer;
+
+      // Handle play/pause state
+      waveSurfer.on("finish", () => {
+        setActiveIndex(null);
+      });
+    }
+  };
+
+  const togglePlay = (index) => {
+    const waveSurfer = waveSurferRefs.current[index];
+    if (waveSurfer) {
+      if (waveSurfer.isPlaying()) {
+        waveSurfer.pause();
+        setActiveIndex(null);
+      } else {
+        waveSurfer.play();
+        setActiveIndex(index);
+      }
+    }
+  };
+
+  const handleDelete = async (file) => {
+    try {
+      const s3 = new AWS.S3({
+        accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+        region: process.env.REACT_APP_AWS_REGION,
+      });
+  
+      const params = {
+        Bucket: process.env.REACT_APP_S3_BUCKET,
+        Key: `users/${user.uid}/${file.name}`,
+      };
+  
+      await s3.deleteObject(params).promise();
+      setAudioFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+      console.log("File deleted successfully:", file.name);
+    } catch (error) {
+      console.error("Error deleting file:", error.message);
+    }
+  };
 
   return (
     <Box className="profile-container">
@@ -125,21 +191,33 @@ const Profile = () => {
         {audioFiles.length > 0 ? (
           <List>
             {audioFiles.map((file, index) => (
-              <Card key={index} className="audio-card" sx={{ mb: 2 }}>
+              <Card
+                key={index}
+                className={`audio-card ${activeIndex === index ? "active" : ""}`}
+                sx={{ mb: 2 }}
+                onMouseEnter={() => initializeWaveSurfer(file.url, index)}
+              >
                 <Grid container alignItems="center">
                   <Grid item xs={8}>
                     <CardContent>
-                      <Typography variant="h6">{file.name}</Typography>
+                      <Typography>{file.name}</Typography>
+                      <div id={`waveform-${index}`} className="waveform-container"></div>
                     </CardContent>
                   </Grid>
                   <Grid item xs={3}>
-                    <audio controls style={{ width: "100%" }}>
-                      <source src={file.url} type="audio/mpeg" />
-                      Your browser does not support the audio element.
-                    </audio>
+                    <IconButton
+                      onClick={() => togglePlay(index)}
+                      style={{ color: "black" }}
+                    >
+                      {waveSurferRefs.current[index]?.isPlaying() ? (
+                        <StopIcon />
+                      ) : (
+                        <PlayArrowIcon />
+                      )}
+                    </IconButton>
                   </Grid>
                   <Grid item xs={1}>
-                    <IconButton color="error">
+                    <IconButton color="error" onClick={() => handleDelete(file)}>
                       <DeleteIcon />
                     </IconButton>
                   </Grid>

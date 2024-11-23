@@ -80,15 +80,15 @@ const FileUpload = () => {
         if (user) {
             console.log("Authenticated user UID:", user.uid); // Log the UID for debugging
             const userDocRef = doc(db, "users", user.uid);
-    
+
             try {
                 const userDoc = await getDoc(userDocRef);
-    
+
                 if (!userDoc.exists()) {
                     console.error("Firestore document not found for UID:", user.uid);
                     throw new Error("User not found in Firestore");
                 }
-    
+
                 console.log("User document data:", userDoc.data());
             } catch (error) {
                 console.error("Error fetching Firestore document:", error);
@@ -189,29 +189,29 @@ const FileUpload = () => {
             setError("No file to publish.");
             return;
         }
-    
+
         setIsLoading(true); // Show loading state
-    
+
         try {
             // Ensure the user is authenticated
             const auth = getAuth();
             const user = auth.currentUser;
-    
+
             if (!user) {
                 throw new Error("User not authenticated");
             }
-    
+
             const uid = user.uid; // Authenticated user's UID
             console.log("Publishing file for UID:", uid);
-    
+
             const userDocRef = doc(db, "users", uid); // Dynamically use the user's UID
             const userDoc = await getDoc(userDocRef);
-    
+
             if (!userDoc.exists()) {
                 console.error("Document does not exist for UID:", uid);
                 throw new Error("User not found in Firestore");
             }
-    
+
             console.log("Firestore document data:", userDoc.data());
     
     
@@ -221,10 +221,10 @@ const FileUpload = () => {
                 Body: selectedFile,
                 ContentType: selectedFile.type,
             };
-    
+
             const uploadResult = await s3.upload(params).promise();
             console.log("File uploaded successfully:", uploadResult);
-    
+
             alert("Audio has been published successfully!");
             setError(null); // Clear any previous error
         } catch (error) {
@@ -234,7 +234,7 @@ const FileUpload = () => {
             setIsLoading(false); // Hide loading state
         }
     };
-    
+
 
 
 
