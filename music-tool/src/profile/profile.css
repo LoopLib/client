@@ -3,38 +3,53 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 24px;
-    max-width: 600px;
+    max-width: 800px;
     margin: auto;
     margin-top: 4rem;
-    background: white; 
+    background: white; /* White background for the profile page */
     border-radius: 16px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Title Styling */
-.profile-title {
-    color: #333;
-    font-weight: bold;
-    margin-bottom: 24px;
-    font-size: 2rem;
-    text-align: center;
-}
-
-/* Paper styling for user details */
-.profile-paper {
+/* User Info Section */
+.user-info {
     padding: 16px;
     width: 100%;
     background: #f9f9f9;
     border-radius: 8px;
+    margin-bottom: 24px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
     text-align: left;
 }
 
-.profile-paper h6 {
+.user-info h6 {
     color: #555;
     margin-bottom: 8px;
+}
+
+/* Audio Files Section */
+.audio-files {
+    width: 100%;
+}
+
+.audio-files-title {
+    margin-bottom: 16px;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
+
+.audio-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.audio-item audio {
+    margin-left: 16px;
 }
 
 /* Responsive adjustments */
@@ -44,7 +59,17 @@
         margin-top: 2rem;
     }
 
-    .profile-title {
-        font-size: 1.5rem;
+    .user-info {
+        padding: 12px;
+    }
+
+    .audio-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .audio-item audio {
+        margin: 8px 0 0;
+        width: 100%;
     }
 }
