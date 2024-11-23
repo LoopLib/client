@@ -4,21 +4,18 @@ import {
   Typography,
   Card,
   CardContent,
-  CardMedia,
   CircularProgress,
   List,
-  ListItem,
-  ListItemText,
-  IconButton,
   Grid,
+  IconButton,
   Button,
 } from "@mui/material";
-import { auth } from "../firebaseConfig";
-import { onAuthStateChanged } from "firebase/auth";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AWS from "aws-sdk"; // AWS SDK for accessing S3
+import { auth } from "../firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import "./profile.css";
 
 const Profile = () => {
@@ -30,7 +27,8 @@ const Profile = () => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        await fetchAudioFiles(currentUser.uid);
+        await fetchProfileData(currentUser.uid); // Fetch profile details
+        await fetchAudioFilesFromAWS(currentUser.uid); // Fetch audio files from AWS
       } else {
         setUser(null);
         setAudioFiles([]);
@@ -41,13 +39,42 @@ const Profile = () => {
     return () => unsubscribe();
   }, []);
 
-  const fetchAudioFiles = async (userId) => {
-    const db = getFirestore();
-    const audioQuery = query(collection(db, "audioFiles"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(audioQuery);
+  const fetchProfileData = async (userId) => {
+    try {
+      const db = getFirestore();
+      const userDocRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userDocRef);
 
-    const files = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    setAudioFiles(files);
+      if (userDoc.exists()) {
+        console.log("User profile data:", userDoc.data());
+      } else {
+        console.error("No user profile found!");
+      }
+    } catch (error) {
+      console.error("Error fetching profile data:", error.message);
+    }
+  };
+
+  const fetchAudioFilesFromAWS = async (userId) => {
+    try {
+
+      });
+
+      const params = {
+        Bucket: "looplib-audio-bucket",
+        Prefix: `users/${userId}/`, // Path to user's files in S3
+      };
+
+      const data = await s3.listObjectsV2(params).promise();
+      const files = data.Contents.map((file) => ({
+        name: file.Key.split("/").pop(), // Extract file name
+        url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${file.Key}`,
+      }));
+
+      setAudioFiles(files);
+    } catch (error) {
+      console.error("Error fetching audio files from AWS:", error.message);
+    }
   };
 
   if (loading) {
@@ -97,15 +124,12 @@ const Profile = () => {
         </Typography>
         {audioFiles.length > 0 ? (
           <List>
-            {audioFiles.map((file) => (
-              <Card key={file.id} className="audio-card" sx={{ mb: 2 }}>
+            {audioFiles.map((file, index) => (
+              <Card key={index} className="audio-card" sx={{ mb: 2 }}>
                 <Grid container alignItems="center">
                   <Grid item xs={8}>
                     <CardContent>
                       <Typography variant="h6">{file.name}</Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {file.description}
-                      </Typography>
                     </CardContent>
                   </Grid>
                   <Grid item xs={3}>
