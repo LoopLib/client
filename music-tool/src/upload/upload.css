@@ -6,6 +6,11 @@
   margin: 0 auto; /* Center the upload area */
 }
 
+.file-upload-container {
+  margin-top: 80px; 
+}
+
+
 .file-upload-dropzone.dragging {
   border-color: #1e88e5;
   background-color: rgba(187, 222, 251, 0.5); /* Subtle background during drag */
