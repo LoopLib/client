@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, TextField } from "@mui/material";
+import { Box, Button, Typography, TextField, Alert } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
@@ -9,10 +9,18 @@ import "./login.css";
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); // State for error messages
     const navigate = useNavigate();
     const { login } = useAuth(); // Get login function from AuthContext
 
     const handleLogin = async () => {
+        setErrorMessage(""); // Clear previous error messages
+
+        if (!username || !password) {
+            setErrorMessage("Please fill in both fields.");
+            return;
+        }
+
         try {
             const userCredential = await signInWithEmailAndPassword(auth, username, password);
             const user = userCredential.user;
@@ -26,6 +34,24 @@ const Login = () => {
             navigate("/homepage");
         } catch (error) {
             console.error("Login error:", error.message);
+
+            // Handle specific error codes from Firebase
+            switch (error.code) {
+                case "auth/invalid-email":
+                    setErrorMessage("Invalid email format.");
+                    break;
+                case "auth/user-disabled":
+                    setErrorMessage("This account has been disabled.");
+                    break;
+                case "auth/user-not-found":
+                    setErrorMessage("No account found with this email.");
+                    break;
+                case "auth/wrong-password":
+                    setErrorMessage("Incorrect password. Please try again.");
+                    break;
+                default:
+                    setErrorMessage("An unexpected error occurred. Please try again.");
+            }
         }
     };
 
@@ -34,6 +60,12 @@ const Login = () => {
             <Typography variant="h5" className="login-title">
                 LOGIN
             </Typography>
+
+            {errorMessage && (
+                <Alert severity="error" className="login-error">
+                    {errorMessage}
+                </Alert>
+            )}
 
             <TextField
                 label="Username"
