@@ -153,7 +153,7 @@ const Profile = () => {
   return (
     <Box className="profile-container">
       <Box className="profile-header" mb={4}>
-        <AccountCircleIcon sx={{ fontSize: 80, color: "#3f51b5" }} />
+        <AccountCircleIcon sx={{ fontSize: 80, color: "#FFFFFF" }} />
         <Typography variant="h4" className="profile-title" mt={2}>
           {user ? user.displayName || "Welcome, User!" : "No User Logged In"}
         </Typography>
