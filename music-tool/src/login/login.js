@@ -80,9 +80,14 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
             />
             <Button
-                variant="contained"
-                color="primary"
-                fullWidth
+                   sx={{
+                    marginTop: '20px',
+                    fontWeight: 'bold',
+                    background: '#6a11cb',
+                    color: 'white',
+                    borderRadius: '8px',
+                    transition: 'all 0.3s ease',
+                }}
                 onClick={handleLogin}
                 className="login-button"
             >

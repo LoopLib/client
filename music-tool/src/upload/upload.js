@@ -31,9 +31,9 @@ const FileUpload = () => {
         if (selectedFile && waveformRef.current) {
             const wavesurfer = WaveSurfer.create({
                 container: waveformRef.current,
-                waveColor: "#4a90e2",
-                progressColor: "#4353ff",
-                cursorColor: "#4353ff",
+                waveColor: "#6a11cb",
+                progressColor: "#000000",
+                cursorColor: "#000000",
                 barWidth: 2,
                 responsive: true,
                 height: 100,
@@ -169,101 +169,148 @@ const FileUpload = () => {
 
 
     return (
-        <>
-            {/* Main File Upload Container */}
-            <Box className="file-upload-container">
-                <Paper
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    className={`file-upload-dropzone ${isDragging ? "dragging" : ""}`}
+        <Box className="file-upload-container">
+            <Paper
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                className={`file-upload-dropzone ${isDragging ? "dragging" : ""}`}
+                style={{ maxWidth: "60%", margin: "0 auto", borderRadius: "25px" }}
+            >
+                <UploadFileIcon className="file-upload-icon" />
+                <Typography variant="body1" color="textSecondary">
+                    Drag & Drop your file here or
+                </Typography>
+                <Button
+                    variant="contained"
+                    component="label"
+                    className="file-upload-button"
+                    sx={{
+                        marginTop: '20px',
+                        fontWeight: 'bold',
+                        background: '#6a11cb',
+                        color: 'white',
+                        borderRadius: '8px',
+                        transition: 'all 0.3s ease',
+                    }}
+
                 >
-                    <UploadFileIcon className="file-upload-icon" />
-                    <Typography variant="body1" color="textSecondary">
-                        Drag & Drop your file here or
+                    Browse Files
+                    <input type="file" hidden onChange={handleFileChange} />
+                </Button>
+            </Paper>
+
+            {selectedFile && (
+                <Box className="file-playback-section"
+                style={{ maxWidth: "90%", borderRadius: "25px" }}>
+                    <Typography variant="subtitle1" className="file-upload-file-name">
+                        {selectedFile.name}
                     </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                        {(selectedFile.size / 1024).toFixed(2)} KB
+                    </Typography>
+
+
+                    <Box className="waveform-display-container">
+                        <Typography variant="h6" marginBottom="16px">
+                            AUDIO PLAYBACK
+                        </Typography>
+                        <Box display="flex" alignItems="center">
+                            <div
+                                color='secondary'
+                                ref={waveformRef}
+                                className="waveform-container"
+                                style={{ flex: 1 }}
+                            ></div>
+                            <IconButton
+                                onClick={togglePlay}
+                                style={{ color: "black" }}
+                                aria-label="play/pause"
+                                className="iconButton"
+                            >
+                                {isPlaying ? <StopIcon /> : <PlayArrowIcon />}
+                            </IconButton>
+
+                        </Box>
+                        <Box display="flex" justifyContent="space-between" marginTop="8px">
+                            <Typography variant="body2">
+                                Current Time: {formatTime(currentTime)}
+                            </Typography>
+                            <Typography variant="body2">
+                                Duration: {formatTime(duration)}
+                            </Typography>
+                        </Box>
+                    </Box>
+
                     <Button
                         variant="contained"
-                        color="primary"
-                        component="label"
-                        className="file-upload-button"
+                        color="secondary"
+                        onClick={handlePublish}
+                        sx={{
+                            marginTop: '20px',
+                            fontWeight: 'bold',
+                            background: '#6a11cb',
+                            color: 'white',
+                            borderRadius: '8px',
+                            transition: 'all 0.3s ease',
+                        }}
                     >
-                        Browse Files
-                        <input type="file" hidden onChange={handleFileChange} />
+                        Publish
                     </Button>
-                </Paper>
-
-                {selectedFile && (
-                    <Box className="file-upload-preview">
-                        <Typography variant="body2">Selected File:</Typography>
-                        <Paper className="file-preview-details">
-                            <Typography variant="subtitle1">{selectedFile.name}</Typography>
-                            <Typography variant="caption" color="textSecondary">
-                                {(selectedFile.size / 1024).toFixed(2)} KB
-                            </Typography>
-                        </Paper>
-
-                        {/* Conditionally rendered "Upload and Analyze" Button */}
-                        <Button onClick={handleUploadAndAnalyze}>
-                            Upload and Analyze
-                        </Button>
-
-                    </Box>
-                )}
-            </Box>
+                </Box>
+            )}
 
             {isLoading && (
                 <Box display="flex" justifyContent="center" marginTop="16px">
-                    <CircularProgress /> {/* Loading indicator */}
-                    <Typography variant="body1" marginLeft="8px">Analyzing...</Typography>
+                    <CircularProgress size={24} />
+                    <Typography variant="body1" marginLeft="8px">
+                        Analyzing...
+                    </Typography>
                 </Box>
             )}
 
             {bpm && key && (
                 <Box className="bpm-key-display">
-                    <Typography variant="body1" className="bpm-key-title">BPM</Typography>
-                    <Typography variant="h6" className="bpm-key-text">{bpm}</Typography>
-                    <Typography variant="body1" className="bpm-key-title">KEY</Typography>
-                    <Typography variant="h6" className="bpm-key-text">{key}</Typography>
+                    <Typography variant="body1" className="bpm-key-title">
+                        BPM
+                    </Typography>
+                    <Typography variant="h6" className="bpm-key-text">
+                        {bpm}
+                    </Typography>
+                    <Typography variant="body1" className="bpm-key-title">
+                        KEY
+                    </Typography>
+                    <Typography variant="h6" className="bpm-key-text">
+                        {key}
+                    </Typography>
                 </Box>
             )}
+
             {error && (
                 <Typography variant="body1" color="error">
                     {error}
                 </Typography>
             )}
 
-            {/* Separate Box for Waveform Display */}
             {selectedFile && (
-                <Box className="waveform-display-container" marginTop="24px" padding="16px" border="1px solid #ddd" borderRadius="8px" boxShadow="0px 4px 12px rgba(0, 0, 0, 0.1)">
-                    <Typography variant="h6" marginBottom="16px">
-                        AUDIO PLAYBACK
-                    </Typography>
-                    <Box display="flex" alignItems="center">
-                        <div ref={waveformRef} className="waveform-container" style={{ flex: 1, height: "100px", marginRight: "16px" }}></div>
-                        <IconButton onClick={togglePlay} color="primary" aria-label="play/pause">
-                            {isPlaying ? <StopIcon /> : <PlayArrowIcon />}
-                        </IconButton>
-                    </Box>
-                    <Box display="flex" justifyContent="space-between" marginTop="8px">
-                        <Typography variant="body2">
-                            Current Time: {formatTime(currentTime)}
-                        </Typography>
-                        <Typography variant="body2">
-                            Duration: {formatTime(duration)}
-                        </Typography>
-                    </Box>
-                    {/* Publish Button */}
-                    <Box display="flex" justifyContent="center" marginTop="16px">
-                        <Button variant="contained" color="secondary" onClick={handlePublish}>
-                            Publish
-                        </Button>
-                    </Box>
-                </Box>
+                <Button
+                    onClick={handleUploadAndAnalyze}
+                    variant="contained"
+                    sx={{
+                        marginTop: '20px',
+                        fontWeight: 'bold',
+                        background: '#6a11cb',
+                        color: 'white',
+                        borderRadius: '8px',
+                        transition: 'all 0.3s ease',
+                    }}
+                >
+                    Upload and Analyze
+                </Button>
             )}
-
-        </>
+        </Box>
     );
 };
+
 
 export default FileUpload;

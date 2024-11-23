@@ -1,129 +1,85 @@
-/* Container for the File Upload component */
-.file-upload-container {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    padding: 24px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    margin: auto;
-    margin-top: 2rem;
-  }
 
- /* Styles for the Drop Zone */
- .file-upload-dropzone {
-    width: 100%;
-    padding: 32px;
-    text-align: center;
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    background-color: #ffffff;
-  }
-
-  .file-upload-dropzone.dragging {
-    border-color: #4a90e2;
-    background-color: #e3f2fd;
-  }
-  
-  /* File upload icon styling */
-  .file-upload-icon {
-    font-size: 50px;
-    color: #999;
-  }
-
-  /* File preview section */
-  .file-upload-preview {
-    width: 100%;
-    margin-top: 24px;
-  }
-  
-  /* File preview details */
-  .file-preview-details {
-    padding: 16px;
-    margin-top: 8px;
-  }
-
-  /* Waveform container styling */
-.waveform-container {
+.file-upload-dropzone {
   width: 100%;
-  height: 100px;
-  margin-top: 16px;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #f0f2ff;
-  border: 1px solid #ddd;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
-  position: relative;
+  padding: 40px;
+  text-align: center;
+  margin: 0 auto; /* Center the upload area */
 }
 
-/* Waveform progress bar styling (inside WaveSurfer) */
-.waveform-container .wave {
-  height: 100%; /* Ensure the waveform covers the container fully */
+.file-upload-dropzone.dragging {
+  border-color: #1e88e5;
+  background-color: rgba(187, 222, 251, 0.5); /* Subtle background during drag */
+  box-shadow: 0 0 16px rgba(33, 150, 243, 0.3);
+}
+
+.file-upload-icon {
+  color: #6a11cb;
+  margin-bottom: 16px;
+  transition: transform 0.3s;
+  scale: 1.5;
+}
+
+.file-upload-dropzone:hover .file-upload-icon {
+  transform: scale(1.5);
+}
+
+button:hover {
+  background-color: #ffd700;
+}
+
+.file-upload-button:hover {
+  background-color: #ffd700;
 }
 
 .waveform-display-container {
+  padding: 24px;
   margin-top: 24px;
-  padding: 20px;
-  background: linear-gradient(135deg, #e8ebf2 0%, #f5f7fa 100%);
+  background: linear-gradient(145deg, #f1f5f9, #ffffff);
+  border: solid;
   border-radius: 12px;
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
-  border: none;
-  transition: all 0.3s ease;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
-.waveform-display-container:hover {
-  box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.2);
+.bpm-key-display {
+  padding: 20px;
+  text-align: center;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.waveform-container {
-  flex: 1;
-  height: 100px;
-  margin-right: 16px;
-  border-radius: 8px;
-  overflow: hidden;
+.bpm-key-title {
+  color: #4a4a4a;
+  font-weight: 500;
 }
 
-.file-upload-preview .file-preview-details {
-  padding: 8px 16px;
-  border-radius: 8px;
-  background-color: #f1f3f8;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.iconButton {
-  transform: scale(1.2);
-  transition: transform 0.2s ease;
+.bpm-key-text {
+  font-size: 24px;
+  color: #1e88e5;
+  font-weight: bold;
 }
 
 .iconButton:hover {
-  transform: scale(1.4);
+  transform: scale(1.5);
 }
 
-/* BPM and Key display box styling */
-.bpm-key-display {
-  margin-top: 16px;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  text-align: center;
-  max-width: 400px;
-  margin: 24px auto;
+.circular-progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
 }
 
-.bpm-key-display .bpm-key-text {
-  font-size: 1.2rem;
-  color: #4a90e2;
+.circular-progress-container .MuiTypography-root {
+  margin-left: 12px;
   font-weight: 500;
-  margin: 8px 0;
 }
 
-.bpm-key-display .bpm-key-title {
-  font-size: 1rem;
-  color: #333;
-  font-weight: 400;
+.file-playback-section {
+  margin: 32px auto; /* Center horizontally */
+  text-align: center;
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

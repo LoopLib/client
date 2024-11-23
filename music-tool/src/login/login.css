@@ -56,19 +56,6 @@ body {
 }
 
 
-/* Button Styling */
-.login-button {
-    margin-top: 16px;
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
-    color: #fff;
-    font-weight: 500;
-    letter-spacing: 1px;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
-    transition: all 0.3s ease;
-}
-
 .login-button:hover {
     background: #ffd700;
     transform: translateY(-2px);
