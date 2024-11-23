@@ -20,26 +20,17 @@ function Navbar() {
                 <Link to="/" className="navbar-logo">LoopLib</Link>
             </div>
             <ul className="navbar-list">
-                <li className="navbar-item">
-                    <Link to="/homepage" className="navbar-link">Home</Link>
-                </li>
-                <li className="navbar-item">
-                    <Link to="/upload" className="navbar-link">Upload</Link>
-                </li>
-                <li className="navbar-item">
-                    <Link to="/profile" className="navbar-link">Profile</Link>
-                </li>
-                {!isLoggedIn ? (
+                {isLoggedIn ? (
                     <>
                         <li className="navbar-item">
-                            <Link to="/" className="navbar-link">Login</Link>
+                            <Link to="/homepage" className="navbar-link">Home</Link>
                         </li>
                         <li className="navbar-item">
-                            <Link to="/register" className="navbar-link">Register</Link>
+                            <Link to="/upload" className="navbar-link">Upload</Link>
                         </li>
-                    </>
-                ) : (
-                    <>
+                        <li className="navbar-item">
+                            <Link to="/profile" className="navbar-link">Profile</Link>
+                        </li>
                         <li className="navbar-item navbar-user">
                             Hello, {user.firstName}
                         </li>
@@ -49,6 +40,15 @@ function Navbar() {
                                 onClick={handleLogout} // Use handleLogout
                                 title="Logout" 
                             />
+                        </li>
+                    </>
+                ) : (
+                    <>
+                        <li className="navbar-item">
+                            <Link to="/" className="navbar-link">Login</Link>
+                        </li>
+                        <li className="navbar-item">
+                            <Link to="/register" className="navbar-link">Register</Link>
                         </li>
                     </>
                 )}
