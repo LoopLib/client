@@ -19,6 +19,9 @@ function Navbar() {
                 <li className="navbar-item">
                     <Link to="/upload" className="navbar-link">Upload</Link>
                 </li>
+                <li className="navbar-item">
+                    <Link to="/profile" className="navbar-link">Profile</Link>
+                </li>
                 {!isLoggedIn ? (
                     <>
                         <li className="navbar-item">
