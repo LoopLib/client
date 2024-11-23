@@ -136,12 +136,12 @@ const Profile = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-  
+
       const params = {
         Bucket: process.env.REACT_APP_S3_BUCKET,
         Key: `users/${user.uid}/${file.name}`,
       };
-  
+
       await s3.deleteObject(params).promise();
       setAudioFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
       console.log("File deleted successfully:", file.name);
@@ -153,7 +153,7 @@ const Profile = () => {
   return (
     <Box className="profile-container">
       <Box className="profile-header" mb={4}>
-        <AccountCircleIcon sx={{ fontSize: 80, color: "#FFFFFF" }} />
+        <AccountCircleIcon sx={{ fontSize: 80, color: "##FFFFFF" }} />
         <Typography variant="h4" className="profile-title" mt={2}>
           {user ? user.displayName || "Welcome, User!" : "No User Logged In"}
         </Typography>
@@ -166,19 +166,42 @@ const Profile = () => {
 
       <Card className="user-info">
         <CardContent>
-          <Typography variant="h6" gutterBottom>
-            User Details
+          <Typography variant="h5" className="user-info-title" gutterBottom>
+            Profile Overview
           </Typography>
           {user ? (
-            <>
-              <Typography variant="body1">Name: {user.displayName || "N/A"}</Typography>
-              <Typography variant="body1">Email: {user.email}</Typography>
-              <Typography variant="body1">UID: {user.uid}</Typography>
-            </>
+            <Box className="user-info-details">
+              <Box className="user-info-row">
+                <Typography variant="subtitle1" className="user-info-label">
+                  Name:
+                </Typography>
+                <Typography variant="body1" className="user-info-value">
+                  {user.displayName || "N/A"}
+                </Typography>
+              </Box>
+              <Box className="user-info-row">
+                <Typography variant="subtitle1" className="user-info-label">
+                  Email:
+                </Typography>
+                <Typography variant="body1" className="user-info-value">
+                  {user.email}
+                </Typography>
+              </Box>
+              <Box className="user-info-row">
+                <Typography variant="subtitle1" className="user-info-label">
+                  UID:
+                </Typography>
+                <Typography variant="body1" className="user-info-value">
+                  {user.uid}
+                </Typography>
+              </Box>
+            </Box>
           ) : (
-            <Typography variant="body1" color="error">
-              No user is logged in.
-            </Typography>
+            <Box className="no-user-info">
+              <Typography variant="body1" color="error">
+                No user is logged in.
+              </Typography>
+            </Box>
           )}
         </CardContent>
       </Card>
