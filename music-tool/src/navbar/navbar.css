@@ -64,6 +64,19 @@ body {
   transform: translateY(-3px);
 }
 
+
+.navbar-logout-icon {
+  font-size: 1.5rem; /* Adjust size */
+  color: #fff;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+
+.navbar-logout-icon:hover {
+  color: #f00; /* Change color on hover */
+}
+
+
 /* Responsive design */
 @media (max-width: 768px) {
   .navbar {

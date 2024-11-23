@@ -61,12 +61,7 @@ const Login = () => {
                 LOGIN
             </Typography>
 
-            {errorMessage && (
-                <Alert severity="error" className="login-error">
-                    {errorMessage}
-                </Alert>
-            )}
-
+           
             <TextField
                 label="Username"
                 variant="outlined"
@@ -93,6 +88,13 @@ const Login = () => {
             >
                 Login
             </Button>
+
+            {errorMessage && (
+                <Alert severity="error" className="login-error">
+                    {errorMessage}
+                </Alert>
+            )}
+
         </Box>
     );
 };
