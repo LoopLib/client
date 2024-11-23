@@ -6,7 +6,11 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import axios from 'axios';
 import WaveSurfer from "wavesurfer.js";
+import { getFirestore, doc, getDoc } from "firebase/firestore"; // Firestore SDK
+import AWS from "aws-sdk"; // AWS SDK
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./upload.css";
+import { db } from "../firebaseConfig";
 
 
 // FileUpload component
@@ -70,6 +74,29 @@ const FileUpload = () => {
         }
     }, [selectedFile]);
 
+
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            console.log("Authenticated user UID:", user.uid); // Log the UID for debugging
+            const userDocRef = doc(db, "users", user.uid);
+    
+            try {
+                const userDoc = await getDoc(userDocRef);
+    
+                if (!userDoc.exists()) {
+                    console.error("Firestore document not found for UID:", user.uid);
+                    throw new Error("User not found in Firestore");
+                }
+    
+                console.log("User document data:", userDoc.data());
+            } catch (error) {
+                console.error("Error fetching Firestore document:", error);
+            }
+        } else {
+            console.error("User is not authenticated");
+        }
+    });
 
     // Function to handle the file input change
     const handleFileChange = (event) => {
@@ -157,15 +184,58 @@ const FileUpload = () => {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
-    // Function to handle publishing the audio file
-    const handlePublish = () => {
+    const handlePublish = async () => {
         if (!selectedFile) {
             setError("No file to publish.");
             return;
         }
-        console.log("Publishing file:", selectedFile.name);
-        alert("Audio has been published successfully!");
+    
+        setIsLoading(true); // Show loading state
+    
+        try {
+            // Ensure the user is authenticated
+            const auth = getAuth();
+            const user = auth.currentUser;
+    
+            if (!user) {
+                throw new Error("User not authenticated");
+            }
+    
+            const uid = user.uid; // Authenticated user's UID
+            console.log("Publishing file for UID:", uid);
+    
+            const userDocRef = doc(db, "users", uid); // Dynamically use the user's UID
+            const userDoc = await getDoc(userDocRef);
+    
+            if (!userDoc.exists()) {
+                console.error("Document does not exist for UID:", uid);
+                throw new Error("User not found in Firestore");
+            }
+    
+            console.log("Firestore document data:", userDoc.data());
+    
+    
+            const params = {
+                Bucket: "looplib-audio-bucket",
+                Key: `users/${uid}/${selectedFile.name}`,
+                Body: selectedFile,
+                ContentType: selectedFile.type,
+            };
+    
+            const uploadResult = await s3.upload(params).promise();
+            console.log("File uploaded successfully:", uploadResult);
+    
+            alert("Audio has been published successfully!");
+            setError(null); // Clear any previous error
+        } catch (error) {
+            console.error("Error publishing file:", error.message || error);
+            setError("Failed to publish the audio file. Please try again.");
+        } finally {
+            setIsLoading(false); // Hide loading state
+        }
     };
+    
+
 
 
     return (
@@ -202,7 +272,7 @@ const FileUpload = () => {
 
             {selectedFile && (
                 <Box className="file-playback-section"
-                style={{ maxWidth: "90%", borderRadius: "25px" }}>
+                    style={{ maxWidth: "90%", borderRadius: "25px" }}>
                     <Typography variant="subtitle1" className="file-upload-file-name">
                         {selectedFile.name}
                     </Typography>
