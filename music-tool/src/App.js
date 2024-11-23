@@ -6,20 +6,23 @@ import Login from "./login/login";
 import Register from "./register/register";
 import Layout from "./layout/layout";
 import Profile from "./profile/profile";
+import { AuthProvider } from "./AuthContext";
 
 function App() {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/homepage" element={<HomePage />} />
-          <Route path="/upload" element={<FileUpload />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </Layout>
-    </Router>
+      <AuthProvider>
+          <Router>
+              <Layout>
+                  <Routes>
+                      <Route path="/" element={<Login />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/homepage" element={<HomePage />} />
+                      <Route path="/upload" element={<FileUpload />} />
+                      <Route path="/profile" element={<Profile />} />
+                  </Routes>
+              </Layout>
+          </Router>
+      </AuthProvider>
   );
 }
 
