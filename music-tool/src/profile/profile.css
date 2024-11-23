@@ -59,6 +59,7 @@
     font-weight: bold;
   }
   
+  
   @media (max-width: 768px) {
     .audio-card {
       flex-direction: column;
