@@ -164,7 +164,6 @@ const FileUpload = () => {
             return;
         }
         console.log("Publishing file:", selectedFile.name);
-        // You can replace the below logic with your actual publish functionality
         alert("Audio has been published successfully!");
     };
 

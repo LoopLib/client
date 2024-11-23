@@ -5,6 +5,7 @@ import HomePage from "./homepage/homepage";
 import Login from "./login/login";
 import Register from "./register/register";
 import Layout from "./layout/layout";
+import Profile from "./profile/profile";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/upload" element={<FileUpload />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </Layout>
     </Router>
