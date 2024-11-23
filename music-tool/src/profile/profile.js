@@ -75,7 +75,6 @@ const Profile = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-      
 
       const params = {
         Bucket: "looplib-audio-bucket",

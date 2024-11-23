@@ -214,7 +214,13 @@ const FileUpload = () => {
 
             console.log("Firestore document data:", userDoc.data());
     
-    
+            // Initialize the S3 client
+            const s3 = new AWS.S3({
+                region: process.env.REACT_APP_AWS_REGION,
+                accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+            });
+            
             const params = {
                 Bucket: "looplib-audio-bucket",
                 Key: `users/${uid}/${selectedFile.name}`,
