@@ -1,29 +1,61 @@
-// register.js
 import React, { useState } from "react";
-import { Box, Button, Typography, Paper, TextField } from "@mui/material";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebaseConfig"; // Import Firebase auth
+import { Box, Button, Typography, TextField, Alert } from "@mui/material";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import "../login/login.css";
 
 const Register = () => {
-    // State to store the username, email, and password
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); // Error state
     const navigate = useNavigate();
 
-    // Function to handle the registration action
     const handleRegister = async () => {
+        setErrorMessage(""); // Clear previous error messages
+
+        // Basic validation
+        if (!username || !email || !password) {
+            setErrorMessage("All fields are required.");
+            return;
+        }
+
+        if (password.length < 6) {
+            setErrorMessage("Password must be at least 6 characters long.");
+            return;
+        }
+
         try {
-            // Create a new user with the provided email and password
-            await createUserWithEmailAndPassword(auth, email, password);
-            console.log("Registration successful");
-            navigate("/"); // Redirect to login after registration
+            // Create user
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Update profile with username
+            await updateProfile(user, { displayName: username });
+            console.log("Registration successful:", user);
+
+            navigate("/"); // Redirect to login page
         } catch (error) {
             console.error("Registration error:", error.message);
+
+            // Handle specific Firebase errors
+            switch (error.code) {
+                case "auth/email-already-in-use":
+                    setErrorMessage("Email is already in use.");
+                    break;
+                case "auth/invalid-email":
+                    setErrorMessage("Invalid email format.");
+                    break;
+                case "auth/weak-password":
+                    setErrorMessage("Password is too weak. Must be at least 6 characters.");
+                    break;
+                default:
+                    setErrorMessage("An unexpected error occurred. Please try again.");
+            }
         }
     };
+
     return (
         <Box className="login-container">
             <Typography variant="h5" className="login-title">
@@ -66,9 +98,16 @@ const Register = () => {
             >
                 Register
             </Button>
+
+            
+            {errorMessage && (
+                <Alert severity="error" className="login-error">
+                    {errorMessage}
+                </Alert>
+            )}
+
         </Box>
     );
 };
 
 export default Register;
-
