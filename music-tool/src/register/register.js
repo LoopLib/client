@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Alert } from "@mui/material";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../firebaseConfig";
+import { db } from "../firebaseConfig"; // Import Firestore instance
+import { doc, setDoc } from "firebase/firestore"; // Import Firestore methods
 import { useNavigate } from "react-router-dom";
 import "../login/login.css";
 
@@ -33,7 +35,17 @@ const Register = () => {
 
             // Update profile with username
             await updateProfile(user, { displayName: username });
-            console.log("Registration successful:", user);
+
+            // Add user details to Firestore
+            const userDocRef = doc(db, "users", user.uid); // Create a document reference
+            await setDoc(userDocRef, {
+                username: username,
+                email: email,
+                createdAt: new Date(), // Store creation timestamp
+                uid: user.uid // User's unique ID
+            });
+
+            console.log("Registration and Firestore write successful:", user);
 
             navigate("/"); // Redirect to login page
         } catch (error) {
@@ -99,13 +111,11 @@ const Register = () => {
                 Register
             </Button>
 
-            
             {errorMessage && (
                 <Alert severity="error" className="login-error">
                     {errorMessage}
                 </Alert>
             )}
-
         </Box>
     );
 };

@@ -32,7 +32,7 @@ function Navbar() {
                             <Link to="/profile" className="navbar-link">Profile</Link>
                         </li>
                         <li className="navbar-item navbar-user">
-                            Hello, {user.firstName}
+                            {user.firstName}
                         </li>
                         <li className="navbar-item">
                             <FaSignOutAlt 
