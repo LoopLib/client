@@ -9,6 +9,9 @@ import {
   Grid,
   IconButton,
 } from "@mui/material";
+import { Button } from "@mui/material";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -26,6 +29,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const waveSurferRefs = useRef({}); // Store WaveSurfer instances for each track
   const [activeIndex, setActiveIndex] = useState(null); // Track currently playing file
+  const [showAudioFiles, setShowAudioFiles] = useState(false); // State for dropdown visibility
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -100,7 +104,7 @@ const Profile = () => {
         waveColor: "#6a11cb",
         progressColor: "#000000",
         cursorColor: "#000000",
-        barWidth: 2,
+        barWidth: 5,
         responsive: true,
         height: 100,
         backend: "MediaElement",
@@ -207,50 +211,69 @@ const Profile = () => {
       </Card>
 
       <Box className="audio-files" mt={4}>
-        <Typography variant="h5" className="audio-files-title" mb={2}>
-          Your Audio Files
-        </Typography>
-        {audioFiles.length > 0 ? (
+        <Button
+          variant="contained"
+          sx={{
+            marginTop: '20px',
+            fontWeight: 'bold',
+            background: '#6a11cb',
+            color: 'white',
+            maxWidth: '200px',
+        }}
+          endIcon={showAudioFiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          onClick={() => setShowAudioFiles(!showAudioFiles)}
+        >
+          {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
+        </Button>
+        {showAudioFiles && (
           <List>
-            {audioFiles.map((file, index) => (
-              <Card
-                key={index}
-                className={`audio-card ${activeIndex === index ? "active" : ""}`}
-                sx={{ mb: 2 }}
-                onMouseEnter={() => initializeWaveSurfer(file.url, index)}
-              >
-                <Grid container alignItems="center">
-                  <Grid item xs={8}>
-                    <CardContent>
-                      <Typography>{file.name}</Typography>
-                      <div id={`waveform-${index}`} className="waveform-container"></div>
-                    </CardContent>
+            {audioFiles.length > 0 ? (
+              audioFiles.map((file, index) => (
+                <Card
+                  key={index}
+                  className={`audio-card ${activeIndex === index ? "active" : ""}`}
+                  sx={{ mb: 2 }}
+                  onMouseEnter={() => initializeWaveSurfer(file.url, index)}
+                >
+                  <Grid container alignItems="center">
+                    <Grid item xs={8}>
+                      <CardContent>
+                        <Typography>{file.name}</Typography>
+                        <div
+                          id={`waveform-${index}`}
+                          className="waveform-container"
+                        ></div>
+                      </CardContent>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <IconButton
+                        onClick={() => togglePlay(index)}
+                        style={{ color: "black" }}
+                      >
+                        {waveSurferRefs.current[index]?.isPlaying() ? (
+                          <StopIcon />
+                        ) : (
+                          <PlayArrowIcon />
+                        )}
+                      </IconButton>
+                    </Grid>
+                    <Grid item xs={1}>
+                      <IconButton
+                        color="error"
+                        onClick={() => handleDelete(file)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={3}>
-                    <IconButton
-                      onClick={() => togglePlay(index)}
-                      style={{ color: "black" }}
-                    >
-                      {waveSurferRefs.current[index]?.isPlaying() ? (
-                        <StopIcon />
-                      ) : (
-                        <PlayArrowIcon />
-                      )}
-                    </IconButton>
-                  </Grid>
-                  <Grid item xs={1}>
-                    <IconButton color="error" onClick={() => handleDelete(file)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </Card>
-            ))}
+                </Card>
+              ))
+            ) : (
+              <Typography variant="body1" color="textSecondary">
+                No audio files uploaded yet.
+              </Typography>
+            )}
           </List>
-        ) : (
-          <Typography variant="body1" color="textSecondary">
-            No audio files uploaded yet.
-          </Typography>
         )}
       </Box>
     </Box>

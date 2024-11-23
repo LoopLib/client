@@ -99,22 +99,118 @@
   }
 }
 
+/* Audio Files Section */
+.audio-files {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: linear-gradient(135deg, #f3f3f5, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+}
 
-  /* Audio Files Section */
-  .audio-files {
-    width: 100%;
-  }
-  
+.audio-files-title {
+  font-weight: 800;
+  font-size: 2rem;
+  text-align: center;
+  color: #6a11cb;
+  margin-bottom: 24px;
+}
+
+.audio-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff, #f7f9fc);
+  border-radius: 12px;
+  box-shadow: 0px 6px 20px rgba(106, 17, 203, 0.15);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.audio-card:hover {
+  box-shadow: 0px 8px 30px rgba(106, 17, 203, 0.3);
+  border: 2px solid #6a11cb;
+}
+
+.audio-card.active {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+}
+
+.audio-card .waveform-container {
+  flex: 1;
+  height: 100px;
+  position: relative;
+}
+
+.audio-card .MuiTypography-root {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  flex-shrink: 0;
+  max-width: 40%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.audio-card.active .MuiTypography-root {
+  color: white;
+}
+
+.audio-card .MuiIconButton-root {
+  color: #6a11cb;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.audio-card .MuiIconButton-root:hover {
+  color: #2575fc;
+  transform: scale(1.2);
+}
+
+.audio-card.active .MuiIconButton-root {
+  color: white;
+}
+
+.audio-card .delete-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: rgba(255, 0, 0, 0.6);
+  transition: color 0.3s ease;
+}
+
+.audio-card .delete-icon:hover {
+  color: rgba(255, 0, 0, 1);
+}
+
+@media (max-width: 768px) {
   .audio-card {
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    border: solid, 2px;
-    max-height: 80%;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  .audio-card audio {
+
+  .audio-card .MuiTypography-root {
+    max-width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .audio-card .MuiIconButton-root {
     margin-top: 8px;
   }
+
+  .audio-card .delete-icon {
+    position: static;
+    align-self: flex-end;
+  }
+}
+
   
   /* Buttons and Actions */
   button {

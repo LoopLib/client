@@ -241,9 +241,6 @@ const FileUpload = () => {
         }
     };
 
-
-
-
     return (
         <Box className="file-upload-container">
             <Paper
