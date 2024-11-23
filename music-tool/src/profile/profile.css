@@ -1,0 +1,50 @@
+/* Container for the Profile component */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    max-width: 600px;
+    margin: auto;
+    margin-top: 4rem;
+    background: white; 
+    border-radius: 16px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Styling */
+.profile-title {
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 24px;
+    font-size: 2rem;
+    text-align: center;
+}
+
+/* Paper styling for user details */
+.profile-paper {
+    padding: 16px;
+    width: 100%;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.profile-paper h6 {
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 16px;
+        margin-top: 2rem;
+    }
+
+    .profile-title {
+        font-size: 1.5rem;
+    }
+}
