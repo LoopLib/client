@@ -203,21 +203,36 @@ const Library = () => {
 
       {/* Context Menu */}
       <Menu
-        open={contextMenu !== null}
-        onClose={closeContextMenu}
-        anchorReference="anchorPosition"
-        anchorPosition={
-          contextMenu !== null
-            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-            : undefined
-        }
-      >
-        <MenuItem onClick={() => handleOptionSelect("play")}>
-          {activeIndex === audioFiles.indexOf(selectedFile) ? "Pause" : "Play"}
-        </MenuItem>
-        <MenuItem onClick={() => handleOptionSelect("edit")}>Edit</MenuItem>
-        <MenuItem onClick={() => handleOptionSelect("delete")}>Delete</MenuItem>
-      </Menu>
+  open={contextMenu !== null}
+  onClose={closeContextMenu}
+  anchorReference="anchorPosition"
+  anchorPosition={
+    contextMenu !== null
+      ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+      : undefined
+  }
+  classes={{ paper: "custom-context-menu" }} // Apply custom styles
+>
+  <MenuItem
+    onClick={() => handleOptionSelect("play")}
+    className="custom-menu-item"
+  >
+    {activeIndex === audioFiles.indexOf(selectedFile) ? "Pause" : "Play"}
+  </MenuItem>
+  <MenuItem
+    onClick={() => handleOptionSelect("edit")}
+    className="custom-menu-item"
+  >
+    Edit
+  </MenuItem>
+  <MenuItem
+    onClick={() => handleOptionSelect("delete")}
+    className="custom-menu-item"
+  >
+    Delete
+  </MenuItem>
+</Menu>
+
     </Box>
   );
 };

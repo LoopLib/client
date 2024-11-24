@@ -33,3 +33,28 @@
     margin-top: 8px;
   }
   
+  .custom-context-menu {
+    background-color: #ffffff !important;
+    border: 1px solid #ddd !important;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+  
+  .custom-menu-item {
+    font-size: 16px !important;
+    color: #333 !important;
+    padding: 12px 24px !important;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .custom-menu-item:hover {
+    background-color: #f3f3f3 !important;
+    color: #6a11cb !important;
+  }
+  
+  .custom-menu-item:active {
+    background-color: #ddd !important;
+  }
+  
