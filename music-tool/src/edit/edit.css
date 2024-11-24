@@ -1,57 +1,129 @@
+/* General Edit Page Container */
 .edit-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 32px;
-    max-width: 900px;
-    margin: auto;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 800px;
+    margin: 50px auto;
+    background: linear-gradient(135deg, #f7f9fc, #ffffff);
+    border-radius: 20px;
+    box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.1);
   }
   
+  /* Header Section */
   .edit-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
   
   .edit-title {
     font-weight: bold;
     color: #6a11cb;
-    text-align: center;
+    font-size: 1.8rem;
     flex-grow: 1;
+    text-align: center;
+  }
+  
+  .file-name {
+    color: #333;
+    font-weight: normal;
   }
   
   .back-button {
     color: #6a11cb;
   }
   
+  /* Waveform Section */
   .waveform-container {
     width: 100%;
-    margin-top: 16px;
-    background: #f7f9fc;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
   }
   
+  /* Playback Controls */
+  .playback-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .playback-button {
+    background: #ffffff;
+    color: #6a11cb;
+    border: 2px solid #6a11cb;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 16px rgba(106, 17, 203, 0.1);
+  }
+  
+  .playback-button:hover {
+    background: #6a11cb;
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+  
+  .playback-button.stop:hover {
+    background: #ff4d4d;
+    border-color: #ff4d4d;
+  }
+  
+  .playback-button.playing {
+    background: #6a11cb;
+    color: #ffffff;
+  }
+  
+  /* Edit Actions Section */
   .edit-actions {
     display: flex;
-    gap: 16px;
-    margin-top: 20px;
+    gap: 20px;
+    justify-content: center;
   }
   
   .edit-button {
-    background: #6a11cb;
-    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
     font-weight: bold;
     text-transform: none;
+    transition: all 0.3s ease;
   }
   
-  .edit-button:hover {
+  .edit-button.trim {
+    background: #6a11cb;
+    color: white;
+  }
+  
+  .edit-button.trim:hover {
     background: #2575fc;
+  }
+  
+  .edit-button.effects {
+    background: #ff8a00;
+    color: white;
+  }
+  
+  .edit-button.effects:hover {
+    background: #ff7300;
+  }
+  
+  .edit-button.save {
+    background: #4caf50;
+    color: white;
+  }
+  
+  .edit-button.save:hover {
+    background: #3e8e41;
   }
   

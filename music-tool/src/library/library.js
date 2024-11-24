@@ -16,6 +16,7 @@ import StopIcon from "@mui/icons-material/Stop";
 import AWS from "aws-sdk";
 import WaveSurfer from "wavesurfer.js";
 import "./library.css";
+import { useNavigate } from "react-router-dom";
 
 const Library = () => {
   const [audioFiles, setAudioFiles] = useState([]);
@@ -25,6 +26,8 @@ const Library = () => {
   const [activeIndexes, setActiveIndexes] = useState([]);
   const [contextMenu, setContextMenu] = useState(null); // Context menu position and target
   const [selectedFile, setSelectedFile] = useState(null); // The file associated with the context menu
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAudioFilesFromAWS();
@@ -140,8 +143,7 @@ const Library = () => {
       togglePlay(index);
     } else if (option === "edit") {
       alert(`Editing ${selectedFile.name}`);
-      //navigate to edit page
-      
+      navigate("/edit", { state: { file: selectedFile } });
     } else if (option === "delete") {
       alert(`Deleting ${selectedFile.name}`);
       // Add delete functionality here

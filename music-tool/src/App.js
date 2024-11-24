@@ -7,6 +7,7 @@ import Register from "./register/register";
 import Layout from "./layout/layout";
 import Profile from "./profile/profile";
 import { AuthProvider } from "./AuthContext";
+import Edit from "./edit/edit";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
                       <Route path="/register" element={<Register />} />
                       <Route path="/homepage" element={<HomePage />} />
                       <Route path="/upload" element={<FileUpload />} />
+                      <Route path="/edit" element={<Edit />} />
                       <Route path="/profile" element={<Profile />} />
                   </Routes>
               </Layout>

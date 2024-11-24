@@ -1,84 +1,128 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Typography, Button, IconButton } from "@mui/material";
-import WaveSurfer from "wavesurfer.js";
-import SaveIcon from "@mui/icons-material/Save";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Box, Typography, IconButton, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import StopIcon from "@mui/icons-material/Stop";
+import PauseIcon from "@mui/icons-material/Pause";
+import WaveSurfer from "wavesurfer.js";
 import "./edit.css";
 
-const Edit = ({ audioFile, onBack }) => {
-  const waveSurferRef = useRef(null); // Store WaveSurfer instance
-  const [waveSurfer, setWaveSurfer] = useState(null); // Track instance for reactivity
+const Edit = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const waveSurferRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    if (audioFile) {
-      const ws = WaveSurfer.create({
-        container: "#waveform",
-        waveColor: "#6a11cb",
-        progressColor: "#000000",
-        cursorColor: "#000000",
-        barWidth: 5,
-        responsive: true,
-        height: 150,
-        backend: "MediaElement",
-      });
+    if (!state?.file) return;
 
-      ws.load(audioFile.url);
-      setWaveSurfer(ws);
+    // Initialize WaveSurfer
+    const waveSurfer = WaveSurfer.create({
+      container: "#waveform",
+      waveColor: "#E0E0E0",
+      progressColor: "#6A11CB",
+      cursorColor: "#6A11CB",
+      barWidth: 3,
+      responsive: true,
+      height: 150,
+      backend: "MediaElement",
+    });
 
-      return () => ws.destroy(); // Clean up on unmount
-    }
-  }, [audioFile]);
+    waveSurfer.load(state.file.url);
+    waveSurferRef.current = waveSurfer;
 
-  const trimAudio = () => {
-    if (waveSurfer) {
-      const duration = waveSurfer.getDuration();
-      const start = 2; // Example: Start trimming at 2 seconds
-      const end = duration - 2; // Example: End trimming 2 seconds before
-      waveSurfer.backend.media.currentTime = start;
-      waveSurfer.backend.media.play();
-      waveSurfer.on("timeupdate", () => {
-        if (waveSurfer.backend.media.currentTime >= end) {
-          waveSurfer.pause();
+    waveSurfer.on("finish", () => setIsPlaying(false));
+
+    return () => {
+      // Cleanup: Safely destroy the instance
+      if (waveSurferRef.current) {
+        try {
+          waveSurferRef.current.destroy(); // Safely destroy WaveSurfer
+        } catch (error) {
+          console.error("WaveSurfer cleanup error:", error);
+        } finally {
+          waveSurferRef.current = null; // Clear reference
         }
-      });
-      alert("Trim applied. Preview the trimmed audio.");
+      }
+    };
+  }, [state]);
+
+  if (!state?.file) {
+    return <Typography>No file selected for editing.</Typography>;
+  }
+
+  const handleBack = () => navigate(-1);
+
+  const togglePlay = () => {
+    const waveSurfer = waveSurferRef.current;
+    if (waveSurfer) {
+      if (waveSurfer.isPlaying()) {
+        waveSurfer.pause();
+        setIsPlaying(false);
+      } else {
+        waveSurfer.play();
+        setIsPlaying(true);
+      }
     }
   };
 
-  const applyEffects = () => {
-    // Placeholder for effects like reverb, speed adjustment, etc.
-    alert("Effects applied! Implement cool audio manipulations here.");
-  };
-
-  const saveAudio = () => {
-    alert("Saving the edited audio. Implement upload or file-saving logic here.");
+  const stopPlayback = () => {
+    const waveSurfer = waveSurferRef.current;
+    if (waveSurfer) {
+      waveSurfer.stop();
+      setIsPlaying(false);
+    }
   };
 
   return (
     <Box className="edit-container">
       <Box className="edit-header">
-        <IconButton onClick={onBack} className="back-button">
+        <IconButton onClick={handleBack} className="back-button">
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" className="edit-title">
-          Edit Audio: {audioFile.name}
+          Editing: <span className="file-name">{state.file.name}</span>
         </Typography>
       </Box>
       <Box id="waveform" className="waveform-container"></Box>
+      <Box className="playback-controls">
+        <IconButton
+          onClick={togglePlay}
+          className={`playback-button ${isPlaying ? "playing" : ""}`}
+          aria-label={isPlaying ? "Pause" : "Play"}
+        >
+          {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+        </IconButton>
+        <IconButton
+          onClick={stopPlayback}
+          className="playback-button stop"
+          aria-label="Stop"
+        >
+          <StopIcon />
+        </IconButton>
+      </Box>
       <Box className="edit-actions">
-        <Button variant="contained" onClick={trimAudio} className="edit-button">
-          Trim
+        <Button
+          variant="contained"
+          className="edit-button trim"
+          onClick={() => alert("Trimming functionality coming soon!")}
+        >
+          Trim Audio
         </Button>
-        <Button variant="contained" onClick={applyEffects} className="edit-button">
+        <Button
+          variant="contained"
+          className="edit-button effects"
+          onClick={() => alert("Effects functionality coming soon!")}
+        >
           Apply Effects
         </Button>
         <Button
           variant="contained"
-          onClick={saveAudio}
-          className="edit-button"
-          endIcon={<SaveIcon />}
+          className="edit-button save"
+          onClick={() => alert("Save functionality coming soon!")}
         >
-          Save
+          Save Changes
         </Button>
       </Box>
     </Box>
