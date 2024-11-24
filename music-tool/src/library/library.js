@@ -13,7 +13,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import AWS from "aws-sdk";
 import WaveSurfer from "wavesurfer.js";
-import "./library.css"; // For consistent styling
+import "./library.css";
 
 const Library = () => {
   const [audioFiles, setAudioFiles] = useState([]);
@@ -35,23 +35,49 @@ const Library = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-
-      const params = {
-        Bucket: "looplib-audio-bucket",
-      };
-
+  
+      const params = { Bucket: "looplib-audio-bucket" };
       const data = await s3.listObjectsV2(params).promise();
+  
+      // Create initial file list without duration
       const files = data.Contents.map((file) => ({
         name: file.Key.split("/").pop(),
         url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${file.Key}`,
+        publisher: "Anonymous Publisher", // Placeholder
+        duration: null, // Will fetch later
       }));
-
+  
       setAudioFiles(files);
+  
+      // Fetch durations in the background
+      for (let i = 0; i < files.length; i++) {
+        const audio = new Audio(files[i].url);
+        audio.addEventListener("loadedmetadata", () => {
+          setAudioFiles((prev) =>
+            prev.map((item, index) =>
+              index === i ? { ...item, duration: formatDuration(audio.duration) } : item
+            )
+          );
+        });
+      }
     } catch (error) {
       console.error("Error fetching audio files from AWS:", error.message);
     } finally {
       setLoading(false);
     }
+  };
+  
+  const getAudioDuration = (audio) =>
+    new Promise((resolve) => {
+      audio.addEventListener("loadedmetadata", () => {
+        resolve(formatDuration(audio.duration));
+      });
+    });
+
+  const formatDuration = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const initializeWaveSurfer = (url, index) => {
@@ -107,14 +133,20 @@ const Library = () => {
               sx={{ mb: 2 }}
               onMouseEnter={() => initializeWaveSurfer(file.url, index)}
             >
-              <Grid container alignItems="center">
-                <Grid item xs={8}>
+              <Grid container alignItems="center" spacing={2}>
+                <Grid item xs={9}>
                   <CardContent>
-                    <Typography>{file.name}</Typography>
+                    <Typography variant="h6">{file.name}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Publisher: {file.publisher}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Duration: {file.duration}
+                    </Typography>
                     <div id={`waveform-${index}`} className="waveform-container"></div>
                   </CardContent>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} textAlign="center">
                   <IconButton
                     onClick={() => togglePlay(index)}
                     style={{ color: "black" }}

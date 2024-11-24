@@ -7,8 +7,7 @@ import "./homepage.css"; // Import the CSS file
 const HomePage = () => {
   return (
     <Box className="landing-page-container">
-      <Typography className="landing-page-title">Explore Audio Tracks</Typography>
-      <Library /> {/* Render the AllAudioTracks component */}
+      <Library /> 
     </Box>
   );
 };
