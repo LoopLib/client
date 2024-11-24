@@ -22,7 +22,7 @@ const Library = () => {
   const [loading, setLoading] = useState(true);
   const waveSurferRefs = useRef({});
   const [activeIndex, setActiveIndex] = useState(null);
-
+  const [activeIndexes, setActiveIndexes] = useState([]);
   const [contextMenu, setContextMenu] = useState(null); // Context menu position and target
   const [selectedFile, setSelectedFile] = useState(null); // The file associated with the context menu
 
@@ -105,13 +105,14 @@ const Library = () => {
     if (waveSurfer) {
       if (waveSurfer.isPlaying()) {
         waveSurfer.pause();
-        setActiveIndex(null);
+        setActiveIndexes((prev) => prev.filter((i) => i !== index)); // Remove from activeIndexes
       } else {
         waveSurfer.play();
-        setActiveIndex(index);
+        setActiveIndexes((prev) => [...prev, index]); // Add to activeIndexes
       }
     }
   };
+
 
   // Handle right-click event
   const handleRightClick = (event, file) => {
@@ -120,9 +121,9 @@ const Library = () => {
     setContextMenu(
       contextMenu === null
         ? {
-            mouseX: event.clientX + 2,
-            mouseY: event.clientY - 6,
-          }
+          mouseX: event.clientX + 2,
+          mouseY: event.clientY - 6,
+        }
         : null
     );
   };
@@ -139,7 +140,8 @@ const Library = () => {
       togglePlay(index);
     } else if (option === "edit") {
       alert(`Editing ${selectedFile.name}`);
-      // Add edit functionality here
+      //navigate to edit page
+      
     } else if (option === "delete") {
       alert(`Deleting ${selectedFile.name}`);
       // Add delete functionality here
@@ -161,10 +163,10 @@ const Library = () => {
           audioFiles.map((file, index) => (
             <Card
               key={index}
-              className={`audio-card ${activeIndex === index ? "active" : ""}`}
+              className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
               sx={{ mb: 2 }}
               onMouseEnter={() => initializeWaveSurfer(file.url, index)}
-              onContextMenu={(event) => handleRightClick(event, file)} // Right-click handler
+              onContextMenu={(event) => handleRightClick(event, file)}
             >
               <Grid container alignItems="center" spacing={2}>
                 <Grid item xs={9}>
@@ -203,35 +205,35 @@ const Library = () => {
 
       {/* Context Menu */}
       <Menu
-  open={contextMenu !== null}
-  onClose={closeContextMenu}
-  anchorReference="anchorPosition"
-  anchorPosition={
-    contextMenu !== null
-      ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-      : undefined
-  }
-  classes={{ paper: "custom-context-menu" }} // Apply custom styles
->
-  <MenuItem
-    onClick={() => handleOptionSelect("play")}
-    className="custom-menu-item"
-  >
-    {activeIndex === audioFiles.indexOf(selectedFile) ? "Pause" : "Play"}
-  </MenuItem>
-  <MenuItem
-    onClick={() => handleOptionSelect("edit")}
-    className="custom-menu-item"
-  >
-    Edit
-  </MenuItem>
-  <MenuItem
-    onClick={() => handleOptionSelect("delete")}
-    className="custom-menu-item"
-  >
-    Delete
-  </MenuItem>
-</Menu>
+        open={contextMenu !== null}
+        onClose={closeContextMenu}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+        classes={{ paper: "custom-context-menu" }} // Apply custom styles
+      >
+        <MenuItem
+          onClick={() => handleOptionSelect("play")}
+          className="custom-menu-item"
+        >
+          {activeIndex === audioFiles.indexOf(selectedFile) ? "Pause" : "Play"}
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleOptionSelect("edit")}
+          className="custom-menu-item"
+        >
+          Edit
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleOptionSelect("delete")}
+          className="custom-menu-item"
+        >
+          Delete
+        </MenuItem>
+      </Menu>
 
     </Box>
   );

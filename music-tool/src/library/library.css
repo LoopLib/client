@@ -32,6 +32,12 @@
   .waveform-container {
     margin-top: 8px;
   }
+
+  .audio-card.active {
+    background-color: #f0f8ff; /* Example active color */
+    border: 2px solid #6a11cb;
+  }
+  
   
   .custom-context-menu {
     background-color: #ffffff !important;

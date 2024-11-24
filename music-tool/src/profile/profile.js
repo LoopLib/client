@@ -30,6 +30,7 @@ const Profile = () => {
   const waveSurferRefs = useRef({}); // Store WaveSurfer instances for each track
   const [activeIndex, setActiveIndex] = useState(null); // Track currently playing file
   const [showAudioFiles, setShowAudioFiles] = useState(false); // State for dropdown visibility
+  const [activeIndexes, setActiveIndexes] = useState([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -98,40 +99,40 @@ const Profile = () => {
   };
 
   const initializeWaveSurfer = (url, index) => {
-    if (!waveSurferRefs.current[index]) {
-      const waveSurfer = WaveSurfer.create({
-        container: `#waveform-${index}`,
-        waveColor: "#6a11cb",
-        progressColor: "#000000",
-        cursorColor: "#000000",
-        barWidth: 5,
-        responsive: true,
-        height: 100,
-        backend: "MediaElement",
-      });
+  if (!waveSurferRefs.current[index]) {
+    const waveSurfer = WaveSurfer.create({
+      container: `#waveform-${index}`,
+      waveColor: "#6a11cb",
+      progressColor: "#000000",
+      cursorColor: "#000000",
+      barWidth: 5,
+      responsive: true,
+      height: 100,
+      backend: "MediaElement",
+    });
 
-      waveSurfer.load(url);
-      waveSurferRefs.current[index] = waveSurfer;
+    waveSurfer.load(url);
+    waveSurferRefs.current[index] = waveSurfer;
 
-      // Handle play/pause state
-      waveSurfer.on("finish", () => {
-        setActiveIndex(null);
-      });
+    // Handle play/pause state
+    waveSurfer.on("finish", () => {
+      setActiveIndexes((prev) => prev.filter((i) => i !== index)); // Remove finished track
+    });
+  }
+};
+
+const togglePlay = (index) => {
+  const waveSurfer = waveSurferRefs.current[index];
+  if (waveSurfer) {
+    if (waveSurfer.isPlaying()) {
+      waveSurfer.pause();
+      setActiveIndexes((prev) => prev.filter((i) => i !== index)); // Remove from activeIndexes
+    } else {
+      waveSurfer.play();
+      setActiveIndexes((prev) => [...prev, index]); // Add to activeIndexes
     }
-  };
-
-  const togglePlay = (index) => {
-    const waveSurfer = waveSurferRefs.current[index];
-    if (waveSurfer) {
-      if (waveSurfer.isPlaying()) {
-        waveSurfer.pause();
-        setActiveIndex(null);
-      } else {
-        waveSurfer.play();
-        setActiveIndex(index);
-      }
-    }
-  };
+  }
+};
 
   const handleDelete = async (file) => {
     try {
@@ -167,7 +168,7 @@ const Profile = () => {
           </Typography>
         )}
       </Box>
-
+  
       <Card className="user-info">
         <CardContent>
           <Typography variant="h5" className="user-info-title" gutterBottom>
@@ -209,17 +210,17 @@ const Profile = () => {
           )}
         </CardContent>
       </Card>
-
+  
       <Box className="audio-files" mt={4}>
         <Button
           variant="contained"
           sx={{
-            marginTop: '20px',
-            fontWeight: 'bold',
-            background: '#6a11cb',
-            color: 'white',
-            maxWidth: '200px',
-        }}
+            marginTop: "20px",
+            fontWeight: "bold",
+            background: "#6a11cb",
+            color: "white",
+            maxWidth: "200px",
+          }}
           endIcon={showAudioFiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           onClick={() => setShowAudioFiles(!showAudioFiles)}
         >
@@ -231,7 +232,9 @@ const Profile = () => {
               audioFiles.map((file, index) => (
                 <Card
                   key={index}
-                  className={`audio-card ${activeIndex === index ? "active" : ""}`}
+                  className={`audio-card ${
+                    activeIndexes.includes(index) ? "active" : ""
+                  }`}
                   sx={{ mb: 2 }}
                   onMouseEnter={() => initializeWaveSurfer(file.url, index)}
                 >
