@@ -8,6 +8,8 @@ import {
   List,
   Grid,
   IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
@@ -20,6 +22,9 @@ const Library = () => {
   const [loading, setLoading] = useState(true);
   const waveSurferRefs = useRef({});
   const [activeIndex, setActiveIndex] = useState(null);
+
+  const [contextMenu, setContextMenu] = useState(null); // Context menu position and target
+  const [selectedFile, setSelectedFile] = useState(null); // The file associated with the context menu
 
   useEffect(() => {
     fetchAudioFilesFromAWS();
@@ -35,10 +40,10 @@ const Library = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-  
+
       const params = { Bucket: "looplib-audio-bucket" };
       const data = await s3.listObjectsV2(params).promise();
-  
+
       // Create initial file list without duration
       const files = data.Contents.map((file) => ({
         name: file.Key.split("/").pop(),
@@ -46,9 +51,9 @@ const Library = () => {
         publisher: "Anonymous Publisher", // Placeholder
         duration: null, // Will fetch later
       }));
-  
+
       setAudioFiles(files);
-  
+
       // Fetch durations in the background
       for (let i = 0; i < files.length; i++) {
         const audio = new Audio(files[i].url);
@@ -66,13 +71,6 @@ const Library = () => {
       setLoading(false);
     }
   };
-  
-  const getAudioDuration = (audio) =>
-    new Promise((resolve) => {
-      audio.addEventListener("loadedmetadata", () => {
-        resolve(formatDuration(audio.duration));
-      });
-    });
 
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -115,6 +113,40 @@ const Library = () => {
     }
   };
 
+  // Handle right-click event
+  const handleRightClick = (event, file) => {
+    event.preventDefault();
+    setSelectedFile(file);
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
+        : null
+    );
+  };
+
+  // Close context menu
+  const closeContextMenu = () => {
+    setContextMenu(null);
+    setSelectedFile(null);
+  };
+
+  const handleOptionSelect = (option) => {
+    if (option === "play") {
+      const index = audioFiles.indexOf(selectedFile);
+      togglePlay(index);
+    } else if (option === "edit") {
+      alert(`Editing ${selectedFile.name}`);
+      // Add edit functionality here
+    } else if (option === "delete") {
+      alert(`Deleting ${selectedFile.name}`);
+      // Add delete functionality here
+    }
+    closeContextMenu();
+  };
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -132,6 +164,7 @@ const Library = () => {
               className={`audio-card ${activeIndex === index ? "active" : ""}`}
               sx={{ mb: 2 }}
               onMouseEnter={() => initializeWaveSurfer(file.url, index)}
+              onContextMenu={(event) => handleRightClick(event, file)} // Right-click handler
             >
               <Grid container alignItems="center" spacing={2}>
                 <Grid item xs={9}>
@@ -167,6 +200,24 @@ const Library = () => {
           </Typography>
         )}
       </List>
+
+      {/* Context Menu */}
+      <Menu
+        open={contextMenu !== null}
+        onClose={closeContextMenu}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+      >
+        <MenuItem onClick={() => handleOptionSelect("play")}>
+          {activeIndex === audioFiles.indexOf(selectedFile) ? "Pause" : "Play"}
+        </MenuItem>
+        <MenuItem onClick={() => handleOptionSelect("edit")}>Edit</MenuItem>
+        <MenuItem onClick={() => handleOptionSelect("delete")}>Delete</MenuItem>
+      </Menu>
     </Box>
   );
 };
