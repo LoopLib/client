@@ -3,6 +3,7 @@ import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/ma
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import WaveSurfer from "wavesurfer.js";
+import DownloadIcon from "@mui/icons-material/Download";
 import "./audiocard.css";
 
 const AudioCard = ({
@@ -60,10 +61,11 @@ const AudioCard = ({
   return (
     <Card
       className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
-      sx={{ mb: 2, borderRadius: 4 }}
+      sx={{ mb: 2, borderRadius: 4, position: "relative" }} // Add 'position: "relative"' here
       onMouseEnter={() => initializeWaveSurfer(file.url, index)}
       onContextMenu={onContextMenu}
     >
+
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
           <CardContent>
@@ -109,16 +111,20 @@ const AudioCard = ({
                 </div>
               </Grid>
             </Grid>
-
-
             <Button
               variant="contained"
               color="primary"
-              style={{ marginTop: "12px" }}
+              style={{
+                position: "absolute",
+                right: "16px",
+                bottom: "16px",
+              }}
               onClick={() => window.open(file.url, "_blank")}
+              startIcon={<DownloadIcon />}
             >
               Download
             </Button>
+
           </CardContent>
         </Grid>
 
