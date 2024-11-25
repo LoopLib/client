@@ -108,7 +108,14 @@ const Library = () => {
   }
 
   return (
-    <Box className="all-audio-container">
+    <Box
+  className="all-audio-container"
+  sx={{
+    width: "100%", // Allow full width for the container
+    maxWidth: "none", // Remove width limitation
+    margin: "20px auto", // Center horizontally
+  }}
+>
       <Typography
         variant="h4"
         className="all-audio-title"
@@ -119,27 +126,25 @@ const Library = () => {
         L I B R A R Y
       </Typography>
       <SearchBar onSearchChange={handleSearchChange} />
-      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        <List style={{ width: "100%" }}>
-          {filteredFiles.length > 0 ? (
-            filteredFiles.map((file, index) => (
-              <AudioCard
-                key={index}
-                file={file}
-                index={index}
-                activeIndexes={activeIndexes}
-                setActiveIndexes={setActiveIndexes}
-                waveSurferRefs={waveSurferRefs}
-                onContextMenu={(event) => handleRightClick(event, file)}
-              />
-            ))
-          ) : (
-            <Typography variant="body1" color="textSecondary">
-              No audio files found.
-            </Typography>
-          )}
-        </List>
-      </div>
+      <List>
+        {filteredFiles.length > 0 ? (
+          filteredFiles.map((file, index) => (
+            <AudioCard
+              key={index}
+              file={file}
+              index={index}
+              activeIndexes={activeIndexes}
+              setActiveIndexes={setActiveIndexes}
+              waveSurferRefs={waveSurferRefs}
+              onContextMenu={(event) => handleRightClick(event, file)}
+            />
+          ))
+        ) : (
+          <Typography variant="body1" color="textSecondary">
+            No audio files found.
+          </Typography>
+        )}
+      </List>
 
       <Menu
         open={contextMenu !== null}

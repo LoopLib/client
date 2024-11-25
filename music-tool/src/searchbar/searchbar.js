@@ -107,7 +107,7 @@ const SearchBar = ({ onSearchChange }) => {
                         label="BPM"
                         value={bpm}
                         onChange={handleBpmChange}
-                        placeholder="BPM"
+                        placeholder="Enter BPM"
                         InputLabelProps={{ shrink: true }}
                         className="filter-item"
                     />

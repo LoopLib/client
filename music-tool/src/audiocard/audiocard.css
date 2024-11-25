@@ -4,18 +4,17 @@
   flex-direction: row;
   align-items: center;
   gap: 16px;
-  padding: 20px;
+  padding: 10px;
   background: linear-gradient(135deg, #ffffff, #f7f9fc);
   box-shadow: 0px 6px 20px rgba(106, 17, 203, 0.15);
   border: 3px solid transparent;
   position: relative;
   overflow: hidden;
-  width: calc(100% - 40px); /* Adjust to take full width with padding */
-  max-width: 1000px; /* Limit card width */
-  margin: 10px auto; /* Ensure even spacing around cards */
+  width: 100%; /* Allow card to span the container's width */
+  max-width: 1200px; /* Optional: Limit max width for larger screens */
+  margin: 16px 0; /* Add vertical spacing between cards */
   border-radius: 8px;
 }
-
 
 /* Removed hover effect styles */
 .audio-card:hover {

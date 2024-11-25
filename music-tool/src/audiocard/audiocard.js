@@ -64,7 +64,14 @@ const AudioCard = ({
   return (
     <Card
       className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
-      sx={{ mb: 2, borderRadius: 4, position: "relative" }}
+      sx={{
+        mb: 2,
+        borderRadius: 4,
+        position: "relative",
+        width: "100%", // Expands the card to take up full width of its container
+        maxWidth: "1200px", // Optional: limits the maximum width for better responsiveness
+        mx: "auto", // Centers the card horizontally within its container
+      }}
       onMouseEnter={() => initializeWaveSurfer(file.url, index)}
       onContextMenu={onContextMenu}
     >

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, TextField, Alert } from "@mui/material";
+import { Box, Button, Typography, TextField, Alert, Paper } from "@mui/material";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { db } from "../firebaseConfig"; // Import Firestore instance
@@ -69,11 +69,27 @@ const Register = () => {
     };
 
     return (
-        <Box className="login-container">
-            <Typography variant="h5" className="login-title">
-                REGISTER
-            </Typography>
-
+        <Box className="login-container" display="flex" flexDirection="column" alignItems="center">
+            <Paper
+               elevation={3}
+               className="title-box" 
+               style={{
+                   padding: "20px", 
+                   backgroundColor: "white", 
+                   marginBottom: "20px", 
+                   textAlign: "center"
+               }}
+            >
+                <Typography
+                    variant="h4"
+                    className="all-audio-title"
+                    color="linear-gradient(90deg, #6a11cb, #2575fc)"
+                    fontFamily={"Montserrat, sans-serif"}
+                    fontWeight="bold"
+                >
+                    R E G I S T E R
+                </Typography>
+            </Paper>
             <TextField
                 label="Username"
                 variant="outlined"

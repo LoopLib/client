@@ -4,15 +4,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Align content to the top */
-  padding: 32px; /* Keep uniform padding */
+  justify-content: flex-start;
+  padding: 32px;
   background: linear-gradient(135deg, #d4d9f6, #ffffff);
   border-radius: 16px;
   box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.2);
-  width: 85%; /* Width controls how much space it takes */
-  max-width: 1200px; /* Add max width for larger screens */
+  width: 80%; /* Change width to take full space */
+  max-width: none; /* Remove width limitation */
   margin: 20px auto; /* Center horizontally */
 }
+
 
 
 .all-audio-title {
