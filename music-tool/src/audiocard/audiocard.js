@@ -50,7 +50,7 @@ const AudioCard = ({
 
   return (
     <Card
-      className={`audio-card ${activeIndexes.includes(index) ? "playing" : ""}`}
+      className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
       sx={{ mb: 2 }}
       onMouseEnter={() => initializeWaveSurfer(file.url, index)}
       onContextMenu={onContextMenu}
