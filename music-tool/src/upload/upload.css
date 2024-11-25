@@ -28,13 +28,6 @@
   transform: scale(1.5);
 }
 
-button:hover {
-  background-color: #ffd700;
-}
-
-.file-upload-button:hover {
-  background-color: #ffd700;
-}
 
 .waveform-display-container {
   padding: 24px;

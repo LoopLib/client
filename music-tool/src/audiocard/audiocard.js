@@ -136,7 +136,6 @@ const AudioCard = ({
             className="audio-card-play-button"
             style={{
               boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-              padding: '10px',
               transition: 'transform 0.1s ease',
               position: 'relative',
               top: '-20px',
@@ -145,7 +144,7 @@ const AudioCard = ({
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')} // Reset scale
           >
             {waveSurferRefs.current[index]?.isPlaying() ? (
-              <PauseCircleIcon style={{ fontSize: '40px', color: '#6a11cb' }} /> // Pause Icon
+              <PauseCircleIcon style={{ fontSize: '40px', color: '#fff' }} /> // Pause Icon
             ) : (
               <PlayCircleIcon style={{ fontSize: '40px', color: '#2575fc' }} />  // Play Icon
             )}

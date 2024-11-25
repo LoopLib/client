@@ -3,10 +3,12 @@ import { Box, Typography, CircularProgress, List, Menu, MenuItem } from "@mui/ma
 import AWS from "aws-sdk";
 import { useNavigate } from "react-router-dom";
 import AudioCard from "../audiocard/audiocard";
+import SearchBar from "../searchbar/searchbar";
 import "./library.css";
 
 const Library = () => {
   const [audioFiles, setAudioFiles] = useState([]);
+  const [filteredFiles, setFilteredFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const waveSurferRefs = useRef({});
   const [activeIndexes, setActiveIndexes] = useState([]);
@@ -41,6 +43,7 @@ const Library = () => {
       }));
 
       setAudioFiles(files);
+      setFilteredFiles(files);
 
       for (let i = 0; i < files.length; i++) {
         const audio = new Audio(files[i].url);
@@ -71,9 +74,9 @@ const Library = () => {
     setContextMenu(
       contextMenu === null
         ? {
-          mouseX: event.clientX + 2,
-          mouseY: event.clientY - 6,
-        }
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
         : null
     );
   };
@@ -93,6 +96,13 @@ const Library = () => {
     closeContextMenu();
   };
 
+  const handleSearchChange = (query) => {
+    const lowerCaseQuery = query.toLowerCase();
+    setFilteredFiles(
+      audioFiles.filter((file) => file.name.toLowerCase().includes(lowerCaseQuery))
+    );
+  };
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -103,14 +113,15 @@ const Library = () => {
         variant="h4"
         className="all-audio-title"
         mb={4}
-        fontFamily={"Montserrat, sans-serif"} 
+        fontFamily={"Montserrat, sans-serif"}
         fontWeight="bold"
       >
         L I B R A R Y
       </Typography>
+      <SearchBar onSearchChange={handleSearchChange} />
       <List>
-        {audioFiles.length > 0 ? (
-          audioFiles.map((file, index) => (
+        {filteredFiles.length > 0 ? (
+          filteredFiles.map((file, index) => (
             <AudioCard
               key={index}
               file={file}
@@ -123,7 +134,7 @@ const Library = () => {
           ))
         ) : (
           <Typography variant="body1" color="textSecondary">
-            No audio files available.
+            No audio files found.
           </Typography>
         )}
       </List>

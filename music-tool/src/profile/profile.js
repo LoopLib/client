@@ -171,11 +171,11 @@ const Profile = () => {
       <Box className="audio-files" mt={4}>
         <Button
           variant="contained"
+          color="primary"
           sx={{
             marginTop: "20px",
             fontWeight: "bold",
             background: "#6a11cb",
-            color: "white",
             maxWidth: "200px",
           }}
           endIcon={showAudioFiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
