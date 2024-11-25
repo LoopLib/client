@@ -119,25 +119,27 @@ const Library = () => {
         L I B R A R Y
       </Typography>
       <SearchBar onSearchChange={handleSearchChange} />
-      <List>
-        {filteredFiles.length > 0 ? (
-          filteredFiles.map((file, index) => (
-            <AudioCard
-              key={index}
-              file={file}
-              index={index}
-              activeIndexes={activeIndexes}
-              setActiveIndexes={setActiveIndexes}
-              waveSurferRefs={waveSurferRefs}
-              onContextMenu={(event) => handleRightClick(event, file)}
-            />
-          ))
-        ) : (
-          <Typography variant="body1" color="textSecondary">
-            No audio files found.
-          </Typography>
-        )}
-      </List>
+      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+        <List style={{ width: "100%" }}>
+          {filteredFiles.length > 0 ? (
+            filteredFiles.map((file, index) => (
+              <AudioCard
+                key={index}
+                file={file}
+                index={index}
+                activeIndexes={activeIndexes}
+                setActiveIndexes={setActiveIndexes}
+                waveSurferRefs={waveSurferRefs}
+                onContextMenu={(event) => handleRightClick(event, file)}
+              />
+            ))
+          ) : (
+            <Typography variant="body1" color="textSecondary">
+              No audio files found.
+            </Typography>
+          )}
+        </List>
+      </div>
 
       <Menu
         open={contextMenu !== null}

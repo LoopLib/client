@@ -1,6 +1,7 @@
 /* Audio card styles */
 .audio-card {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 16px;
   padding: 20px;
@@ -9,7 +10,12 @@
   border: 3px solid transparent;
   position: relative;
   overflow: hidden;
+  width: calc(100% - 40px); /* Adjust to take full width with padding */
+  max-width: 1000px; /* Limit card width */
+  margin: 10px auto; /* Ensure even spacing around cards */
+  border-radius: 8px;
 }
+
 
 /* Removed hover effect styles */
 .audio-card:hover {
@@ -78,6 +84,15 @@
     transform: translateY(-1px); /* Slight lift on hover */
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
     background: linear-gradient(145deg, #ffffff, #f0f0f0); /* Subtle highlight effect */
+}
+
+/* Adjust layout on smaller screens */
+@media (max-width: 768px) {
+  .audio-card {
+    flex-direction: column; /* Stack content vertically */
+    align-items: flex-start;
+    width: 100%; /* Ensure cards take full width of the container */
+  }
 }
 
 

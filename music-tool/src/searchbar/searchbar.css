@@ -54,9 +54,7 @@
     padding: 10px 20px;
     border-radius: 12px;
     font-weight: bold;
-    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
   }
   
   .filter-button:hover {
