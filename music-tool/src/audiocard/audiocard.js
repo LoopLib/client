@@ -58,16 +58,19 @@ const AudioCard = ({
       <Grid container alignItems="center" spacing={2}>
         <Grid item xs={9}>
           <CardContent>
-            <Typography variant="h6">{file.name}</Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body1" gutterBottom>
+              {file.name}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" gutterBottom>
               Publisher: {file.publisher}
             </Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" color="textSecondary" paragraph>
               Duration: {file.duration}
             </Typography>
             <div id={`waveform-${index}`} className="waveform-container"></div>
           </CardContent>
         </Grid>
+
         <Grid item xs={3} textAlign="center">
           <IconButton
             onClick={() => togglePlay(index)}

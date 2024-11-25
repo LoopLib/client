@@ -99,8 +99,8 @@ const Library = () => {
 
   return (
     <Box className="all-audio-container">
-      <Typography variant="h3" className="all-audio-title" mb={4}>
-        LIBRARY
+      <Typography variant="h4" className="all-audio-title" mb={4}>
+        L I B R A R Y
       </Typography>
       <List>
         {audioFiles.length > 0 ? (

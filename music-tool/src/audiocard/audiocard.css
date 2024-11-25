@@ -57,11 +57,7 @@
     cursor: pointer; /* Show pointer cursor for interactivity */
   }
   
-  .waveform-container:hover {
-    background-color: #eaeaea; /* Slightly darker background on hover */
-    border-color: #aaa; /* Change border color on hover */
-  }
-  
+
   .waveform-container:active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Enhanced shadow when active */
   }
