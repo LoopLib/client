@@ -1,19 +1,9 @@
 /* Audio card styles */
 .audio-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-  padding: 10px;
-  background: linear-gradient(135deg, #ffffff, #f7f9fc);
-  box-shadow: 0px 6px 20px rgba(106, 17, 203, 0.15);
-  border: 3px solid transparent;
-  position: relative;
-  overflow: hidden;
-  width: 100%; /* Allow card to span the container's width */
-  max-width: 1200px; /* Optional: Limit max width for larger screens */
-  margin: 16px 0; /* Add vertical spacing between cards */
-  border-radius: 8px;
+  width: 100%; /* Stretch card to container's width */
+  max-width: 1200px; /* Limit card size for larger screens */
+  margin: 16px 0; /* Add spacing between cards */
+  box-sizing: border-box; /* Consistent sizing */
 }
 
 /* Removed hover effect styles */

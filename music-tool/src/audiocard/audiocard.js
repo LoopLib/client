@@ -82,7 +82,7 @@ const AudioCard = ({
         sx={{
           position: "absolute",
           top: 8,
-          right: 8, // Positioned in the top-right corner
+          right: 20, // Positioned in the top-right corner
           width: 60, // Larger size
           height: 60, // Larger size
           border: "3px solid", // Add a border

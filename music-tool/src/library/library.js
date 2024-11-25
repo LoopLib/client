@@ -74,9 +74,9 @@ const Library = () => {
     setContextMenu(
       contextMenu === null
         ? {
-            mouseX: event.clientX + 2,
-            mouseY: event.clientY - 6,
-          }
+          mouseX: event.clientX + 2,
+          mouseY: event.clientY - 6,
+        }
         : null
     );
   };
@@ -109,13 +109,13 @@ const Library = () => {
 
   return (
     <Box
-  className="all-audio-container"
-  sx={{
-    width: "100%", // Allow full width for the container
-    maxWidth: "none", // Remove width limitation
-    margin: "20px auto", // Center horizontally
-  }}
->
+      className="all-audio-container"
+      sx={{
+        width: "80%", // Allow full width for the container
+        maxWidth: "none", // Remove width limitation
+        margin: "20px auto", // Center horizontally
+      }}
+    >
       <Typography
         variant="h4"
         className="all-audio-title"
