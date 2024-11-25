@@ -25,7 +25,6 @@
 }
 
 
-
 @media (max-width: 768px) {
   .audio-card {
       flex-direction: column;
@@ -51,7 +50,7 @@
 /* Add keyframes for ripple effect */
 @keyframes ripple {
   0% {
-    box-shadow: 0 0 0 0 rgba(218, 165, 32, 0.8); /* Stronger opacity */
+    box-shadow: 0 0 0 0 rgba(235, 171, 10, 0.8); 
   }
   70% {
     box-shadow: 0 0 0 20px rgba(218, 165, 32, 0);
@@ -64,17 +63,15 @@
 /* Add keyframes for glowing effect */
 @keyframes glow {
   0% {
-    box-shadow: 0 0 10px 2px #daa520; /* Darker goldenrod */
+    box-shadow: 0 0 10px 2px #ffd700; /* Darker goldenrod */
   }
   50% {
-    box-shadow: 0 0 20px 4px #daa520;
+    box-shadow: 0 0 20px 4px #ffd700;
   }
   100% {
-    box-shadow: 0 0 10px 2px #daa520;
+    box-shadow: 0 0 10px 2px #ffd700;
   }
 }
-
-
 
 /* Add ripple effect on play button click */
 .audio-card-play-button:active {
@@ -104,4 +101,22 @@
   .waveform-container:active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Enhanced shadow when active */
   }
+
+  .metadata-box {
+    border: 1px solid #ddd; /* Softer border for a sleek look */
+    background: linear-gradient(145deg, #f7f7f7, #eaeaea); /* Subtle gradient for depth */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06); /* Modern shadow */
+    font-family: 'Montserrat, sans-serif';
+    font-size: 14px; /* Adjusted for readability */
+    padding: 16px; /* More padding for a spacious feel */
+    border-radius: 8px; /* Enhanced rounded corners for smoothness */
+    transition: all 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.metadata-box:hover {
+    transform: translateY(-3px); /* Slight lift on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
+    background: linear-gradient(145deg, #ffffff, #f0f0f0); /* Subtle highlight effect */
+}
+
   

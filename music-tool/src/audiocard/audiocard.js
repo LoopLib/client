@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography, Grid, IconButton } from "@mui/material";
+import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import WaveSurfer from "wavesurfer.js";
@@ -13,8 +13,16 @@ const AudioCard = ({
   waveSurferRefs,
   onContextMenu,
 }) => {
+
+
   const initializeWaveSurfer = (url, index) => {
+    const container = document.getElementById(`waveform-${index}`);
+    if (!container) {
+      console.error(`Container #waveform-${index} not found.`);
+      return;
+    }
     if (!waveSurferRefs.current[index]) {
+      console.log("Initializing WaveSurfer for index:", index);
       const waveSurfer = WaveSurfer.create({
         container: `#waveform-${index}`,
         waveColor: "#6a11cb",
@@ -22,8 +30,8 @@ const AudioCard = ({
         cursorColor: "#000000",
         barWidth: 5,
         responsive: true,
-        height: 100,
-        backend: "MediaElement",
+        height: 80,
+        backend: "MediaElement", // Try "WebAudio" if this doesn't work
       });
 
       waveSurfer.load(url);
@@ -34,6 +42,7 @@ const AudioCard = ({
       });
     }
   };
+
 
   const togglePlay = (index) => {
     const waveSurfer = waveSurferRefs.current[index];
@@ -51,23 +60,65 @@ const AudioCard = ({
   return (
     <Card
       className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
-      sx={{ mb: 2 }}
+      sx={{ mb: 2, borderRadius: 4 }}
       onMouseEnter={() => initializeWaveSurfer(file.url, index)}
       onContextMenu={onContextMenu}
     >
-      <Grid container alignItems="center" spacing={2}>
+      <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
           <CardContent>
+            {/* Name and Publisher Above Waveform */}
             <Typography variant="body2" gutterBottom>
               {file.name}
             </Typography>
-            <Typography variant="body2" color="textSecondary" gutterBottom>
+            <Typography variant="body2" color="textSecondary">
               Publisher: {file.publisher}
             </Typography>
-            <Typography variant="body3" color="textSecondary" paragraph>
-              Duration: {file.duration}
-            </Typography>
+
+            {/* Waveform */}
             <div id={`waveform-${index}`} className="waveform-container"></div>
+
+            {/* Metadata and Download Button Below Waveform */}
+            <Grid container spacing={2} style={{ marginTop: "8px" }}>
+              <Grid item xs={3}>
+                <div className="metadata-box">
+                  <Typography variant="body2" color="textSecondary">
+                    Duration: {file.duration}
+                  </Typography>
+                </div>
+              </Grid>
+              <Grid item xs={3}>
+                <div className="metadata-box">
+                  <Typography variant="body2" color="textSecondary">
+                    Key: Cmin{file.key}
+                  </Typography>
+                </div>
+              </Grid>
+              <Grid item xs={3}>
+                <div className="metadata-box">
+                  <Typography variant="body2" color="textSecondary">
+                    BPM: 135.00{file.bpm}
+                  </Typography>
+                </div>
+              </Grid>
+              <Grid item xs={3}>
+                <div className="metadata-box">
+                  <Typography variant="body2" color="textSecondary">
+                    Genre: House{file.genre}
+                  </Typography>
+                </div>
+              </Grid>
+            </Grid>
+
+
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "12px" }}
+              onClick={() => window.open(file.url, "_blank")}
+            >
+              Download
+            </Button>
           </CardContent>
         </Grid>
 
@@ -76,9 +127,12 @@ const AudioCard = ({
             onClick={() => togglePlay(index)}
             className="audio-card-play-button"
           >
-            {waveSurferRefs.current[index]?.isPlaying() ? <StopIcon /> : <PlayArrowIcon />}
+            {waveSurferRefs.current[index]?.isPlaying() ? (
+              <StopIcon />
+            ) : (
+              <PlayArrowIcon />
+            )}
           </IconButton>
-
         </Grid>
       </Grid>
     </Card>
