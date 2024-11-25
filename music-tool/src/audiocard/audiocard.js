@@ -6,6 +6,7 @@ import WaveSurfer from "wavesurfer.js";
 import DownloadIcon from "@mui/icons-material/Download";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
+import { Avatar } from "@mui/material";
 import "./audiocard.css";
 
 const AudioCard = ({
@@ -63,10 +64,26 @@ const AudioCard = ({
   return (
     <Card
       className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
-      sx={{ mb: 2, borderRadius: 4, position: "relative" }} // Add 'position: "relative"' here
+      sx={{ mb: 2, borderRadius: 4, position: "relative" }}
       onMouseEnter={() => initializeWaveSurfer(file.url, index)}
       onContextMenu={onContextMenu}
     >
+      {/* Add this Avatar component */}
+      <Avatar
+        alt={file.publisher}
+        src={file.profilePicture} // Keep the profile picture
+        sx={{
+          position: "absolute",
+          top: 8,
+          right: 8, // Positioned in the top-right corner
+          width: 60, // Larger size
+          height: 60, // Larger size
+          border: "3px solid", // Add a border
+          borderColor: "primary.main", // Border matches primary color
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)", // Add shadow for emphasis
+        }}
+      />
+
 
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
