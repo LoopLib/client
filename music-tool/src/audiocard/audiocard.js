@@ -58,13 +58,13 @@ const AudioCard = ({
       <Grid container alignItems="center" spacing={2}>
         <Grid item xs={9}>
           <CardContent>
-            <Typography variant="body1" gutterBottom>
+            <Typography variant="body2" gutterBottom>
               {file.name}
             </Typography>
             <Typography variant="body2" color="textSecondary" gutterBottom>
               Publisher: {file.publisher}
             </Typography>
-            <Typography variant="body2" color="textSecondary" paragraph>
+            <Typography variant="body3" color="textSecondary" paragraph>
               Duration: {file.duration}
             </Typography>
             <div id={`waveform-${index}`} className="waveform-container"></div>
@@ -74,10 +74,11 @@ const AudioCard = ({
         <Grid item xs={3} textAlign="center">
           <IconButton
             onClick={() => togglePlay(index)}
-            style={{ color: "black" }}
+            className="audio-card-play-button"
           >
             {waveSurferRefs.current[index]?.isPlaying() ? <StopIcon /> : <PlayArrowIcon />}
           </IconButton>
+
         </Grid>
       </Grid>
     </Card>

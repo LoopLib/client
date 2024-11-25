@@ -1,6 +1,5 @@
 /* Audio card styles */
 .audio-card {
-  border-radius: 12px;
   overflow: hidden;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
@@ -8,7 +7,7 @@
 }
 
 .audio-card:hover {
-  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 6px px rgba(0, 0, 0, 0.2);
 }
 
 .audio-card.active {
@@ -37,13 +36,51 @@
 
 /* Play/Stop button styles */
 .audio-card-play-button {
-  color: black;
-  transition: transform 0.2s ease;
+  color: #6a11cb; /* Match theme color */
+  transition: transform 0.3s ease, color 0.3s ease;
+  background-color: #f0f8ff; /* Soft background for button */
+  border-radius: 50%; /* Circular button */
+  padding: 10px; /* Adjust padding for size */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
 }
 
-.audio-card-play-button:hover {
-  transform: scale(1.1);
+/* Add keyframes for ripple effect */
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(139, 66, 242, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(139, 66, 242, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 66, 242, 0);
+  }
 }
+
+/* Add keyframes for glowing effect */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 10px 2px #8b42f2;
+  }
+  50% {
+    box-shadow: 0 0 20px 4px #5500cc;
+  }
+  100% {
+    box-shadow: 0 0 10px 2px #8b42f2;
+  }
+}
+
+/* Add ripple effect on play button click */
+.audio-card-play-button:active {
+  animation: ripple 0.6s ease-out;
+}
+
+/* Add glow effect when hovering or clicking */
+.audio-card-play-button:hover,
+.audio-card-play-button:active {
+  animation: glow 1.2s infinite alternate;
+}
+
 
 .waveform-container {
     width: 100%; /* Adjust width to fit the container */
