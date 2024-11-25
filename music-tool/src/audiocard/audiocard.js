@@ -4,6 +4,8 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import WaveSurfer from "wavesurfer.js";
 import DownloadIcon from "@mui/icons-material/Download";
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import "./audiocard.css";
 
 const AudioCard = ({
@@ -83,28 +85,28 @@ const AudioCard = ({
             {/* Metadata and Download Button Below Waveform */}
             <Grid container spacing={2} style={{ marginTop: "8px" }}>
               <Grid item xs={3}>
-                <div className="metadata-box">
+                <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
                   <Typography variant="body2" color="textSecondary">
                     Duration: {file.duration}
                   </Typography>
                 </div>
               </Grid>
               <Grid item xs={3}>
-                <div className="metadata-box">
+                <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
                   <Typography variant="body2" color="textSecondary">
                     Key: Cmin{file.key}
                   </Typography>
                 </div>
               </Grid>
               <Grid item xs={3}>
-                <div className="metadata-box">
+                <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
                   <Typography variant="body2" color="textSecondary">
                     BPM: 135.00{file.bpm}
                   </Typography>
                 </div>
               </Grid>
               <Grid item xs={3}>
-                <div className="metadata-box">
+                <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
                   <Typography variant="body2" color="textSecondary">
                     Genre: House{file.genre}
                   </Typography>
@@ -132,13 +134,23 @@ const AudioCard = ({
           <IconButton
             onClick={() => togglePlay(index)}
             className="audio-card-play-button"
+            style={{
+              boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+              padding: '10px',
+              transition: 'transform 0.1s ease',
+              position: 'relative',
+              top: '-20px',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')} // Scale up on hover
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')} // Reset scale
           >
             {waveSurferRefs.current[index]?.isPlaying() ? (
-              <StopIcon />
+              <PauseCircleIcon style={{ fontSize: '40px', color: '#6a11cb' }} /> // Pause Icon
             ) : (
-              <PlayArrowIcon />
+              <PlayCircleIcon style={{ fontSize: '40px', color: '#2575fc' }} />  // Play Icon
             )}
           </IconButton>
+
         </Grid>
       </Grid>
     </Card>
