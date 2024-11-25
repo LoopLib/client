@@ -1,0 +1,74 @@
+/* Container Styling */
+.search-bar-container {
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Search Bar Styling */
+  .search-bar-input .MuiOutlinedInput-root {
+    border-radius: 16px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-bar-input .MuiOutlinedInput-root:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .search-bar-input .MuiOutlinedInput-root.Mui-focused {
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.3);
+    border-color: #007bff;
+  }
+  
+  /* Filters Card */
+  .filters-card {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ffffff, #f1f1f1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* Filter Item Styling */
+  .filter-item {
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  .filter-select {
+    width: 100%;
+  }
+  
+  /* Filter Button */
+  .filter-button {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .filter-button:hover {
+    background: linear-gradient(135deg, #0056b3, #003d80);
+    box-shadow: 0 4px 16px rgba(0, 91, 255, 0.3);
+  }
+  
+  /* Responsive Styling */
+  @media (max-width: 768px) {
+    .filters-container {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+  
