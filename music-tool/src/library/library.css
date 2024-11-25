@@ -16,8 +16,6 @@
 }
 
 .all-audio-title {
-  font-family: 'Poppins', sans-serif; /* Modern, thick font */
-  font-weight: 700; /* Ensures a bold appearance */
   text-align: center;
   margin-bottom: 16px;
   color: transparent; /* Required for gradient text */
@@ -26,7 +24,6 @@
   background-clip: text;
   position: relative; /* For the underline effect */
 }
-
 .all-audio-title::after {
   content: "";
   position: absolute;
@@ -34,7 +31,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 20%; /* Length of the underline */
-  height: 5px; /* Thickness of the underline */
+  height: 3px; /* Thickness of the underline */
   background: linear-gradient(90deg, #6a11cb, #2575fc);
   border-radius: 2px; /* Rounded edges for a clean look */
   transition: width 0.3s ease; /* Smooth animation on hover */
@@ -42,24 +39,6 @@
 
 .all-audio-title:hover::after {
   width: 100%; /* Expands underline on hover */
-}
-
-/* Audio card styles */
-.audio-card {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
-}
-
-.audio-card:hover {
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Keep shadow the same as default */
-  transform: none; /* Remove any scaling */
-}
-
-.audio-card.active {
-  background-color: #f0f8ff; /* Example active color */
-  border: 2px solid #6a11cb;
 }
 
 /* Waveform container inside the audio card */

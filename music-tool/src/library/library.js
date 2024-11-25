@@ -71,9 +71,9 @@ const Library = () => {
     setContextMenu(
       contextMenu === null
         ? {
-            mouseX: event.clientX + 2,
-            mouseY: event.clientY - 6,
-          }
+          mouseX: event.clientX + 2,
+          mouseY: event.clientY - 6,
+        }
         : null
     );
   };
@@ -99,7 +99,13 @@ const Library = () => {
 
   return (
     <Box className="all-audio-container">
-      <Typography variant="h4" className="all-audio-title" mb={4}>
+      <Typography
+        variant="h4"
+        className="all-audio-title"
+        mb={4}
+        fontFamily={"Montserrat, sans-serif"} 
+        fontWeight="bold"
+      >
         L I B R A R Y
       </Typography>
       <List>
