@@ -1,74 +1,80 @@
 /* Audio card styles */
 .audio-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff, #f7f9fc);
+  box-shadow: 0px 6px 20px rgba(106, 17, 203, 0.15);
+  border: 3px solid transparent;
+  position: relative;
   overflow: hidden;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
+/* Removed hover effect styles */
 .audio-card:hover {
-  box-shadow: 0px 6px px rgba(0, 0, 0, 0.2);
+  box-shadow: 10px 6px 20px rgba(106, 17, 203, 0.15); /* Same as default */
 }
 
+/* Active state remains unchanged */
 .audio-card.active {
-  background-color: #f0f8ff;
-  border: 2px solid #6a11cb;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  box-shadow: 0px 8px 30px rgba(106, 17, 203, 0.4);
+  border: 2px solid #ffffff;
 }
 
-/* Waveform container inside the audio card */
-.waveform-container {
-  margin-top: 8px;
-  height: 100px; /* Fixed height for waveform consistency */
+
+
+@media (max-width: 768px) {
+  .audio-card {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .audio-card .MuiTypography-root {
+      max-width: 100%;
+      margin-bottom: 8px;
+  }
+
+  .audio-card .MuiIconButton-root {
+      margin-top: 8px;
+  }
+
+  .audio-card .delete-icon {
+      position: static;
+      align-self: flex-end;
+  }
 }
 
-/* Typography inside the audio card */
-.audio-card-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.audio-card-publisher,
-.audio-card-duration {
-  font-size: 14px;
-  color: #666;
-}
-
-/* Play/Stop button styles */
-.audio-card-play-button {
-  color: #6a11cb; /* Match theme color */
-  transition: transform 0.3s ease, color 0.3s ease;
-  background-color: #f0f8ff; /* Soft background for button */
-  border-radius: 50%; /* Circular button */
-  padding: 10px; /* Adjust padding for size */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
-}
 
 /* Add keyframes for ripple effect */
 @keyframes ripple {
   0% {
-    box-shadow: 0 0 0 0 rgba(139, 66, 242, 0.5);
+    box-shadow: 0 0 0 0 rgba(218, 165, 32, 0.8); /* Stronger opacity */
   }
   70% {
-    box-shadow: 0 0 0 20px rgba(139, 66, 242, 0);
+    box-shadow: 0 0 0 20px rgba(218, 165, 32, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(139, 66, 242, 0);
+    box-shadow: 0 0 0 0 rgba(218, 165, 32, 0);
   }
 }
 
 /* Add keyframes for glowing effect */
 @keyframes glow {
   0% {
-    box-shadow: 0 0 10px 2px #8b42f2;
+    box-shadow: 0 0 10px 2px #daa520; /* Darker goldenrod */
   }
   50% {
-    box-shadow: 0 0 20px 4px #5500cc;
+    box-shadow: 0 0 20px 4px #daa520;
   }
   100% {
-    box-shadow: 0 0 10px 2px #8b42f2;
+    box-shadow: 0 0 10px 2px #daa520;
   }
 }
+
+
 
 /* Add ripple effect on play button click */
 .audio-card-play-button:active {

@@ -1,43 +1,31 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CircularProgress,
-  List,
-  Grid,
-  IconButton,
-} from "@mui/material";
-import { Button } from "@mui/material";
+import { Box, Typography, Card, CardContent, CircularProgress, List, Button, IconButton } from "@mui/material";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import StopIcon from "@mui/icons-material/Stop";
 import AWS from "aws-sdk";
-import WaveSurfer from "wavesurfer.js";
 import { auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import AudioCard from "../audiocard/audiocard";
 import "./profile.css";
+
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [audioFiles, setAudioFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const waveSurferRefs = useRef({}); // Store WaveSurfer instances for each track
-  const [activeIndex, setActiveIndex] = useState(null); // Track currently playing file
-  const [showAudioFiles, setShowAudioFiles] = useState(false); // State for dropdown visibility
-  const [activeIndexes, setActiveIndexes] = useState([]);
+  const [activeIndexes, setActiveIndexes] = useState([]); // Tracks currently playing files
+  const [showAudioFiles, setShowAudioFiles] = useState(false); // Dropdown visibility
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        await fetchProfileData(currentUser.uid); // Fetch profile details
-        await fetchAudioFilesFromAWS(currentUser.uid); // Fetch audio files from AWS
+        await fetchProfileData(currentUser.uid);
+        await fetchAudioFilesFromAWS(currentUser.uid);
       } else {
         setUser(null);
         setAudioFiles([]);
@@ -98,42 +86,6 @@ const Profile = () => {
     }
   };
 
-  const initializeWaveSurfer = (url, index) => {
-  if (!waveSurferRefs.current[index]) {
-    const waveSurfer = WaveSurfer.create({
-      container: `#waveform-${index}`,
-      waveColor: "#6a11cb",
-      progressColor: "#000000",
-      cursorColor: "#000000",
-      barWidth: 5,
-      responsive: true,
-      height: 100,
-      backend: "MediaElement",
-    });
-
-    waveSurfer.load(url);
-    waveSurferRefs.current[index] = waveSurfer;
-
-    // Handle play/pause state
-    waveSurfer.on("finish", () => {
-      setActiveIndexes((prev) => prev.filter((i) => i !== index)); // Remove finished track
-    });
-  }
-};
-
-const togglePlay = (index) => {
-  const waveSurfer = waveSurferRefs.current[index];
-  if (waveSurfer) {
-    if (waveSurfer.isPlaying()) {
-      waveSurfer.pause();
-      setActiveIndexes((prev) => prev.filter((i) => i !== index)); // Remove from activeIndexes
-    } else {
-      waveSurfer.play();
-      setActiveIndexes((prev) => [...prev, index]); // Add to activeIndexes
-    }
-  }
-};
-
   const handleDelete = async (file) => {
     try {
       const s3 = new AWS.S3({
@@ -155,6 +107,11 @@ const togglePlay = (index) => {
     }
   };
 
+  const handleContextMenu = (event, file) => {
+    event.preventDefault();
+    console.log("Right-click on file:", file.name);
+  };
+
   return (
     <Box className="profile-container">
       <Box className="profile-header" mb={4}>
@@ -168,7 +125,7 @@ const togglePlay = (index) => {
           </Typography>
         )}
       </Box>
-  
+
       <Card className="user-info">
         <CardContent>
           <Typography variant="h5" className="user-info-title" gutterBottom>
@@ -210,7 +167,7 @@ const togglePlay = (index) => {
           )}
         </CardContent>
       </Card>
-  
+
       <Box className="audio-files" mt={4}>
         <Button
           variant="contained"
@@ -230,46 +187,15 @@ const togglePlay = (index) => {
           <List>
             {audioFiles.length > 0 ? (
               audioFiles.map((file, index) => (
-                <Card
+                <AudioCard
                   key={index}
-                  className={`audio-card ${
-                    activeIndexes.includes(index) ? "active" : ""
-                  }`}
-                  sx={{ mb: 2 }}
-                  onMouseEnter={() => initializeWaveSurfer(file.url, index)}
-                >
-                  <Grid container alignItems="center">
-                    <Grid item xs={8}>
-                      <CardContent>
-                        <Typography>{file.name}</Typography>
-                        <div
-                          id={`waveform-${index}`}
-                          className="waveform-container"
-                        ></div>
-                      </CardContent>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <IconButton
-                        onClick={() => togglePlay(index)}
-                        style={{ color: "black" }}
-                      >
-                        {waveSurferRefs.current[index]?.isPlaying() ? (
-                          <StopIcon />
-                        ) : (
-                          <PlayArrowIcon />
-                        )}
-                      </IconButton>
-                    </Grid>
-                    <Grid item xs={1}>
-                      <IconButton
-                        color="error"
-                        onClick={() => handleDelete(file)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                </Card>
+                  file={file}
+                  index={index}
+                  activeIndexes={activeIndexes}
+                  setActiveIndexes={setActiveIndexes}
+                  waveSurferRefs={waveSurferRefs}
+                  onContextMenu={(event) => handleContextMenu(event, file)}
+                />
               ))
             ) : (
               <Typography variant="body1" color="textSecondary">
