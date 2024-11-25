@@ -1,31 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CircularProgress,
-  List,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-} from "@mui/material";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import StopIcon from "@mui/icons-material/Stop";
+import { Box, Typography, CircularProgress, List, Menu, MenuItem } from "@mui/material";
 import AWS from "aws-sdk";
-import WaveSurfer from "wavesurfer.js";
-import "./library.css";
 import { useNavigate } from "react-router-dom";
+import AudioCard from "../audiocard/audiocard";
+import "./library.css";
 
 const Library = () => {
   const [audioFiles, setAudioFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const waveSurferRefs = useRef({});
-  const [activeIndex, setActiveIndex] = useState(null);
   const [activeIndexes, setActiveIndexes] = useState([]);
-  const [contextMenu, setContextMenu] = useState(null); // Context menu position and target
-  const [selectedFile, setSelectedFile] = useState(null); // The file associated with the context menu
+  const [contextMenu, setContextMenu] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const navigate = useNavigate();
 
@@ -47,17 +33,15 @@ const Library = () => {
       const params = { Bucket: "looplib-audio-bucket" };
       const data = await s3.listObjectsV2(params).promise();
 
-      // Create initial file list without duration
       const files = data.Contents.map((file) => ({
         name: file.Key.split("/").pop(),
         url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${file.Key}`,
-        publisher: "Anonymous Publisher", // Placeholder
-        duration: null, // Will fetch later
+        publisher: "Anonymous Publisher",
+        duration: null,
       }));
 
       setAudioFiles(files);
 
-      // Fetch durations in the background
       for (let i = 0; i < files.length; i++) {
         const audio = new Audio(files[i].url);
         audio.addEventListener("loadedmetadata", () => {
@@ -81,72 +65,30 @@ const Library = () => {
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
-  const initializeWaveSurfer = (url, index) => {
-    if (!waveSurferRefs.current[index]) {
-      const waveSurfer = WaveSurfer.create({
-        container: `#waveform-${index}`,
-        waveColor: "#6a11cb",
-        progressColor: "#000000",
-        cursorColor: "#000000",
-        barWidth: 5,
-        responsive: true,
-        height: 100,
-        backend: "MediaElement",
-      });
-
-      waveSurfer.load(url);
-      waveSurferRefs.current[index] = waveSurfer;
-
-      waveSurfer.on("finish", () => {
-        setActiveIndex(null);
-      });
-    }
-  };
-
-  const togglePlay = (index) => {
-    const waveSurfer = waveSurferRefs.current[index];
-    if (waveSurfer) {
-      if (waveSurfer.isPlaying()) {
-        waveSurfer.pause();
-        setActiveIndexes((prev) => prev.filter((i) => i !== index)); // Remove from activeIndexes
-      } else {
-        waveSurfer.play();
-        setActiveIndexes((prev) => [...prev, index]); // Add to activeIndexes
-      }
-    }
-  };
-
-
-  // Handle right-click event
   const handleRightClick = (event, file) => {
     event.preventDefault();
     setSelectedFile(file);
     setContextMenu(
       contextMenu === null
         ? {
-          mouseX: event.clientX + 2,
-          mouseY: event.clientY - 6,
-        }
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
         : null
     );
   };
 
-  // Close context menu
   const closeContextMenu = () => {
     setContextMenu(null);
     setSelectedFile(null);
   };
 
   const handleOptionSelect = (option) => {
-    if (option === "play") {
-      const index = audioFiles.indexOf(selectedFile);
-      togglePlay(index);
-    } else if (option === "edit") {
+    if (option === "edit") {
       alert(`Editing ${selectedFile.name}`);
       navigate("/edit", { state: { file: selectedFile } });
     } else if (option === "delete") {
       alert(`Deleting ${selectedFile.name}`);
-      // Add delete functionality here
     }
     closeContextMenu();
   };
@@ -157,46 +99,21 @@ const Library = () => {
 
   return (
     <Box className="all-audio-container">
-      <Typography variant="h4" className="all-audio-title" mb={4}>
-        All Audio Tracks
+      <Typography variant="h3" className="all-audio-title" mb={4}>
+        LIBRARY
       </Typography>
       <List>
         {audioFiles.length > 0 ? (
           audioFiles.map((file, index) => (
-            <Card
+            <AudioCard
               key={index}
-              className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
-              sx={{ mb: 2 }}
-              onMouseEnter={() => initializeWaveSurfer(file.url, index)}
+              file={file}
+              index={index}
+              activeIndexes={activeIndexes}
+              setActiveIndexes={setActiveIndexes}
+              waveSurferRefs={waveSurferRefs}
               onContextMenu={(event) => handleRightClick(event, file)}
-            >
-              <Grid container alignItems="center" spacing={2}>
-                <Grid item xs={9}>
-                  <CardContent>
-                    <Typography variant="h6">{file.name}</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Publisher: {file.publisher}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Duration: {file.duration}
-                    </Typography>
-                    <div id={`waveform-${index}`} className="waveform-container"></div>
-                  </CardContent>
-                </Grid>
-                <Grid item xs={3} textAlign="center">
-                  <IconButton
-                    onClick={() => togglePlay(index)}
-                    style={{ color: "black" }}
-                  >
-                    {waveSurferRefs.current[index]?.isPlaying() ? (
-                      <StopIcon />
-                    ) : (
-                      <PlayArrowIcon />
-                    )}
-                  </IconButton>
-                </Grid>
-              </Grid>
-            </Card>
+            />
           ))
         ) : (
           <Typography variant="body1" color="textSecondary">
@@ -205,7 +122,6 @@ const Library = () => {
         )}
       </List>
 
-      {/* Context Menu */}
       <Menu
         open={contextMenu !== null}
         onClose={closeContextMenu}
@@ -215,28 +131,15 @@ const Library = () => {
             ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
             : undefined
         }
-        classes={{ paper: "custom-context-menu" }} // Apply custom styles
+        classes={{ paper: "custom-context-menu" }}
       >
-        <MenuItem
-          onClick={() => handleOptionSelect("play")}
-          className="custom-menu-item"
-        >
-          {activeIndex === audioFiles.indexOf(selectedFile) ? "Pause" : "Play"}
-        </MenuItem>
-        <MenuItem
-          onClick={() => handleOptionSelect("edit")}
-          className="custom-menu-item"
-        >
+        <MenuItem onClick={() => handleOptionSelect("edit")} className="custom-menu-item">
           Edit
         </MenuItem>
-        <MenuItem
-          onClick={() => handleOptionSelect("delete")}
-          className="custom-menu-item"
-        >
+        <MenuItem onClick={() => handleOptionSelect("delete")} className="custom-menu-item">
           Delete
         </MenuItem>
       </Menu>
-
     </Box>
   );
 };
