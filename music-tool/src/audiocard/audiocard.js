@@ -63,16 +63,18 @@ const AudioCard = ({
 
   return (
     <Card
-    sx={{
-      mb: 2,
-      borderRadius: 4,
-      position: "relative",
-      width: "100%",
-      mx: "auto",
-    }}
+      className={`audio-card ${activeIndexes.includes(index) ? 'active' : ''}`}
+      sx={{
+        mb: 8,
+        borderRadius: 4,
+        position: "relative",
+        width: "100%",
+        mx: "auto",
+      }}
       onMouseEnter={() => initializeWaveSurfer(file.url, index)}
       onContextMenu={onContextMenu}
     >
+
       {/* Add this Avatar component */}
       <Avatar
         alt={file.publisher}
@@ -81,8 +83,8 @@ const AudioCard = ({
           position: "absolute",
           top: 8,
           right: 20, // Positioned in the top-right corner
-          width: 60, // Larger size
-          height: 60, // Larger size
+          width: 40, // Larger size
+          height: 40, // Larger size
           border: "3px solid", // Add a border
           borderColor: "primary.main", // Border matches primary color
           boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)", // Add shadow for emphasis
