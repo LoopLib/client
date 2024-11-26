@@ -261,7 +261,7 @@ const FileUpload = () => {
                     sx={{
                         marginTop: '20px',
                         fontWeight: 'bold',
-                        background: '#6a11cb',
+                        background: '#2575fc',
                         color: 'white',
                         borderRadius: '8px',
                         transition: 'all 0.3s ease',

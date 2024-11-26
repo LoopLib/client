@@ -1,52 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+// Edit.js
+
+import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import StopIcon from "@mui/icons-material/Stop";
-import PauseIcon from "@mui/icons-material/Pause";
-import WaveSurfer from "wavesurfer.js";
+import AudioCard from "../audiocard/audiocard";
 import "./edit.css";
 
 const Edit = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const waveSurferRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  useEffect(() => {
-    if (!state?.file) return;
-
-    // Initialize WaveSurfer
-    const waveSurfer = WaveSurfer.create({
-      container: "#waveform",
-      waveColor: "#E0E0E0",
-      progressColor: "#6A11CB",
-      cursorColor: "#6A11CB",
-      barWidth: 3,
-      responsive: true,
-      height: 150,
-      backend: "MediaElement",
-    });
-
-    waveSurfer.load(state.file.url);
-    waveSurferRef.current = waveSurfer;
-
-    waveSurfer.on("finish", () => setIsPlaying(false));
-
-    return () => {
-      // Cleanup: Safely destroy the instance
-      if (waveSurferRef.current) {
-        try {
-          waveSurferRef.current.destroy(); // Safely destroy WaveSurfer
-        } catch (error) {
-          console.error("WaveSurfer cleanup error:", error);
-        } finally {
-          waveSurferRef.current = null; // Clear reference
-        }
-      }
-    };
-  }, [state]);
+  
+  // Since AudioCard expects waveSurferRefs and activeIndexes, we set them up here
+  const waveSurferRefs = useRef({});
+  const [activeIndexes, setActiveIndexes] = useState([]);
 
   if (!state?.file) {
     return <Typography>No file selected for editing.</Typography>;
@@ -54,25 +21,9 @@ const Edit = () => {
 
   const handleBack = () => navigate(-1);
 
-  const togglePlay = () => {
-    const waveSurfer = waveSurferRef.current;
-    if (waveSurfer) {
-      if (waveSurfer.isPlaying()) {
-        waveSurfer.pause();
-        setIsPlaying(false);
-      } else {
-        waveSurfer.play();
-        setIsPlaying(true);
-      }
-    }
-  };
-
-  const stopPlayback = () => {
-    const waveSurfer = waveSurferRef.current;
-    if (waveSurfer) {
-      waveSurfer.stop();
-      setIsPlaying(false);
-    }
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    // Implement any context menu functionality if needed
   };
 
   return (
@@ -81,32 +32,24 @@ const Edit = () => {
         <IconButton onClick={handleBack} className="back-button">
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h4" className="edit-title">
-          Editing: <span className="file-name">{state.file.name}</span>
-        </Typography>
       </Box>
-      <Box id="waveform" className="waveform-container"></Box>
-      <Box className="playback-controls">
-        <IconButton
-          onClick={togglePlay}
-          className={`playback-button ${isPlaying ? "playing" : ""}`}
-          aria-label={isPlaying ? "Pause" : "Play"}
-        >
-          {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-        </IconButton>
-        <IconButton
-          onClick={stopPlayback}
-          className="playback-button stop"
-          aria-label="Stop"
-        >
-          <StopIcon />
-        </IconButton>
-      </Box>
-      <Box className="edit-actions">
+      
+      {/* Render the AudioCard component */}
+      <AudioCard
+        file={state.file}
+        index={0} // Since it's a single file, index can be 0
+        activeIndexes={activeIndexes}
+        setActiveIndexes={setActiveIndexes}
+        waveSurferRefs={waveSurferRefs}
+        onContextMenu={handleContextMenu}
+      />
+
+      <Box className="edit-actions" mt={4}>
         <Button
           variant="contained"
           className="edit-button trim"
           onClick={() => alert("Trimming functionality coming soon!")}
+          sx={{ mr: 2 }}
         >
           Trim Audio
         </Button>
@@ -114,6 +57,7 @@ const Edit = () => {
           variant="contained"
           className="edit-button effects"
           onClick={() => alert("Effects functionality coming soon!")}
+          sx={{ mr: 2 }}
         >
           Apply Effects
         </Button>

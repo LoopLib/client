@@ -1,129 +1,102 @@
-/* General Edit Page Container */
-.edit-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px;
-    max-width: 800px;
-    margin: 50px auto;
-    background: linear-gradient(135deg, #f7f9fc, #ffffff);
-    border-radius: 20px;
-    box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.1);
+
+/* Header Section */
+.edit-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.edit-title {
+  font-weight: bold;
+  color: #6a11cb;
+  font-size: 1.8rem;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.file-name {
+  color: #333;
+  font-weight: normal;
+}
+
+.back-button {
+  color: #6a11cb;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.back-button:hover {
+  color: #2575fc;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Playback Controls */
+.playback-controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.playback-button {
+  background: #ffffff;
+  color: #6a11cb;
+  border: 2px solid #6a11cb;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease, transform 0.3s ease;
+  box-shadow: 0px 4px 16px rgba(106, 17, 203, 0.1);
+  cursor: pointer;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .edit-container {
+      padding: 20px;
+      margin: 20px auto;
   }
-  
-  /* Header Section */
+
   .edit-header {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 30px;
+      flex-direction: column;
+      align-items: center;
   }
-  
-  .edit-title {
-    font-weight: bold;
-    color: #6a11cb;
-    font-size: 1.8rem;
-    flex-grow: 1;
-    text-align: center;
-  }
-  
-  .file-name {
-    color: #333;
-    font-weight: normal;
-  }
-  
+
   .back-button {
-    color: #6a11cb;
+      position: static;
+      transform: none;
+      margin-bottom: 10px;
   }
-  
-  /* Waveform Section */
-  .waveform-container {
-    width: 100%;
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
-    margin-bottom: 30px;
+
+  .edit-title {
+      text-align: center;
   }
-  
-  /* Playback Controls */
+
   .playback-controls {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
+      gap: 15px;
   }
-  
+
   .playback-button {
-    background: #ffffff;
-    color: #6a11cb;
-    border: 2px solid #6a11cb;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0px 4px 16px rgba(106, 17, 203, 0.1);
+      width: 50px;
+      height: 50px;
   }
-  
-  .playback-button:hover {
-    background: #6a11cb;
-    color: #ffffff;
-    transform: scale(1.1);
-  }
-  
-  .playback-button.stop:hover {
-    background: #ff4d4d;
-    border-color: #ff4d4d;
-  }
-  
-  .playback-button.playing {
-    background: #6a11cb;
-    color: #ffffff;
-  }
-  
-  /* Edit Actions Section */
+
   .edit-actions {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
+      flex-direction: column;
+      align-items: center;
   }
-  
+
   .edit-button {
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: bold;
-    text-transform: none;
-    transition: all 0.3s ease;
+      width: 100%;
+      max-width: 200px;
   }
-  
-  .edit-button.trim {
-    background: #6a11cb;
-    color: white;
-  }
-  
-  .edit-button.trim:hover {
-    background: #2575fc;
-  }
-  
-  .edit-button.effects {
-    background: #ff8a00;
-    color: white;
-  }
-  
-  .edit-button.effects:hover {
-    background: #ff7300;
-  }
-  
-  .edit-button.save {
-    background: #4caf50;
-    color: white;
-  }
-  
-  .edit-button.save:hover {
-    background: #3e8e41;
-  }
-  
+}
