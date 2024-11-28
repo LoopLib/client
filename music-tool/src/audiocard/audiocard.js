@@ -22,30 +22,80 @@ const AudioCard = ({
   const initializeWaveSurfer = (url, index) => {
     const container = document.getElementById(`waveform-${index}`);
     if (!container) {
-      console.error(`Container #waveform-${index} not found.`);
-      return;
+        console.error(`Container #waveform-${index} not found.`);
+        return;
     }
     if (!waveSurferRefs.current[index]) {
-      console.log("Initializing WaveSurfer for index:", index);
-      const waveSurfer = WaveSurfer.create({
-        container: `#waveform-${index}`,
-        waveColor: "#6a11cb",
-        progressColor: "#000000",
-        cursorColor: "#000000",
-        barWidth: 5,
-        responsive: true,
-        height: 80,
-        backend: "MediaElement", // Try "WebAudio" if this doesn't work
-      });
+        console.log("Initializing WaveSurfer for index:", index);
+        const waveSurfer = WaveSurfer.create({
+            container: `#waveform-${index}`,
+            waveColor: "#6a11cb",
+            progressColor: "#000000",
+            cursorColor: "#000000",
+            barWidth: 5,
+            responsive: true,
+            height: 80,
+            backend: "MediaElement", // Use "WebAudio" if waveform extraction fails
+        });
 
-      waveSurfer.load(url);
-      waveSurferRefs.current[index] = waveSurfer;
+        waveSurfer.load(url);
+        waveSurferRefs.current[index] = waveSurfer;
 
-      waveSurfer.on("finish", () => {
-        setActiveIndexes((prev) => prev.filter((i) => i !== index));
-      });
+        waveSurfer.on("ready", async () => {
+            try {
+                const peaks = waveSurfer.backend.getPeaks(512); // Extract waveform peaks
+                console.log("Waveform Peaks:", peaks);
+
+                // Call function to upload waveform data
+                await uploadWaveformData(peaks, selectedFile.name);
+            } catch (error) {
+                console.error("Error extracting waveform peaks:", error);
+            }
+        });
+
+        waveSurfer.on("finish", () => {
+            setActiveIndexes((prev) => prev.filter((i) => i !== index));
+        });
     }
-  };
+};
+const uploadWaveformData = async (peaks, fileName) => {
+  try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+          throw new Error("User not authenticated");
+      }
+
+      const uid = user.uid;
+
+      const s3 = new AWS.S3({
+          region: process.env.REACT_APP_AWS_REGION,
+          accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+      });
+
+      const waveformData = {
+          peaks,
+          fileName,
+          timestamp: new Date().toISOString(),
+      };
+
+      const params = {
+          Bucket: "looplib-audio-bucket",
+          Key: `users/${uid}/${fileName}.waveform.json`,
+          Body: JSON.stringify(waveformData),
+          ContentType: "application/json",
+      };
+
+      const uploadResult = await s3.upload(params).promise();
+      console.log("Waveform data uploaded successfully:", uploadResult);
+  } catch (error) {
+      console.error("Error uploading waveform data:", error);
+  }
+};
+
+
 
 
   const togglePlay = (index) => {
