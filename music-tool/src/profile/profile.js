@@ -113,7 +113,24 @@ const Profile = () => {
   };
 
   return (
-    <Box className="profile-container">
+    <Box
+      className="all-audio-container"
+      sx={{
+        width: "80%", // Allow full width for the container
+        maxWidth: "none", // Remove width limitation
+        margin: "20px auto", // Center horizontally
+      }}
+    >
+      <Typography
+        variant="h4"
+        className="all-audio-title"
+        mb={4}
+        fontFamily={"Montserrat, sans-serif"}
+        fontWeight="bold"
+      >
+        P R O F I L E
+      </Typography>
+
       <Box className="profile-header" mb={4}>
         <AccountCircleIcon sx={{ fontSize: 80, color: "##FFFFFF" }} />
         <Typography variant="h4" className="profile-title" mt={2}>
@@ -167,22 +184,30 @@ const Profile = () => {
           )}
         </CardContent>
       </Card>
-
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          marginTop: "20px",
+          fontWeight: "bold",
+          background: "#6a11cb",
+          maxWidth: "200px",
+          boxShadow: "none", // Remove shadow
+          outline: "none", // Remove focus outline
+          "&:focus": {
+            outline: "none", // Ensure no focus outline
+          },
+          "&:hover": {
+            boxShadow: "none", // Prevent shadow on hover
+          },
+        }}
+        endIcon={showAudioFiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        onClick={() => setShowAudioFiles(!showAudioFiles)}
+      >
+        {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
+      </Button>
       <Box className="audio-files" mt={4}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            marginTop: "20px",
-            fontWeight: "bold",
-            background: "#6a11cb",
-            maxWidth: "200px",
-          }}
-          endIcon={showAudioFiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          onClick={() => setShowAudioFiles(!showAudioFiles)}
-        >
-          {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
-        </Button>
+
         {showAudioFiles && (
           <List>
             {audioFiles.length > 0 ? (
@@ -206,6 +231,7 @@ const Profile = () => {
         )}
       </Box>
     </Box>
+
   );
 };
 
