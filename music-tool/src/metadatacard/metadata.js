@@ -1,89 +1,40 @@
-import React from 'react';
-import { Grid, Typography, Button, Box, Card, CardContent } from '@material-ui/core';
-// If you're using Material-UI v5, you might need to import from '@mui/material' instead.
+import React from "react";
+import { Grid, Typography } from "@mui/material";
+import './metadata.css'
 
-const MetadataCard = ({ file }) => {
+const Metadata = ({ duration, key, bpm, genre }) => {
   return (
-    <Card>
-      <CardContent>
-        {/* Metadata Row with Borders */}
-        <Grid container spacing={0} style={{ marginTop: "8px", border: '1px solid #ccc' }}>
-          {/* Duration */}
-          <Grid item xs={3}>
-            <Box
-              borderRight={1}
-              borderColor="grey.300"
-              padding={2}
-              display="flex"
-              alignItems="center"
-              height="100%"
-            >
-              <Typography variant="body2" color="textSecondary">
-                Duration: {file.duration}
-              </Typography>
-            </Box>
-          </Grid>
-
-          {/* Key */}
-          <Grid item xs={3}>
-            <Box
-              borderRight={1}
-              borderColor="grey.300"
-              padding={2}
-              display="flex"
-              alignItems="center"
-              height="100%"
-            >
-              <Typography variant="body2" color="textSecondary">
-                Key: {file.key}
-              </Typography>
-            </Box>
-          </Grid>
-
-          {/* BPM */}
-          <Grid item xs={3}>
-            <Box
-              borderRight={1}
-              borderColor="grey.300"
-              padding={2}
-              display="flex"
-              alignItems="center"
-              height="100%"
-            >
-              <Typography variant="body2" color="textSecondary">
-                BPM: {file.bpm}
-              </Typography>
-            </Box>
-          </Grid>
-
-          {/* Genre */}
-          <Grid item xs={3}>
-            <Box
-              padding={2}
-              display="flex"
-              alignItems="center"
-              height="100%"
-            >
-              <Typography variant="body2" color="textSecondary">
-                Genre: {file.genre}
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-
-        {/* Download Button */}
-        <Box mt={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => window.open(file.url, "_blank")}
-          >
-            Download
-          </Button>
-        </Box>
-      </CardContent>
-    </Card>
+    <Grid container spacing={2} style={{ marginTop: "8px" }}>
+      <Grid item xs={3}>
+        <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
+          <Typography variant="body2" color="textSecondary">
+            Duration: {duration}
+          </Typography>
+        </div>
+      </Grid>
+      <Grid item xs={3}>
+        <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
+          <Typography variant="body2" color="textSecondary">
+            Key: {key}
+          </Typography>
+        </div>
+      </Grid>
+      <Grid item xs={3}>
+        <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
+          <Typography variant="body2" color="textSecondary">
+            BPM: {bpm}
+          </Typography>
+        </div>
+      </Grid>
+      <Grid item xs={3}>
+        <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
+          <Typography variant="body2" color="textSecondary">
+            Genre: {genre}
+          </Typography>
+        </div>
+      </Grid>
+    </Grid>
   );
 };
 
-export default MetadataCard;
+export default Metadata;

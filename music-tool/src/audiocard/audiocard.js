@@ -1,12 +1,11 @@
 import React from "react";
 import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import StopIcon from "@mui/icons-material/Stop";
-import WaveSurfer from "wavesurfer.js";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import DownloadIcon from "@mui/icons-material/Download";
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import { Avatar } from "@mui/material";
+import Metadata from "../metadatacard/metadata";
+import WaveSurfer from "wavesurfer.js";
 import "./audiocard.css";
 
 const AudioCard = ({
@@ -17,8 +16,6 @@ const AudioCard = ({
   waveSurferRefs,
   onContextMenu,
 }) => {
-
-
   const initializeWaveSurfer = (url, index) => {
     const container = document.getElementById(`waveform-${index}`);
     if (!container) {
@@ -35,7 +32,7 @@ const AudioCard = ({
         barWidth: 5,
         responsive: true,
         height: 80,
-        backend: "MediaElement", 
+        backend: "MediaElement",
       });
 
       waveSurfer.load(url);
@@ -46,7 +43,6 @@ const AudioCard = ({
       });
     }
   };
-
 
   const togglePlay = (index) => {
     const waveSurfer = waveSurferRefs.current[index];
@@ -63,7 +59,7 @@ const AudioCard = ({
 
   return (
     <Card
-      className={`audio-card ${activeIndexes.includes(index) ? 'active' : ''}`}
+      className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
       sx={{
         mb: 8,
         borderRadius: 4,
@@ -74,28 +70,24 @@ const AudioCard = ({
       onMouseEnter={() => initializeWaveSurfer(file.url, index)}
       onContextMenu={onContextMenu}
     >
-
-      {/* Add this Avatar component */}
       <Avatar
         alt={file.publisher}
-        src={file.profilePicture} // Keep the profile picture
+        src={file.profilePicture}
         sx={{
           position: "absolute",
           top: 8,
-          right: 20, // Positioned in the top-right corner
-          width: 50, // Larger size
-          height: 50, // Larger size
-          border: "3px solid", // Add a border
-          borderColor: "primary.main", // Border matches primary color
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)", // Add shadow for emphasis
+          right: 20,
+          width: 50,
+          height: 50,
+          border: "3px solid",
+          borderColor: "primary.main",
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
         }}
       />
-
 
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
           <CardContent>
-            {/* Name and Publisher Above Waveform */}
             <Typography variant="body2" gutterBottom>
               {file.name}
             </Typography>
@@ -103,40 +95,16 @@ const AudioCard = ({
               Publisher: {file.publisher}
             </Typography>
 
-            {/* Waveform */}
             <div id={`waveform-${index}`} className="waveform-container"></div>
 
-            {/* Metadata and Download Button Below Waveform */}
-            <Grid container spacing={2} style={{ marginTop: "8px" }}>
-              <Grid item xs={3}>
-                <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
-                  <Typography variant="body2" color="textSecondary">
-                    Duration: {file.duration}
-                  </Typography>
-                </div>
-              </Grid>
-              <Grid item xs={3}>
-                <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
-                  <Typography variant="body2" color="textSecondary">
-                    Key: Cmin{file.key}
-                  </Typography>
-                </div>
-              </Grid>
-              <Grid item xs={3}>
-                <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
-                  <Typography variant="body2" color="textSecondary">
-                    BPM: 135.00{file.bpm}
-                  </Typography>
-                </div>
-              </Grid>
-              <Grid item xs={3}>
-                <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
-                  <Typography variant="body2" color="textSecondary">
-                    Genre: House{file.genre}
-                  </Typography>
-                </div>
-              </Grid>
-            </Grid>
+            {/* Use Metadata Component */}
+            <Metadata
+              duration={file.duration}
+              key={file.key}
+              bpm={file.bpm}
+              genre={file.genre}
+            />
+
             <Button
               variant="contained"
               color="primary"
@@ -150,7 +118,6 @@ const AudioCard = ({
             >
               Download
             </Button>
-
           </CardContent>
         </Grid>
 
@@ -159,21 +126,20 @@ const AudioCard = ({
             onClick={() => togglePlay(index)}
             className="audio-card-play-button"
             style={{
-              boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-              transition: 'transform 0.1s ease',
-              position: 'relative',
-              top: '-20px',
+              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "transform 0.1s ease",
+              position: "relative",
+              top: "-20px",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')} // Scale up on hover
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')} // Reset scale
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             {waveSurferRefs.current[index]?.isPlaying() ? (
-              <PauseCircleIcon style={{ fontSize: '40px', color: '#fff' }} /> // Pause Icon
+              <PauseCircleIcon style={{ fontSize: "40px", color: "#fff" }} />
             ) : (
-              <PlayCircleIcon style={{ fontSize: '40px', color: '#2575fc' }} />  // Play Icon
+              <PlayCircleIcon style={{ fontSize: "40px", color: "#2575fc" }} />
             )}
           </IconButton>
-
         </Grid>
       </Grid>
     </Card>

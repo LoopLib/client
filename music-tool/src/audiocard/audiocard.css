@@ -58,48 +58,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Enhanced shadow when active */
   }
 
-  /* Enhanced Metadata Box Styling */
-.metadata-box {
-  /* Remove the border for a cleaner appearance */
-  border: none;
-
-  /* Apply a soft, modern gradient background */
-  background: linear-gradient(135deg, #ffffff, #f0f0f0);
-
-  /* Add a more pronounced and smooth shadow for depth */
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1),
-              0 6px 12px rgba(0, 0, 0, 0.06);
-
-  /* Update font settings for better readability and aesthetics */
-  font-family: 'Montserrat', sans-serif; /* Ensure correct font-family syntax */
-  font-size: 16px; /* Slightly increased for enhanced readability */
-  color: #333333; /* Darker text color for better contrast */
-
-  /* Increase padding for a more spacious layout */
-  padding: 20px 24px;
-
-  /* Enhance border-radius for smoother corners */
-  border-radius: 12px;
-
-  /* Add a subtle transition for interactive effects */
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   
-  /* Optional: Add a slight transform for better layout control */
-  transform: translateZ(0);
-}
-
-/* Hover Effects for Interactivity */
-.metadata-box:hover {
-  /* Slightly lift the box on hover */
-  transform: translateY(-4px);
-
-  /* Intensify the shadow to enhance the lifted effect */
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15),
-              0 8px 16px rgba(0, 0, 0, 0.08);
-
-  /* Optionally, subtly change the background gradient on hover */
-  background: linear-gradient(135deg, #f9f9f9, #eaeaea);
-}
 
 /* Adjust layout on smaller screens */
 @media (max-width: 768px) {
