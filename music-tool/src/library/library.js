@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Box, Typography, CircularProgress, List, Menu, MenuItem } from "@mui/material";
 import AWS from "aws-sdk";
 import { useNavigate } from "react-router-dom";
-import AudioCard from "../audiocard/audiocard";
+import AudioCard from "../audio-card/audio-card";
 import SearchBar from "../searchbar/searchbar";
 import "./library.css";
 

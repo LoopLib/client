@@ -6,7 +6,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { Avatar } from "@mui/material";
 import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
-import "./audiocard.css";
+import "./audio-card.css";
 
 const AudioCard = ({
   file,

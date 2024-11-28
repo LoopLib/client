@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Typography, IconButton, Button, Divider } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import AudioCard from "../audiocard/audiocard";
+import AudioCard from "../audio-card/audio-card";
 import "./edit.css";
 
 const Edit = () => {

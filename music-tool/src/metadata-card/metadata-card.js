@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Typography } from "@mui/material";
-import './metadata.css'
+import './metadata-card.css'
 
 const Metadata = ({ duration, key, bpm, genre }) => {
   return (

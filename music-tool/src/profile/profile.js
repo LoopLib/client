@@ -8,7 +8,7 @@ import AWS from "aws-sdk";
 import { auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import AudioCard from "../audiocard/audiocard";
+import AudioCard from "../audio-card/audio-card";
 import "./profile.css";
 
 
