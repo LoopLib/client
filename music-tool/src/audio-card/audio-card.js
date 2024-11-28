@@ -4,7 +4,7 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Avatar } from "@mui/material";
-import Metadata from "../metadatacard/metadata";
+import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
 import "./audiocard.css";
 
