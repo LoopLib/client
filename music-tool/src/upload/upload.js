@@ -16,6 +16,7 @@ import AudioCard from "../audio-card/audio-card";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import BrowseFiles from "../browse-files/browse-files";
 
 
 const FileUpload = () => {
@@ -140,38 +141,26 @@ const FileUpload = () => {
                 maxWidth: "none",
                 margin: "20px auto",
             }}
+
         >
-            <Paper
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                className={`file-upload-dropzone ${isDragging ? "dragging" : ""}`}
-                style={{
-                    maxWidth: "60%",
-                    margin: "0 auto",
-                    borderRadius: "25px",
-                    padding: "20px 0", // Add padding to increase spacing between elements
-                }}
+            <Typography
+                variant="h4"
+                className="upload-title"
+                mb={4}
+                fontFamily={"Montserrat, sans-serif"}
+                fontWeight="bold"
             >
-                <UploadFileIcon className="file-upload-icon" />
-                <Typography variant="body1" color="textSecondary" sx={{ marginBottom: "16px" }}>
-                    Drag & Drop your file here or
-                </Typography>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    style={{
-                        position: "relative",
-                        padding: "6px 15px",
-                        marginTop: "10px", // Adjust margin to create more space
-                    }}
-                    component="label"
-                    startIcon={<FolderOpenIcon />}
-                >
-                    Browse Files
-                    <input type="file" hidden onChange={handleFileChange} />
-                </Button>
-            </Paper>
+                U P L O A D
+            </Typography>
+
+            <BrowseFiles
+                onFileChange={handleFileChange}
+                isDragging={isDragging}
+                handleDragOver={handleDragOver}
+                handleDrop={handleDrop}
+                handleDragLeave={handleDragLeave}
+            />
+
 
 
             {selectedFile && (
