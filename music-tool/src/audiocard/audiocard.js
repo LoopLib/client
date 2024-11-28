@@ -83,8 +83,8 @@ const AudioCard = ({
           position: "absolute",
           top: 8,
           right: 20, // Positioned in the top-right corner
-          width: 40, // Larger size
-          height: 40, // Larger size
+          width: 50, // Larger size
+          height: 50, // Larger size
           border: "3px solid", // Add a border
           borderColor: "primary.main", // Border matches primary color
           boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)", // Add shadow for emphasis
