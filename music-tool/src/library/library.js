@@ -31,36 +31,52 @@ const Library = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-
-      const params = { Bucket: "looplib-audio-bucket" };
+  
+      const params = { Bucket: "looplib-audio-bucket", Prefix: "users/" };
       const data = await s3.listObjectsV2(params).promise();
-
-      const files = data.Contents.map((file) => ({
-        name: file.Key.split("/").pop(),
-        url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${file.Key}`,
-        publisher: "Anonymous Publisher",
-        duration: null,
-      }));
-
+  
+      // Filter for audio files only (e.g., .mp3, .wav, .flac)
+      const audioExtensions = [".mp3", ".wav", ".flac", ".ogg"];
+      const audioFiles = data.Contents.filter(file =>
+        audioExtensions.some(ext => file.Key.toLowerCase().endsWith(ext))
+      );
+  
+      const files = await Promise.all(
+        audioFiles.map(async (audioFile) => {
+          const metadataKey = audioFile.Key.replace("/audio/", "/metadata/") + ".metadata.json";
+          const metadataParams = {
+            Bucket: params.Bucket,
+            Key: metadataKey,
+          };
+  
+          let metadata = {};
+          try {
+            const metadataObject = await s3.getObject(metadataParams).promise();
+            metadata = JSON.parse(metadataObject.Body.toString());
+          } catch (err) {
+            console.warn(`Metadata not found for file ${audioFile.Key}:`, err.message);
+          }
+  
+          return {
+            name: audioFile.Key.split("/").pop(),
+            url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${audioFile.Key}`,
+            publisher: metadata.publisher || "Anonymous Publisher",
+            duration: metadata.duration || "Unknown",
+            bpm: metadata.bpm || "Unknown",
+            musicalKey: metadata.key || "Unknown",
+            genre: metadata.genre || "Unknown",
+          };
+        })
+      );
+  
       setAudioFiles(files);
       setFilteredFiles(files);
-
-      for (let i = 0; i < files.length; i++) {
-        const audio = new Audio(files[i].url);
-        audio.addEventListener("loadedmetadata", () => {
-          setAudioFiles((prev) =>
-            prev.map((item, index) =>
-              index === i ? { ...item, duration: formatDuration(audio.duration) } : item
-            )
-          );
-        });
-      }
+  
     } catch (error) {
       console.error("Error fetching audio files from AWS:", error.message);
-    } finally {
-      setLoading(false);
     }
   };
+  
 
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
