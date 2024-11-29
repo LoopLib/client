@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
@@ -16,6 +16,8 @@ const AudioCard = ({
   waveSurferRefs,
   onContextMenu,
 }) => {
+  const [duration, setDuration] = useState("N/A");
+
   const initializeWaveSurfer = (url, index) => {
     const container = document.getElementById(`waveform-${index}`);
     if (!container) {
@@ -38,10 +40,20 @@ const AudioCard = ({
       waveSurfer.load(url);
       waveSurferRefs.current[index] = waveSurfer;
 
+      waveSurfer.on("ready", () => {
+        setDuration(formatDuration(waveSurfer.getDuration()));
+      });
+
       waveSurfer.on("finish", () => {
         setActiveIndexes((prev) => prev.filter((i) => i !== index));
       });
     }
+  };
+
+  const formatDuration = (durationInSeconds) => {
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = Math.round(durationInSeconds % 60);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const togglePlay = (index) => {
@@ -97,10 +109,10 @@ const AudioCard = ({
 
             <div id={`waveform-${index}`} className="waveform-container"></div>
 
-            {/* Use Metadata Component */}
+            {/* Pass Duration to Metadata */}
             <Metadata
-              duration={file.duration}
-              key={file.key}
+              duration={duration}
+              musicalKey={file.musicalKey}
               bpm={file.bpm}
               genre={file.genre}
             />
@@ -137,7 +149,7 @@ const AudioCard = ({
             {waveSurferRefs.current[index]?.isPlaying() ? (
               <PauseCircleIcon style={{ fontSize: "40px", color: "#fff" }} />
             ) : (
-              <PlayCircleIcon style={{ fontSize: "40px", color: "#2575fc" }} />
+              <PlayCircleIcon style={{ fontSize: "40px", color: "#1976D2" }} />
             )}
           </IconButton>
         </Grid>

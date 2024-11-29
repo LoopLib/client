@@ -15,6 +15,7 @@ const BrowseFiles = ({ onFileChange, isDragging, handleDragOver, handleDrop, han
                 margin: "0 auto",
                 borderRadius: "25px",
                 padding: "20px 0",
+                border: "3px solid #1976D2",
             }}
         >
             <UploadFileIcon className="file-upload-icon" style={{ fontSize: 48, marginBottom: "16px" }} />

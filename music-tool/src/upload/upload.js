@@ -54,7 +54,6 @@ const FileUpload = () => {
     const handleDragLeave = () => {
         setIsDragging(false);
     };
-
     const handleUploadAndAnalyze = async () => {
         if (!selectedFile) return;
 
@@ -62,15 +61,12 @@ const FileUpload = () => {
         formData.append("file", selectedFile);
 
         setIsLoading(true);
-
         try {
             const response = await axios.post(
                 "http://localhost:5000/upload",
                 formData,
                 {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
+                    headers: { "Content-Type": "multipart/form-data" },
                 }
             );
             setBpm(response.data.bpm);
@@ -87,51 +83,80 @@ const FileUpload = () => {
             setError("No file to publish.");
             return;
         }
-
+    
         setIsLoading(true);
-
+    
         try {
             const auth = getAuth();
             const user = auth.currentUser;
-
+    
             if (!user) {
                 throw new Error("User not authenticated");
             }
-
+    
             const uid = user.uid;
-
+    
             const userDocRef = doc(db, "users", uid);
             const userDoc = await getDoc(userDocRef);
-
+    
             if (!userDoc.exists()) {
                 throw new Error("User not found in Firestore");
             }
-
+    
             const s3 = new AWS.S3({
                 region: process.env.REACT_APP_AWS_REGION,
                 accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
                 secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
             });
-
-            const params = {
+    
+            // Upload the audio file
+            const audioParams = {
                 Bucket: "looplib-audio-bucket",
-                Key: `users/${uid}/${selectedFile.name}`,
+                Key: `users/${uid}/audio/${selectedFile.name}`, // Store audio file in "audio" folder
                 Body: selectedFile,
                 ContentType: selectedFile.type,
             };
-
-            const uploadResult = await s3.upload(params).promise();
-            console.log("File uploaded successfully:", uploadResult);
-
-            alert("Audio has been published successfully!");
+    
+            console.log("Uploading audio file with params:", audioParams);
+            const uploadResult = await s3.upload(audioParams).promise();
+            console.log("Audio file uploaded successfully:", uploadResult);
+    
+            // Prepare metadata
+            const metadata = {
+                name: selectedFile.name,
+                type: selectedFile.type,
+                size: selectedFile.size,
+                lastModified: selectedFile.lastModified,
+                bpm: bpm || null,
+                key: key || null,
+                uploadTimestamp: new Date().toISOString(),
+            };
+    
+            console.log("Metadata object:", metadata);
+    
+            // Upload metadata to a "metadata" folder
+            const metadataParams = {
+                Bucket: "looplib-audio-bucket",
+                Key: `users/${uid}/metadata/${selectedFile.name}.metadata.json`, // Store metadata in "metadata" folder
+                Body: JSON.stringify(metadata, null, 2),
+                ContentType: "application/json",
+            };
+    
+            console.log("Uploading metadata with params:", metadataParams);
+            const metadataUploadResult = await s3.upload(metadataParams).promise();
+            console.log("Metadata uploaded successfully:", metadataUploadResult);
+    
+            alert("Audio and metadata have been published successfully!");
             setError(null);
         } catch (error) {
             console.error("Error publishing file:", error);
-            setError("Failed to publish the audio file. Please try again.");
+            setError(`Failed to publish the audio file and metadata. Error: ${error.message}`);
         } finally {
             setIsLoading(false);
         }
     };
+    
+    
 
     return (
         <Box
@@ -165,22 +190,21 @@ const FileUpload = () => {
 
             {selectedFile && (
                 <AudioCard
-                    file={{
-                        url: URL.createObjectURL(selectedFile),
-                        name: selectedFile.name,
-                        duration: "N/A",
-                        key: key || "N/A",
-                        bpm: bpm || "N/A",
-                        genre: "N/A",
-                        publisher: "You",
-                        profilePicture: "",
-                    }}
-                    index={0}
-                    activeIndexes={activeIndexes}
-                    setActiveIndexes={setActiveIndexes}
-                    waveSurferRefs={waveSurferRefs}
-                    onContextMenu={(e) => e.preventDefault()}
-                />
+                file={{
+                    url: URL.createObjectURL(selectedFile),
+                    name: selectedFile.name,
+                    duration: "N/A",
+                    musicalKey: key ? String(key) : "N/A",
+                    bpm: bpm || "N/A",
+                    genre: "N/A",
+                    publisher: "You",
+                }}
+                index={0}
+                activeIndexes={activeIndexes}
+                setActiveIndexes={setActiveIndexes}
+                waveSurferRefs={waveSurferRefs}
+            />
+            
             )}
 
             {isLoading && (
