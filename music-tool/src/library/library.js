@@ -31,20 +31,19 @@ const Library = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-
+  
       const params = { Bucket: "looplib-audio-bucket", Prefix: `users/` };
       const data = await s3.listObjectsV2(params).promise();
-
+  
       // Separate audio files and metadata files
-      const audioFiles = data.Contents.filter(file => file.Key.includes('/audio/'));
-      const metadataFiles = data.Contents.filter(file => file.Key.includes('/metadata/'));
-
+      const audioFiles = data.Contents.filter((file) => file.Key.includes('/audio/'));
+      const metadataFiles = data.Contents.filter((file) => file.Key.includes('/metadata/'));
+  
       const files = await Promise.all(
         audioFiles.map(async (audioFile) => {
           const metadataKey = audioFile.Key.replace('/audio/', '/metadata/') + '.metadata.json';
-
-          const metadataFile = metadataFiles.find(file => file.Key === metadataKey);
-
+          const metadataFile = metadataFiles.find((file) => file.Key === metadataKey);
+  
           let metadata = {};
           if (metadataFile) {
             const metadataParams = {
@@ -54,10 +53,14 @@ const Library = () => {
             const metadataObject = await s3.getObject(metadataParams).promise();
             metadata = JSON.parse(metadataObject.Body.toString());
           }
-
+  
+          // Extract UID from the key (e.g., "users/uid123/audio/filename.mp3")
+          const uid = audioFile.Key.split('/')[1];
+  
           return {
             name: audioFile.Key.split('/').pop(),
             url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${audioFile.Key}`,
+            uid, // Add the extracted UID
             publisher: "Anonymous Publisher",
             duration: metadata.duration || "Unknown",
             bpm: metadata.bpm || "Unknown",
@@ -66,7 +69,7 @@ const Library = () => {
           };
         })
       );
-
+  
       setAudioFiles(files);
       setFilteredFiles(files);
     } catch (error) {
@@ -75,6 +78,7 @@ const Library = () => {
       setLoading(false);
     }
   };
+  
 
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);

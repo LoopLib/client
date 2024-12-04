@@ -6,6 +6,8 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { Avatar } from "@mui/material";
 import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
+import AWS from "aws-sdk";
+import { getFirestore, query, where, collection, getDocs } from "firebase/firestore"; 
 import "./audio-card.css";
 
 const AudioCard = ({
@@ -17,6 +19,86 @@ const AudioCard = ({
   onContextMenu,
 }) => {
   const [duration, setDuration] = useState("N/A");
+  const [publisherName, setPublisherName] = useState("");
+
+  // AWS S3 configuration
+  const s3 = new AWS.S3({
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+    region: process.env.REACT_APP_AWS_REGION,
+  });
+
+  useEffect(() => {
+    const fetchPublisherName = async () => {
+      try {
+        // Step 1: Validate file.uid
+        console.log("File UID:", file.uid);
+        if (!file.uid) {
+          console.error("Error: file.uid is undefined");
+          setPublisherName("Unknown");
+          return;
+        }
+    
+        // Step 2: List folders under the "users/" directory in the S3 bucket
+        const s3Params = {
+          Bucket: "looplib-audio-bucket", // Replace with your bucket name
+          Prefix: `users/`,
+          Delimiter: "/",
+        };
+    
+        const data = await s3.listObjectsV2(s3Params).promise();
+    
+        // Step 3: Validate and extract folder names
+        console.log("S3 Response CommonPrefixes:", data.CommonPrefixes);
+        if (!data.CommonPrefixes || data.CommonPrefixes.length === 0) {
+          console.error("Error: No folders found in S3 under users/");
+          setPublisherName("Unknown");
+          return;
+        }
+    
+        const folderNames = (data.CommonPrefixes || []).map((prefix) =>
+          prefix.Prefix ? prefix.Prefix.replace("users/", "").replace("/", "") : null
+        ).filter(Boolean);
+    
+        console.log("Extracted Folder Names:", folderNames);
+    
+        // Step 4: Normalize for comparison
+        const normalizedFolderNames = folderNames.map((name) =>
+          typeof name === "string" ? name.toLowerCase() : ""
+        );
+        const normalizedUID = typeof file.uid === "string" ? file.uid.toLowerCase() : "";
+    
+        if (normalizedFolderNames.includes(normalizedUID)) {
+          console.log("Matching UID found in S3 folder names:", file.uid);
+    
+          // Step 5: Query Firestore
+          const db = getFirestore();
+          const usersCollection = collection(db, "users");
+          const q = query(usersCollection, where("uid", "==", file.uid));
+          const querySnapshot = await getDocs(q);
+    
+          if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
+            console.log("Fetched User Data from Firestore:", userData);
+            setPublisherName(userData.username || "Unknown");
+          } else {
+            console.error("No matching Firestore document found for UID:", file.uid);
+            setPublisherName("Unknown");
+          }
+        } else {
+          console.error("No matching UID found in S3 folder names!");
+          setPublisherName("Unknown");
+        }
+      } catch (error) {
+        console.error("Error fetching publisher name:", error);
+        setPublisherName("Unknown");
+      }
+    };
+    
+    
+  
+    fetchPublisherName();
+  }, [file.uid]);
 
   const initializeWaveSurfer = (url, index) => {
     const container = document.getElementById(`waveform-${index}`);
@@ -104,8 +186,9 @@ const AudioCard = ({
               {file.name}
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Publisher: {file.publisher}
+              Publisher: {publisherName}
             </Typography>
+
 
             <div id={`waveform-${index}`} className="waveform-container"></div>
 
