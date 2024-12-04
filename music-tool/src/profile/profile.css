@@ -63,18 +63,47 @@
   align-items: center;
   text-align: center;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
-  padding: 24px;
-  border-radius: 16px;
+  padding: 32px 24px; /* Extra padding for breathing room */
+  border-radius: 20px; /* Slightly larger border radius for a softer look */
   color: white;
-  width: 100%; /* Stays within parent container */
-  box-sizing: border-box; /* Includes padding within width */
+  width: 100%; /* Ensure it spans the full container width */
+  box-sizing: border-box; /* Ensure padding is included in width */
+  position: relative; /* For decorative elements */
+  overflow: hidden; /* Hide potential overflow from decorative elements */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
 }
 
+/* Optional background decoration */
+.profile-header::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent 70%);
+  transform: rotate(-45deg);
+  pointer-events: none;
+  z-index: 0; /* Behind content */
+}
 
+/* Ensure the content sits above the background decoration */
+.profile-header > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Title Styling */
 .profile-header .profile-title {
-  font-weight: bold;
-  color: white;
+  font-size: 2rem; /* Larger font size for prominence */
+  font-weight: 700; /* Slightly bolder text */
+  color: #ffffff;
+  text-transform: uppercase; /* Optional: Uppercase for a strong look */
+  letter-spacing: 1px; /* Subtle letter spacing */
+  margin-top: 8px; /* Space below the profile icon */
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3); /* Subtle text shadow for readability */
 }
+
 
 /* User Info Section */
 .user-info {

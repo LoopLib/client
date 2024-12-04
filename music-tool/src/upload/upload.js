@@ -216,13 +216,6 @@ const FileUpload = () => {
                 </Box>
             )}
 
-            {bpm && key && (
-                <Box>
-                    <Typography variant="body1">BPM: {bpm}</Typography>
-                    <Typography variant="body1">Key: {key}</Typography>
-                </Box>
-            )}
-
             {error && (
                 <Typography variant="body1" color="error">
                     {error}
@@ -248,7 +241,7 @@ const FileUpload = () => {
                             onClick={handleUploadAndAnalyze}
                             startIcon={<UploadFileIcon />} // Upload icon
                         >
-                            Upload and Analyze
+                            Analyze
                         </Button>
                         <Button
                             variant="contained"

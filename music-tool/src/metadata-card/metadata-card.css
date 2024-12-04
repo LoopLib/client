@@ -2,7 +2,8 @@
 .metadata-box {
     /* Remove the border for a cleaner appearance */
     border: none;
-  
+    width: 90%; /* Ensures all boxes are of equal width */
+    height: 40px; /* Sets a consistent height for all boxes */
     /* Apply a soft, modern gradient background */
     background: linear-gradient(135deg, #ffffff, #f0f0f0);
   

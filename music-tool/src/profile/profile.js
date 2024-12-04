@@ -68,23 +68,56 @@ const Profile = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-
+  
       const params = {
         Bucket: "looplib-audio-bucket",
         Prefix: `users/${userId}/`, // Path to user's files in S3
       };
-
+  
       const data = await s3.listObjectsV2(params).promise();
-      const files = data.Contents.map((file) => ({
-        name: file.Key.split("/").pop(), // Extract file name
-        url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${file.Key}`,
-      }));
-
+  
+      // Separate audio files and metadata files
+      const audioFiles = data.Contents.filter(file => file.Key.includes('/audio/'));
+      const metadataFiles = data.Contents.filter(file => file.Key.includes('/metadata/'));
+  
+      // Combine audio files with corresponding metadata
+      const files = await Promise.all(
+        audioFiles.map(async (audioFile) => {
+          const metadataKey = audioFile.Key.replace('/audio/', '/metadata/') + '.metadata.json';
+          const metadataFile = metadataFiles.find(file => file.Key === metadataKey);
+  
+          let metadata = {};
+          if (metadataFile) {
+            const metadataParams = {
+              Bucket: params.Bucket,
+              Key: metadataKey,
+            };
+            try {
+              const metadataObject = await s3.getObject(metadataParams).promise();
+              metadata = JSON.parse(metadataObject.Body.toString());
+            } catch (err) {
+              console.warn(`Error fetching metadata for ${audioFile.Key}:`, err.message);
+            }
+          }
+  
+          return {
+            name: audioFile.Key.split("/").pop(),
+            url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${audioFile.Key}`,
+            publisher: metadata.publisher || "Anonymous Publisher",
+            duration: metadata.duration || "Unknown",
+            bpm: metadata.bpm || "Unknown",
+            musicalKey: metadata.key || "Unknown",
+            genre: metadata.genre || "Unknown",
+          };
+        })
+      );
+  
       setAudioFiles(files);
     } catch (error) {
       console.error("Error fetching audio files from AWS:", error.message);
     }
   };
+  
 
   const handleDelete = async (file) => {
     try {
