@@ -6,7 +6,7 @@ import AudioCard from "../audio-card/audio-card";
 import SearchBar from "../searchbar/searchbar";
 import "./library.css";
 
-const Library = () => {
+const Library = ({ ownerUid = null }) => {
   const [audioFiles, setAudioFiles] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,8 @@ const Library = () => {
     return () => {
       Object.values(waveSurferRefs.current).forEach((waveSurfer) => waveSurfer.destroy());
     };
-  }, []);
+  }, [ownerUid]);
+  
 
   const fetchAudioFilesFromAWS = async () => {
     try {
@@ -32,7 +33,10 @@ const Library = () => {
         region: process.env.REACT_APP_AWS_REGION,
       });
   
-      const params = { Bucket: "looplib-audio-bucket", Prefix: `users/` };
+      // If `ownerUid` is provided, fetch only that user's files; otherwise fetch all files
+      const prefix = ownerUid ? `users/${ownerUid}/audio/` : "users/";
+      const params = { Bucket: "looplib-audio-bucket", Prefix: prefix };
+  
       const data = await s3.listObjectsV2(params).promise();
   
       // Separate audio files and metadata files
@@ -66,6 +70,7 @@ const Library = () => {
             bpm: metadata.bpm || "Unknown",
             musicalKey: metadata.key || "Unknown",
             genre: metadata.genre || "Unknown",
+            ownerUid: uid, // Extract owner UID from the key
           };
         })
       );
@@ -79,7 +84,6 @@ const Library = () => {
     }
   };
   
-
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
