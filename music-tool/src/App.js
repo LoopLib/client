@@ -1,31 +1,87 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import FileUpload from "./upload/upload";
 import HomePage from "./homepage/homepage";
 import Login from "./login/login";
 import Register from "./register/register";
 import Layout from "./layout/layout";
 import Profile from "./profile/profile";
-import { AuthProvider } from "./AuthContext";
+import { AuthProvider, useAuth } from "./AuthContext";
 import Edit from "./edit/edit";
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+    const { authState } = useAuth();
+    return authState.isLoggedIn ? children : <Navigate to="/" />;
+};
+
+// Redirect If Logged In Component
+const RedirectIfLoggedIn = ({ children }) => {
+    const { authState } = useAuth();
+    return authState.isLoggedIn ? <Navigate to="/homepage" /> : children;
+};
+
 function App() {
-  return (
-      <AuthProvider>
-          <Router>
-              <Layout>
-                  <Routes>
-                      <Route path="/" element={<Login />} />
-                      <Route path="/register" element={<Register />} />
-                      <Route path="/homepage" element={<HomePage />} />
-                      <Route path="/upload" element={<FileUpload />} />
-                      <Route path="/edit" element={<Edit />} />
-                      <Route path="/profile" element={<Profile />} />
-                  </Routes>
-              </Layout>
-          </Router>
-      </AuthProvider>
-  );
+    return (
+        <AuthProvider>
+            <Router>
+                <Layout>
+                    <Routes>
+                        {/* Redirect to homepage if user is logged in */}
+                        <Route
+                            path="/"
+                            element={
+                                <RedirectIfLoggedIn>
+                                    <Login />
+                                </RedirectIfLoggedIn>
+                            }
+                        />
+                        <Route
+                            path="/register"
+                            element={
+                                <RedirectIfLoggedIn>
+                                    <Register />
+                                </RedirectIfLoggedIn>
+                            }
+                        />
+                        {/* Protected Routes for Logged-in Users */}
+                        <Route
+                            path="/homepage"
+                            element={
+                                <ProtectedRoute>
+                                    <HomePage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/upload"
+                            element={
+                                <ProtectedRoute>
+                                    <FileUpload />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/edit"
+                            element={
+                                <ProtectedRoute>
+                                    <Edit />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/profile"
+                            element={
+                                <ProtectedRoute>
+                                    <Profile />
+                                </ProtectedRoute>
+                            }
+                        />
+                    </Routes>
+                </Layout>
+            </Router>
+        </AuthProvider>
+    );
 }
 
 export default App;
