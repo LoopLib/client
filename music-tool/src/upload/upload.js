@@ -5,6 +5,12 @@ import {
     Typography,
     Paper,
     CircularProgress,
+    TextField,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import PublishIcon from "@mui/icons-material/Publish";
@@ -29,6 +35,9 @@ const FileUpload = () => {
 
     const waveSurferRefs = useRef([]);
     const [activeIndexes, setActiveIndexes] = useState([]);
+
+    const [fileName, setFileName] = useState(""); // Added state for file name
+    const [openDialog, setOpenDialog] = useState(false); // State for dialog visibility
 
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
@@ -83,6 +92,10 @@ const FileUpload = () => {
             setError("No file to publish.");
             return;
         }
+        if (!fileName) {
+            setError("Please provide a file name.");
+            return;
+        }
 
         setIsLoading(true);
 
@@ -109,10 +122,10 @@ const FileUpload = () => {
                 secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
             });
 
-            // Upload the audio file
+            // Use the user-specified file name
             const audioParams = {
                 Bucket: "looplib-audio-bucket",
-                Key: `users/${uid}/audio/${selectedFile.name}`, // Store audio file in "audio" folder
+                Key: `users/${uid}/audio/${fileName}`, // User-defined file name
                 Body: selectedFile,
                 ContentType: selectedFile.type,
             };
@@ -121,9 +134,8 @@ const FileUpload = () => {
             const uploadResult = await s3.upload(audioParams).promise();
             console.log("Audio file uploaded successfully:", uploadResult);
 
-            // Prepare metadata
             const metadata = {
-                name: selectedFile.name,
+                name: fileName,
                 type: selectedFile.type,
                 size: selectedFile.size,
                 lastModified: selectedFile.lastModified,
@@ -132,12 +144,9 @@ const FileUpload = () => {
                 uploadTimestamp: new Date().toISOString(),
             };
 
-            console.log("Metadata object:", metadata);
-
-            // Upload metadata to a "metadata" folder
             const metadataParams = {
                 Bucket: "looplib-audio-bucket",
-                Key: `users/${uid}/metadata/${selectedFile.name}.metadata.json`, // Store metadata in "metadata" folder
+                Key: `users/${uid}/metadata/${fileName}.metadata.json`, // Use file name for metadata
                 Body: JSON.stringify(metadata, null, 2),
                 ContentType: "application/json",
             };
@@ -153,7 +162,21 @@ const FileUpload = () => {
             setError(`Failed to publish the audio file and metadata. Error: ${error.message}`);
         } finally {
             setIsLoading(false);
+            setOpenDialog(false);
         }
+    };
+
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    const handleFileNameChange = (event) => {
+        setFileName(event.target.value);
     };
 
     return (
@@ -226,17 +249,46 @@ const FileUpload = () => {
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={handlePublish}
-                            startIcon={<PublishIcon />} // Publish icon
+                            onClick={handleOpenDialog}
+                            startIcon={<PublishIcon />}
                         >
                             Publish
                         </Button>
+
                     </Box>
 
 
                 </>
             )}
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Enter File Name</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Please enter a name for the file before publishing.
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="File Name"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={fileName}
+                        onChange={handleFileNameChange}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="secondary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handlePublish} color="primary">
+                        Publish
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </Box>
+
     );
 };
 
