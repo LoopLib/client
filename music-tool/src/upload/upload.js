@@ -83,32 +83,32 @@ const FileUpload = () => {
             setError("No file to publish.");
             return;
         }
-    
+
         setIsLoading(true);
-    
+
         try {
             const auth = getAuth();
             const user = auth.currentUser;
-    
+
             if (!user) {
                 throw new Error("User not authenticated");
             }
-    
+
             const uid = user.uid;
-    
+
             const userDocRef = doc(db, "users", uid);
             const userDoc = await getDoc(userDocRef);
-    
+
             if (!userDoc.exists()) {
                 throw new Error("User not found in Firestore");
             }
-    
+
             const s3 = new AWS.S3({
                 region: process.env.REACT_APP_AWS_REGION,
                 accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
                 secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
             });
-    
+
             // Upload the audio file
             const audioParams = {
                 Bucket: "looplib-audio-bucket",
@@ -116,11 +116,11 @@ const FileUpload = () => {
                 Body: selectedFile,
                 ContentType: selectedFile.type,
             };
-    
+
             console.log("Uploading audio file with params:", audioParams);
             const uploadResult = await s3.upload(audioParams).promise();
             console.log("Audio file uploaded successfully:", uploadResult);
-    
+
             // Prepare metadata
             const metadata = {
                 name: selectedFile.name,
@@ -131,9 +131,9 @@ const FileUpload = () => {
                 key: key || null,
                 uploadTimestamp: new Date().toISOString(),
             };
-    
+
             console.log("Metadata object:", metadata);
-    
+
             // Upload metadata to a "metadata" folder
             const metadataParams = {
                 Bucket: "looplib-audio-bucket",
@@ -141,11 +141,11 @@ const FileUpload = () => {
                 Body: JSON.stringify(metadata, null, 2),
                 ContentType: "application/json",
             };
-    
+
             console.log("Uploading metadata with params:", metadataParams);
             const metadataUploadResult = await s3.upload(metadataParams).promise();
             console.log("Metadata uploaded successfully:", metadataUploadResult);
-    
+
             alert("Audio and metadata have been published successfully!");
             setError(null);
         } catch (error) {
@@ -155,19 +155,11 @@ const FileUpload = () => {
             setIsLoading(false);
         }
     };
-    
-    
+
+
 
     return (
-        <Box
-            className="file-upload-container"
-            sx={{
-                width: "80%",
-                maxWidth: "none",
-                margin: "20px auto",
-            }}
-
-        >
+        <Box className="file-upload-container">
             <Typography
                 variant="h4"
                 className="upload-title"
@@ -186,25 +178,23 @@ const FileUpload = () => {
                 handleDragLeave={handleDragLeave}
             />
 
-
-
             {selectedFile && (
                 <AudioCard
-                file={{
-                    url: URL.createObjectURL(selectedFile),
-                    name: selectedFile.name,
-                    duration: "N/A",
-                    musicalKey: key ? String(key) : "N/A",
-                    bpm: bpm || "N/A",
-                    genre: "N/A",
-                    publisher: "You",
-                }}
-                index={0}
-                activeIndexes={activeIndexes}
-                setActiveIndexes={setActiveIndexes}
-                waveSurferRefs={waveSurferRefs}
-            />
-            
+                    file={{
+                        url: URL.createObjectURL(selectedFile),
+                        name: selectedFile.name,
+                        duration: "N/A",
+                        musicalKey: key ? String(key) : "N/A",
+                        bpm: bpm || "N/A",
+                        genre: "N/A",
+                        publisher: "You",
+                    }}
+                    index={0}
+                    activeIndexes={activeIndexes}
+                    setActiveIndexes={setActiveIndexes}
+                    waveSurferRefs={waveSurferRefs}
+                />
+
             )}
 
             {isLoading && (
@@ -225,19 +215,10 @@ const FileUpload = () => {
             {selectedFile && (
                 <>
                     <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        gap="16px"
-                        marginTop="20px"
                     >
                         <Button
                             variant="contained"
                             color="primary"
-                            style={{
-                                position: "relative", // Center-friendly styling
-                                padding: "12px 24px",
-                            }}
                             onClick={handleUploadAndAnalyze}
                             startIcon={<UploadFileIcon />} // Upload icon
                         >
@@ -246,10 +227,6 @@ const FileUpload = () => {
                         <Button
                             variant="contained"
                             color="primary"
-                            style={{
-                                position: "relative", // Center-friendly styling
-                                padding: "12px 24px",
-                            }}
                             onClick={handlePublish}
                             startIcon={<PublishIcon />} // Publish icon
                         >

@@ -1,13 +1,13 @@
 
 .file-upload-dropzone {
-  width: 90%;
+  width: 70%;
   padding: 40px;
   text-align: center;
   margin: 0 auto; /* Center the upload area */
 }
 
 .file-upload-container {
-  width: 80%; 
+  width: 60%; 
   padding: 16px;
   margin: 20px auto; /* Center the container */
   background: linear-gradient(135deg, #f3f3f5, #ffffff);
@@ -16,6 +16,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  border: 3px solid #333;
 }
 
 .file-upload-dropzone.dragging {
