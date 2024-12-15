@@ -203,23 +203,6 @@ const AudioCard = ({
               {showExtras && `Publisher: ${publisherName}`}
             </Typography>
 
-            {showExtras && (
-              <Button
-                variant="contained"
-                color="primary"
-                style={{
-                  position: "absolute",
-                  right: "16px",
-                  bottom: "16px",
-                }}
-                onClick={() => window.open(file.url, "_blank")}
-                startIcon={<DownloadIcon />}
-              >
-                Download
-              </Button>
-            )}
-
-
             <div id={`waveform-${index}`} className="waveform-container"></div>
 
             {/* Pass Duration to Metadata */}
@@ -231,19 +214,25 @@ const AudioCard = ({
             />
 
             {showExtras && (
-              <Button
-                variant="contained"
-                color="primary"
-                style={{
-                  position: "absolute",
-                  right: "16px",
-                  bottom: "16px",
-                }}
-                onClick={() => window.open(file.url, "_blank")}
-                startIcon={<DownloadIcon />}
-              >
-                Download
-              </Button>
+             <Button
+             variant="contained"
+             color="primary"
+             style={{
+                 position: "absolute",
+                 right: "20px",
+                 bottom: "20px",
+                 display: "flex",
+                 justifyContent: "center",
+                 alignItems: "center",
+                 width: "40px", // Set width for a square button
+                 height: "40px", // Set height for a square button
+                 padding: 0, // Remove default padding
+                 minWidth: "unset", // Prevent Material-UI from enforcing min-width
+             }}
+             onClick={() => window.open(file.url, "_blank")}
+         >
+             <DownloadIcon />
+         </Button>
             )}
           </CardContent>
         </Grid>
