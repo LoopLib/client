@@ -17,7 +17,9 @@ const AudioCard = ({
   setActiveIndexes,
   waveSurferRefs,
   onContextMenu,
+  showExtras = true, // Default to true
 }) => {
+
   const [duration, setDuration] = useState("N/A");
   const [publisherName, setPublisherName] = useState("");
 
@@ -195,11 +197,28 @@ const AudioCard = ({
             <Typography
               variant="p"
               className="audio-card-publisher"
-              onClick={() => window.location.assign(`/user-library/${file.uid}`)}
-              title={`Publisher: ${publisherName}`} // Tooltip for truncated text
+              onClick={() => showExtras && window.location.assign(`/user-library/${file.uid}`)}
+              title={showExtras ? `Publisher: ${publisherName}` : ""}
             >
-              Publisher: {publisherName}
+              {showExtras && `Publisher: ${publisherName}`}
             </Typography>
+
+            {showExtras && (
+              <Button
+                variant="contained"
+                color="primary"
+                style={{
+                  position: "absolute",
+                  right: "16px",
+                  bottom: "16px",
+                }}
+                onClick={() => window.open(file.url, "_blank")}
+                startIcon={<DownloadIcon />}
+              >
+                Download
+              </Button>
+            )}
+
 
             <div id={`waveform-${index}`} className="waveform-container"></div>
 
@@ -211,19 +230,21 @@ const AudioCard = ({
               genre={file.genre}
             />
 
-            <Button
-              variant="contained"
-              color="primary"
-              style={{
-                position: "absolute",
-                right: "16px",
-                bottom: "16px",
-              }}
-              onClick={() => window.open(file.url, "_blank")}
-              startIcon={<DownloadIcon />}
-            >
-              Download
-            </Button>
+            {showExtras && (
+              <Button
+                variant="contained"
+                color="primary"
+                style={{
+                  position: "absolute",
+                  right: "16px",
+                  bottom: "16px",
+                }}
+                onClick={() => window.open(file.url, "_blank")}
+                startIcon={<DownloadIcon />}
+              >
+                Download
+              </Button>
+            )}
           </CardContent>
         </Grid>
 

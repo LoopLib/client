@@ -156,8 +156,6 @@ const FileUpload = () => {
         }
     };
 
-
-
     return (
         <Box className="file-upload-container">
             <Typography
@@ -193,6 +191,7 @@ const FileUpload = () => {
                     activeIndexes={activeIndexes}
                     setActiveIndexes={setActiveIndexes}
                     waveSurferRefs={waveSurferRefs}
+                    showExtras={false} // Hide download button and publisher name
                 />
 
             )}
