@@ -137,7 +137,7 @@ const Profile = () => {
       </Button>
       {showAudioFiles && user && (
         <Box className="audio-files" mt={4}>
-          <Library ownerUid={user.uid} />
+          <Library ownerUid={user?.uid} />
         </Box>
       )}
     </Box>

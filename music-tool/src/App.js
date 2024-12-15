@@ -8,6 +8,7 @@ import Layout from "./layout/layout";
 import Profile from "./profile/profile";
 import { AuthProvider, useAuth } from "./AuthContext";
 import Edit from "./edit/edit";
+import UserLibrary from "./user-library/user-library";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -74,6 +75,14 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <Profile />
+                                </ProtectedRoute>
+                            }
+                        />
+                           <Route
+                            path="/user-library/:userUid"
+                            element={
+                                <ProtectedRoute>
+                                    <UserLibrary />
                                 </ProtectedRoute>
                             }
                         />

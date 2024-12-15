@@ -1,60 +1,134 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Grid } from "@mui/material";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
-import AudioCard from "../audio-card/audio-card";
+import { Box, Typography, Card, CardContent, Button } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import Library from "../library/library";
+import "./user-library.css";
+import { useParams } from "react-router-dom";
 
-const UserLibrary = ({ match }) => {
-  const [audioFiles, setAudioFiles] = useState([]);
-  const [publisherName, setPublisherName] = useState("User");
-  const { userUid } = match.params;
+const UserLibrary = () => {
+  const { userUid } = useParams(); // Use 'userUid' to match the route definition
+  const [user, setUser] = useState(null);
+  const { uid } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [showAudioFiles, setShowAudioFiles] = useState(false);
 
   useEffect(() => {
-    const fetchUserAudioFiles = async () => {
-      try {
-        const db = getFirestore();
-        const q = query(collection(db, "audioFiles"), where("uid", "==", userUid));
-        const querySnapshot = await getDocs(q);
-
-        const files = [];
-        querySnapshot.forEach((doc) => {
-          files.push({ id: doc.id, ...doc.data() });
-        });
-
-        setAudioFiles(files);
-
-        if (files.length > 0 && files[0].publisher) {
-          setPublisherName(files[0].publisher);
-        }
-      } catch (error) {
-        console.error("Error fetching audio files:", error);
-      }
-    };
-
-    fetchUserAudioFiles();
+    console.log("Received UID from route:", userUid); // Debugging
+    if (userUid) {
+      fetchUserData(userUid);
+    }
   }, [userUid]);
 
+  const fetchUserData = async (userId) => {
+    try {
+      const db = getFirestore();
+      const userDocRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        setUser(userDoc.data());
+      } else {
+        console.error("User not found!");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
   return (
-    <Box sx={{ width: "80%", margin: "20px auto" }}>
+    <Box
+      className="all-audio-container"
+      sx={{
+        width: "80%",
+        maxWidth: "none",
+        margin: "20px auto",
+      }}
+    >
       <Typography
         variant="h4"
+        className="all-audio-title"
         mb={4}
         fontFamily={"Montserrat, sans-serif"}
         fontWeight="bold"
       >
-        {publisherName}'s Library
+        {user ? `${user.username || "User"}'s Library` : "User Library"}
       </Typography>
 
-      <Grid container spacing={4}>
-        {audioFiles.length > 0 ? (
-          audioFiles.map((file, index) => (
-            <Grid item xs={12} sm={6} md={4} key={file.id}>
-              <AudioCard file={file} index={index} />
-            </Grid>
-          ))
-        ) : (
-          <Typography variant="body1">No audio files available.</Typography>
+      <Box className="profile-header" mb={4}>
+        <AccountCircleIcon sx={{ fontSize: 80, color: "##FFFFFF" }} />
+        <Typography variant="h4" className="profile-title" mt={2}>
+          {user ? user.username || "Anonymous" : "No User Found"}
+        </Typography>
+        {user && (
+          <Typography variant="subtitle1" color="textSecondary">
+            {user.email || "Email not available"}
+          </Typography>
         )}
-      </Grid>
+      </Box>
+
+      <Card className="user-info">
+        <CardContent>
+          <Typography variant="h5" className="user-info-title" gutterBottom>
+            Profile Overview
+          </Typography>
+          {user ? (
+            <Box className="user-info-details">
+              <Box className="user-info-row">
+                <Typography variant="subtitle1" className="user-info-label">
+                  Name:
+                </Typography>
+                <Typography variant="body1" className="user-info-value">
+                  {user.username || "N/A"}
+                </Typography>
+              </Box>
+              <Box className="user-info-row">
+                <Typography variant="subtitle1" className="user-info-label">
+                  Email:
+                </Typography>
+                <Typography variant="body1" className="user-info-value">
+                  {user.email || "N/A"}
+                </Typography>
+              </Box>
+            </Box>
+          ) : (
+            <Typography variant="body1" color="error">
+              No user data available.
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          marginTop: "20px",
+          fontWeight: "bold",
+          background: "#6a11cb",
+          maxWidth: "200px",
+          boxShadow: "none",
+          "&:hover": {
+            boxShadow: "none",
+          },
+        }}
+        onClick={() => setShowAudioFiles(!showAudioFiles)}
+      >
+        {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
+      </Button>
+
+      {showAudioFiles && (
+        <Box className="audio-files" mt={4}>
+          {/* Use Library component to display audio files */}
+          <Library ownerUid={uid} />
+        </Box>
+      )}
     </Box>
   );
 };

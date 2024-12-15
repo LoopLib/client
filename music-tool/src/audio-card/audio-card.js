@@ -182,6 +182,15 @@ const AudioCard = ({
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
           <CardContent>
+
+            <Typography
+              variant="h6"
+              color="textPrimary"
+              style={{ fontWeight: "bold", marginBottom: "8px" }}
+            >
+              {file.name}
+            </Typography>
+
             <Typography
               variant="body2"
               color="primary"
@@ -190,6 +199,7 @@ const AudioCard = ({
             >
               Publisher: {publisherName}
             </Typography>
+
 
 
             <div id={`waveform-${index}`} className="waveform-container"></div>

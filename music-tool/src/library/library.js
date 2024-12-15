@@ -20,10 +20,10 @@ const Library = ({ ownerUid = null }) => {
   useEffect(() => {
     fetchAudioFilesFromAWS();
     return () => {
+      // Clean up WaveSurfer instances
       Object.values(waveSurferRefs.current).forEach((waveSurfer) => waveSurfer.destroy());
     };
   }, [ownerUid]);
-  
 
   const fetchAudioFilesFromAWS = async () => {
     try {
@@ -32,22 +32,24 @@ const Library = ({ ownerUid = null }) => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-  
-      // If `ownerUid` is provided, fetch only that user's files; otherwise fetch all files
+
+      // Set the S3 prefix based on `ownerUid`
       const prefix = ownerUid ? `users/${ownerUid}/audio/` : "users/";
       const params = { Bucket: "looplib-audio-bucket", Prefix: prefix };
-  
+
+      // Fetch data from S3
       const data = await s3.listObjectsV2(params).promise();
-  
+
       // Separate audio files and metadata files
-      const audioFiles = data.Contents.filter((file) => file.Key.includes('/audio/'));
-      const metadataFiles = data.Contents.filter((file) => file.Key.includes('/metadata/'));
-  
+      const audioFiles = data.Contents.filter((file) => file.Key.includes("/audio/"));
+      const metadataFiles = data.Contents.filter((file) => file.Key.includes("/metadata/"));
+
+      // Process files
       const files = await Promise.all(
         audioFiles.map(async (audioFile) => {
-          const metadataKey = audioFile.Key.replace('/audio/', '/metadata/') + '.metadata.json';
+          const metadataKey = audioFile.Key.replace("/audio/", "/metadata/") + ".metadata.json";
           const metadataFile = metadataFiles.find((file) => file.Key === metadataKey);
-  
+
           let metadata = {};
           if (metadataFile) {
             const metadataParams = {
@@ -57,15 +59,15 @@ const Library = ({ ownerUid = null }) => {
             const metadataObject = await s3.getObject(metadataParams).promise();
             metadata = JSON.parse(metadataObject.Body.toString());
           }
-  
+
           // Extract UID from the key (e.g., "users/uid123/audio/filename.mp3")
-          const uid = audioFile.Key.split('/')[1];
-  
+          const uid = audioFile.Key.split("/")[1];
+
           return {
-            name: audioFile.Key.split('/').pop(),
+            name: audioFile.Key.split("/").pop(),
             url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${audioFile.Key}`,
             uid, // Add the extracted UID
-            publisher: "Anonymous Publisher",
+            publisher: "Anonymous Publisher", // Placeholder for publisher info
             duration: metadata.duration || "Unknown",
             bpm: metadata.bpm || "Unknown",
             musicalKey: metadata.key || "Unknown",
@@ -74,7 +76,7 @@ const Library = ({ ownerUid = null }) => {
           };
         })
       );
-  
+
       setAudioFiles(files);
       setFilteredFiles(files);
     } catch (error) {
