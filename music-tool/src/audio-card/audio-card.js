@@ -184,23 +184,22 @@ const AudioCard = ({
           <CardContent>
 
             <Typography
-              variant="h6"
-              color="textPrimary"
-              style={{ fontWeight: "bold", marginBottom: "8px" }}
+              variant="p"
+              className="audio-card-title"
+              title={file.name} // Tooltip for truncated names
             >
               {file.name}
             </Typography>
 
+
             <Typography
-              variant="body2"
-              color="primary"
-              style={{ cursor: "pointer", textDecoration: "underline" }}
+              variant="p"
+              className="audio-card-publisher"
               onClick={() => window.location.assign(`/user-library/${file.uid}`)}
+              title={`Publisher: ${publisherName}`} // Tooltip for truncated text
             >
               Publisher: {publisherName}
             </Typography>
-
-
 
             <div id={`waveform-${index}`} className="waveform-container"></div>
 

@@ -20,6 +20,33 @@
   border: 2px solid #ffffff;
 }
 
+.audio-card-title {
+  font-size: 1.25rem; /* Larger font size for better visibility */
+  letter-spacing: 0.5px; /* Slight spacing between letters */
+  text-transform: capitalize; /* Capitalize the first letter of each word */
+  text-overflow: ellipsis; /* Handle overflow with ellipsis */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Ensure the text stays within its container */
+  display: block; /* Block display for consistent behavior */
+  margin-bottom: 8px; /* Space below the title */
+  color: var(--text-primary-color, #000); /* Use a variable for flexibility */
+  cursor: default; /* Default cursor behavior */
+}
+
+.audio-card-publisher {
+  font-size: 1rem; /* Standard size for body text */
+  font-weight: normal; /* Normal weight to differentiate from the title */
+  color: var(--primary-color, #1976D2); /* Use a primary color for emphasis */
+  text-decoration: underline; /* To indicate interactivity */
+  cursor: pointer; /* Pointer cursor for clickable text */
+  margin-bottom: 8px; /* Add spacing below if needed */
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden; /* Ensure text doesn't overflow */
+  text-overflow: ellipsis; /* Add ellipsis for long text */
+  display: inline-block; /* Maintain block behavior for layout consistency */
+}
+
+
 
 @media (max-width: 768px) {
   .audio-card {

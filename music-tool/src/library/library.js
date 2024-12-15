@@ -26,6 +26,7 @@ const Library = ({ ownerUid = null }) => {
   }, [ownerUid]);
 
   const fetchAudioFilesFromAWS = async () => {
+    setLoading(true);
     try {
       const s3 = new AWS.S3({
         accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
@@ -77,8 +78,11 @@ const Library = ({ ownerUid = null }) => {
         })
       );
 
-      setAudioFiles(files);
-      setFilteredFiles(files);
+      // Filter files based on `ownerUid` if provided
+      const userSpecificFiles = ownerUid ? files.filter((file) => file.uid === ownerUid) : files;
+
+      setAudioFiles(userSpecificFiles);
+      setFilteredFiles(userSpecificFiles);
     } catch (error) {
       console.error("Error fetching audio files from AWS:", error.message);
     } finally {
@@ -86,6 +90,17 @@ const Library = ({ ownerUid = null }) => {
     }
   };
   
+  const handleSearchChange = (query) => {
+    const lowerCaseQuery = query.toLowerCase();
+
+    // Filter only for the current user if `ownerUid` is provided
+    const filtered = audioFiles.filter((file) =>
+      file.name.toLowerCase().includes(lowerCaseQuery)
+    );
+
+    setFilteredFiles(filtered);
+  };
+
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
@@ -120,13 +135,6 @@ const Library = ({ ownerUid = null }) => {
     closeContextMenu();
   };
 
-  const handleSearchChange = (query) => {
-    const lowerCaseQuery = query.toLowerCase();
-    setFilteredFiles(
-      audioFiles.filter((file) => file.name.toLowerCase().includes(lowerCaseQuery))
-    );
-  };
-
   if (loading) {
     return <CircularProgress />;
   }
@@ -135,9 +143,9 @@ const Library = ({ ownerUid = null }) => {
     <Box
       className="all-audio-container"
       sx={{
-        width: "80%", // Allow full width for the container
-        maxWidth: "none", // Remove width limitation
-        margin: "20px auto", // Center horizontally
+        width: "80%",
+        maxWidth: "none",
+        margin: "20px auto",
       }}
     >
       <Typography
@@ -147,7 +155,7 @@ const Library = ({ ownerUid = null }) => {
         fontFamily={"Montserrat, sans-serif"}
         fontWeight="bold"
       >
-        L I B R A R Y
+        {ownerUid ? "User's Library" : "L I B R A R Y"}
       </Typography>
       <SearchBar onSearchChange={handleSearchChange} />
       <List>

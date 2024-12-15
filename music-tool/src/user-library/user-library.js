@@ -9,12 +9,10 @@ import { useParams } from "react-router-dom";
 const UserLibrary = () => {
   const { userUid } = useParams(); // Use 'userUid' to match the route definition
   const [user, setUser] = useState(null);
-  const { uid } = useParams();
   const [loading, setLoading] = useState(true);
   const [showAudioFiles, setShowAudioFiles] = useState(false);
 
   useEffect(() => {
-    console.log("Received UID from route:", userUid); // Debugging
     if (userUid) {
       fetchUserData(userUid);
     }
@@ -125,8 +123,8 @@ const UserLibrary = () => {
 
       {showAudioFiles && (
         <Box className="audio-files" mt={4}>
-          {/* Use Library component to display audio files */}
-          <Library ownerUid={uid} />
+          {/* Pass the correct ownerUid to Library */}
+          <Library ownerUid={userUid} />
         </Box>
       )}
     </Box>
