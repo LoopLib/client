@@ -7,7 +7,7 @@ import { Avatar } from "@mui/material";
 import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
 import AWS from "aws-sdk";
-import { getFirestore, query, where, collection, getDocs } from "firebase/firestore"; 
+import { getFirestore, query, where, collection, getDocs } from "firebase/firestore";
 import "./audio-card.css";
 
 const AudioCard = ({
@@ -38,16 +38,16 @@ const AudioCard = ({
           setPublisherName("Unknown");
           return;
         }
-    
+
         // Step 2: List folders under the "users/" directory in the S3 bucket
         const s3Params = {
           Bucket: "looplib-audio-bucket", // Replace with your bucket name
           Prefix: `users/`,
           Delimiter: "/",
         };
-    
+
         const data = await s3.listObjectsV2(s3Params).promise();
-    
+
         // Step 3: Validate and extract folder names
         console.log("S3 Response CommonPrefixes:", data.CommonPrefixes);
         if (!data.CommonPrefixes || data.CommonPrefixes.length === 0) {
@@ -55,28 +55,28 @@ const AudioCard = ({
           setPublisherName("Unknown");
           return;
         }
-    
+
         const folderNames = (data.CommonPrefixes || []).map((prefix) =>
           prefix.Prefix ? prefix.Prefix.replace("users/", "").replace("/", "") : null
         ).filter(Boolean);
-    
+
         console.log("Extracted Folder Names:", folderNames);
-    
+
         // Step 4: Normalize for comparison
         const normalizedFolderNames = folderNames.map((name) =>
           typeof name === "string" ? name.toLowerCase() : ""
         );
         const normalizedUID = typeof file.uid === "string" ? file.uid.toLowerCase() : "";
-    
+
         if (normalizedFolderNames.includes(normalizedUID)) {
           console.log("Matching UID found in S3 folder names:", file.uid);
-    
+
           // Step 5: Query Firestore
           const db = getFirestore();
           const usersCollection = collection(db, "users");
           const q = query(usersCollection, where("uid", "==", file.uid));
           const querySnapshot = await getDocs(q);
-    
+
           if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
             console.log("Fetched User Data from Firestore:", userData);
@@ -94,9 +94,9 @@ const AudioCard = ({
         setPublisherName("Unknown");
       }
     };
-    
-    
-  
+
+
+
     fetchPublisherName();
   }, [file.uid]);
 
@@ -182,10 +182,12 @@ const AudioCard = ({
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
           <CardContent>
-            <Typography variant="body2" gutterBottom>
-              {file.name}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography
+              variant="body2"
+              color="primary"
+              style={{ cursor: "pointer", textDecoration: "underline" }}
+              onClick={() => window.location.assign(`/user-library/${file.uid}`)}
+            >
               Publisher: {publisherName}
             </Typography>
 
