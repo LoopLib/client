@@ -1,18 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, Button, List } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  TextField,
+  IconButton,
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, updateProfile, updateEmail } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import Library from "../library/library";
 import "./profile.css";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showAudioFiles, setShowAudioFiles] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [showAudioFiles, setShowAudioFiles] = useState(false); // Reintroduced state
+  const [profileData, setProfileData] = useState({
+    displayName: "",
+    email: "",
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -35,7 +50,7 @@ const Profile = () => {
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
-        console.log("User profile data:", userDoc.data());
+        setProfileData(userDoc.data());
       } else {
         console.error("No user profile found!");
       }
@@ -43,6 +58,41 @@ const Profile = () => {
       console.error("Error fetching profile data:", error.message);
     }
   };
+
+  const handleInputChange = (field, value) => {
+    setProfileData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const saveProfileData = async () => {
+    try {
+      if (user) {
+        const db = getFirestore();
+        const userDocRef = doc(db, "users", user.uid);
+        await setDoc(userDocRef, profileData, { merge: true });
+
+        // Update Firebase Authentication (Optional: Update displayName or email)
+        if (profileData.displayName !== user.displayName) {
+          await updateProfile(user, { displayName: profileData.displayName });
+        }
+        if (profileData.email !== user.email) {
+          await updateEmail(user, profileData.email);
+        }
+
+        // Reflect changes in the local state
+        setUser({ ...user, ...profileData });
+        setEditMode(false);
+      }
+    } catch (error) {
+      console.error("Error saving profile data:", error.message);
+    }
+  };
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
 
   return (
     <Box
@@ -86,17 +136,37 @@ const Profile = () => {
                 <Typography variant="subtitle1" className="user-info-label">
                   Name:
                 </Typography>
-                <Typography variant="body1" className="user-info-value">
-                  {user.displayName || "N/A"}
-                </Typography>
+                {editMode ? (
+                  <TextField
+                    variant="outlined"
+                    value={profileData.displayName}
+                    onChange={(e) =>
+                      handleInputChange("displayName", e.target.value)
+                    }
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" className="user-info-value">
+                    {profileData.displayName || "N/A"}
+                  </Typography>
+                )}
               </Box>
               <Box className="user-info-row">
                 <Typography variant="subtitle1" className="user-info-label">
                   Email:
                 </Typography>
-                <Typography variant="body1" className="user-info-value">
-                  {user.email}
-                </Typography>
+                {editMode ? (
+                  <TextField
+                    variant="outlined"
+                    value={profileData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" className="user-info-value">
+                    {profileData.email}
+                  </Typography>
+                )}
               </Box>
               <Box className="user-info-row">
                 <Typography variant="subtitle1" className="user-info-label">
@@ -105,6 +175,25 @@ const Profile = () => {
                 <Typography variant="body1" className="user-info-value">
                   {user.uid}
                 </Typography>
+              </Box>
+              <Box mt={2}>
+                {editMode ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SaveIcon />}
+                    onClick={saveProfileData}
+                  >
+                    Save
+                  </Button>
+                ) : (
+                  <IconButton
+                    color="primary"
+                    onClick={() => setEditMode(true)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                )}
               </Box>
             </Box>
           ) : (
