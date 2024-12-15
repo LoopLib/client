@@ -346,11 +346,11 @@ const newKey = oldKey.replace(editingFile.name, newFileName);
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>File Name</TableCell>
+                <TableCell>FILE NAME</TableCell>
                 <TableCell>BPM</TableCell>
-                <TableCell>Genre</TableCell>
-                <TableCell>Key</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell>GENRE</TableCell>
+                <TableCell>KEY</TableCell>
+                <TableCell>ACTIONS</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
