@@ -1,138 +1,161 @@
+/* General Reset and Utility Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Main Container */
 .all-audio-container {
   width: 100%;
-  padding: 16px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  background: linear-gradient(135deg, #f3f3f5, #ffffff);
+  gap: 24px;
+  background: #ffffff;
   border-radius: 16px;
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 20px auto;
 }
 
 .all-audio-title {
   text-align: center;
   margin-bottom: 16px;
-  color: transparent; /* Required for gradient text */
+  font-size: 2rem;
+  font-weight: bold;
+  color: transparent;
   background: linear-gradient(90deg, #6a11cb, #2575fc);
-  -webkit-background-clip: text; /* Clips the gradient to text */
+  -webkit-background-clip: text;
   background-clip: text;
-  position: relative; /* For the underline effect */
+  position: relative;
 }
 
 .all-audio-title::after {
-  content: "";
+  content: '';
   position: absolute;
-  bottom: -5px; /* Position below the text */
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
-  width: 20%; /* Length of the underline */
-  height: 3px; /* Thickness of the underline */
+  width: 20%;
+  height: 3px;
   background: linear-gradient(90deg, #6a11cb, #2575fc);
-  border-radius: 2px; /* Rounded edges for a clean look */
-  transition: width 0.3s ease; /* Smooth animation on hover */
+  border-radius: 2px;
+  transition: width 0.3s ease;
 }
 
 .all-audio-title:hover::after {
-  width: 100%; /* Expands underline on hover */
+  width: 100%;
 }
 
-
-/* General Profile Container */
-/* Profile Container (Main Box) */
-.profile-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 32px;
-  max-width: 900px;
-  margin: auto;
-  margin-top: 80px;
-  background: #ffffff;
+/* Audio Files Table */
+.MuiTableContainer-root {
+  background: #f9f9f9;
   border-radius: 16px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-
-  /* Ensures child elements don't overflow */
-  box-sizing: border-box;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-/* Profile Header (Inside Main Box) */
+.MuiTableHead-root {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+}
+
+.MuiTableCell-head {
+  color: #ffffff;
+  font-weight: bold;
+  text-align: left;
+  padding: 16px;
+}
+
+.MuiTableCell-body {
+  padding: 16px;
+  color: #333;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.MuiTableRow-root:hover {
+  background: #f0f4ff;
+  transition: background 0.3s ease;
+}
+
+.MuiIconButton-root {
+  color: #6a11cb;
+  transition: color 0.3s ease;
+}
+
+.MuiIconButton-root:hover {
+  color: #2575fc;
+}
+
+/* File Name TextField Styling */
+.MuiTextField-root {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Buttons */
+.MuiButton-contained {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: #ffffff;
+  font-weight: bold;
+  text-transform: none;
+  border-radius: 24px;
+  padding: 10px 20px;
+}
+
+.MuiButton-contained:hover {
+  background: linear-gradient(90deg, #2575fc, #6a11cb);
+}
+
+/* Profile Section */
 .profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
-  padding: 32px 24px; /* Extra padding for breathing room */
-  border-radius: 20px; /* Slightly larger border radius for a softer look */
+  padding: 32px 24px;
+  border-radius: 16px;
   color: white;
-  width: 100%; /* Ensure it spans the full container width */
-  box-sizing: border-box; /* Ensure padding is included in width */
-  position: relative; /* For decorative elements */
-  overflow: hidden; /* Hide potential overflow from decorative elements */
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+  width: 100%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Optional background decoration */
-.profile-header::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent 70%);
-  transform: rotate(-45deg);
-  pointer-events: none;
-  z-index: 0; /* Behind content */
-}
-
-/* Ensure the content sits above the background decoration */
-.profile-header > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Title Styling */
 .profile-header .profile-title {
-  font-size: 2rem; /* Larger font size for prominence */
-  font-weight: 700; /* Slightly bolder text */
+  font-size: 2rem;
+  font-weight: bold;
   color: #ffffff;
-  text-transform: uppercase; /* Optional: Uppercase for a strong look */
-  letter-spacing: 1px; /* Subtle letter spacing */
-  margin-top: 8px; /* Space below the profile icon */
-  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3); /* Subtle text shadow for readability */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 8px;
 }
 
-
-/* User Info Section */
 .user-info {
-  width: 100%; /* Ensures the card stays within the parent */
+  width: 100%;
   margin-top: 24px;
   padding: 24px;
   border-radius: 16px;
   box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
   background: linear-gradient(135deg, #f7f9fc, #ffffff);
   border: 1px solid #e0e0e0;
-
-  /* Ensures child elements don't overflow */
-  box-sizing: border-box;
-  overflow: hidden;
 }
 
 .user-info-title {
-  font-weight: 700;
+  font-weight: bold;
   font-size: 1.5rem;
-  color: #333333;
+  color: #333;
   margin-bottom: 16px;
   text-align: center;
-}
-
-.user-info-details {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 8px;
 }
 
 .user-info-row {
@@ -145,67 +168,27 @@
 }
 
 .user-info-label {
-  font-weight: 600;
+  font-weight: bold;
   color: #6a11cb;
   flex-basis: 30%;
 }
 
 .user-info-value {
-  font-weight: 400;
-  color: #333333;
+  color: #333;
   text-align: right;
   flex-basis: 65%;
-  word-wrap: break-word;
-}
-
-.no-user-info {
-  text-align: center;
-  padding: 16px;
-  color: #e57373;
-  font-size: 1rem;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .user-info-row {
-      flex-direction: column;
-      align-items: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .user-info-label,
   .user-info-value {
-      flex-basis: auto;
-      text-align: left;
+    flex-basis: auto;
+    text-align: left;
   }
-}
-
-/* Audio Files Section */
-.audio-files {
-  width: 100%; /* Adjust width to account for padding */
-  max-width: 100%; /* Ensure it does not exceed parent width */
-  padding: 16px;
-  margin: auto; /* Center the box */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #f3f3f5, #ffffff);
-  border-radius: 16px;
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box; /* Ensure padding and border are included in width */
-}
-
-
-.audio-files-title {
-  font-weight: 800;
-  font-size: 2rem;
-  text-align: center;
-  color: #6a11cb;
-  margin-bottom: 24px;
-}
-
-
-/* Buttons and Actions */
-button {
-  text-transform: none;
-  font-weight: bold;
 }
