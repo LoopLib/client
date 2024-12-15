@@ -40,6 +40,10 @@ const Profile = () => {
   const [audioFiles, setAudioFiles] = useState([]);
   const [editingFile, setEditingFile] = useState(null);
   const [newFileName, setNewFileName] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null); // For preview
+  const [uploading, setUploading] = useState(false); // Upload progress indicator
+
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
 
   const [operationInProgress, setOperationInProgress] = useState(false);
 
@@ -49,6 +53,7 @@ const Profile = () => {
         setUser(currentUser);
         await fetchProfileData(currentUser.uid);
         await fetchAudioFiles(currentUser.uid);
+        fetchProfilePicture(currentUser.uid);
       } else {
         setUser(null);
       }
@@ -115,6 +120,95 @@ const Profile = () => {
       console.error("Error fetching audio files:", error.message);
     }
   };
+
+  const fetchProfilePicture = async (uid) => {
+    try {
+      const s3 = new AWS.S3({
+        accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+        region: process.env.REACT_APP_AWS_REGION,
+      });
+
+      const avatarKey = `users/${uid}/avatar/profile-picture.jpg`;
+      const params = { Bucket: "looplib-audio-bucket", Key: avatarKey };
+      const avatarUrl = s3.getSignedUrl("getObject", params);
+      setProfilePictureUrl(avatarUrl);
+    } catch (error) {
+      console.warn("Error fetching profile picture:", error.message);
+    }
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      alert("No file selected.");
+      return;
+    }
+
+    // Validate file type
+    const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!validTypes.includes(file.type)) {
+      alert("Invalid file type. Please select a .jpg or .png file.");
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSizeInBytes) {
+      alert("File size exceeds 5MB. Please select a smaller file.");
+      return;
+    }
+
+    // Show preview
+    setSelectedImage(URL.createObjectURL(file));
+  };
+
+  const handleProfilePictureUpload = async () => {
+    if (!selectedImage) {
+      alert("Please select an image first.");
+      return;
+    }
+
+    const fileInput = document.querySelector('input[type="file"]');
+    const file = fileInput.files[0];
+
+    if (!file) return;
+
+    const fileName = "profile-picture.jpg";
+    const avatarKey = `users/${user.uid}/avatar/${fileName}`;
+
+    setUploading(true);
+
+    try {
+      const s3 = new AWS.S3({
+        accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+        region: process.env.REACT_APP_AWS_REGION,
+      });
+
+      await s3
+        .putObject({
+          Bucket: "looplib-audio-bucket",
+          Key: avatarKey,
+          Body: file,
+          ContentType: file.type,
+        })
+        .promise();
+
+      fetchProfilePicture(user.uid); // Refresh the profile picture
+      alert("Profile picture uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading profile picture:", error.message);
+      alert(`Failed to upload profile picture: ${error.message}`);
+    } finally {
+      setUploading(false);
+      setSelectedImage(null); // Clear the preview
+    }
+  };
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
 
   const handleEditFile = (file) => {
     setEditingFile(file);
@@ -239,17 +333,51 @@ const newKey = oldKey.replace(editingFile.name, newFileName);
       P R O F I L E
     </Typography>
 
-    <Box className="profile-header" mb={4}>
-      <AccountCircleIcon sx={{ fontSize: 80, color: "##FFFFFF" }} />
-      <Typography variant="h4" className="profile-title" mt={2}>
-        {user ? user.displayName || "Welcome, User!" : "No User Logged In"}
-      </Typography>
-      {user && (
-        <Typography variant="subtitle1" color="textSecondary">
-          {user.email}
-        </Typography>
-      )}
-    </Box>
+    <Box mb={4} display="flex" alignItems="center" flexDirection="column">
+        {/* Show current profile picture or default icon */}
+        {profilePictureUrl ? (
+          <img
+            src={profilePictureUrl}
+            alt="Profile"
+            style={{ width: 100, height: 100, borderRadius: "50%", marginBottom: "20px" }}
+          />
+        ) : (
+          <AccountCircleIcon sx={{ fontSize: 80, color: "#888", marginBottom: "20px" }} />
+        )}
+
+        {/* Show preview of the selected image */}
+        {selectedImage && (
+          <img
+            src={selectedImage}
+            alt="Preview"
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: "50%",
+              marginBottom: "10px",
+              border: "2px solid #ccc",
+            }}
+          />
+        )}
+
+        <Button variant="outlined" component="label" sx={{ mt: 2 }}>
+          {selectedImage ? "Change Image" : "Select Image"}
+          <input type="file" hidden onChange={handleImageChange} />
+        </Button>
+
+        {/* Upload button */}
+        {selectedImage && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleProfilePictureUpload}
+            disabled={uploading}
+            sx={{ mt: 2 }}
+          >
+            {uploading ? "Uploading..." : "Upload Picture"}
+          </Button>
+        )}
+      </Box>
 
     <Card className="user-info">
       <CardContent>
