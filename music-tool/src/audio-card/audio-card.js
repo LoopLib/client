@@ -31,75 +31,43 @@ const AudioCard = ({
   });
 
   useEffect(() => {
-    const fetchPublisherName = async () => {
+    const fetchPublisherData = async () => {
       try {
-        // Step 1: Validate file.uid
-        console.log("File UID:", file.uid);
         if (!file.uid) {
           console.error("Error: file.uid is undefined");
           setPublisherName("Unknown");
           return;
         }
 
-        // Step 2: List folders under the "users/" directory in the S3 bucket
-        const s3Params = {
-          Bucket: "looplib-audio-bucket", // Replace with your bucket name
-          Prefix: `users/`,
-          Delimiter: "/",
-        };
+        const db = getFirestore();
+        const usersCollection = collection(db, "users");
+        const q = query(usersCollection, where("uid", "==", file.uid));
+        const querySnapshot = await getDocs(q);
 
-        const data = await s3.listObjectsV2(s3Params).promise();
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data();
+          setPublisherName(userData.username || "Unknown");
 
-        // Step 3: Validate and extract folder names
-        console.log("S3 Response CommonPrefixes:", data.CommonPrefixes);
-        if (!data.CommonPrefixes || data.CommonPrefixes.length === 0) {
-          console.error("Error: No folders found in S3 under users/");
-          setPublisherName("Unknown");
-          return;
-        }
+          // Construct profile picture URL from S3
+          const avatarKey = `users/${file.uid}/avatar/profile-picture.jpg`;
+          const avatarUrl = s3.getSignedUrl("getObject", {
+            Bucket: "looplib-audio-bucket",
+            Key: avatarKey,
+          });
 
-        const folderNames = (data.CommonPrefixes || []).map((prefix) =>
-          prefix.Prefix ? prefix.Prefix.replace("users/", "").replace("/", "") : null
-        ).filter(Boolean);
-
-        console.log("Extracted Folder Names:", folderNames);
-
-        // Step 4: Normalize for comparison
-        const normalizedFolderNames = folderNames.map((name) =>
-          typeof name === "string" ? name.toLowerCase() : ""
-        );
-        const normalizedUID = typeof file.uid === "string" ? file.uid.toLowerCase() : "";
-
-        if (normalizedFolderNames.includes(normalizedUID)) {
-          console.log("Matching UID found in S3 folder names:", file.uid);
-
-          // Step 5: Query Firestore
-          const db = getFirestore();
-          const usersCollection = collection(db, "users");
-          const q = query(usersCollection, where("uid", "==", file.uid));
-          const querySnapshot = await getDocs(q);
-
-          if (!querySnapshot.empty) {
-            const userData = querySnapshot.docs[0].data();
-            console.log("Fetched User Data from Firestore:", userData);
-            setPublisherName(userData.username || "Unknown");
-          } else {
-            console.error("No matching Firestore document found for UID:", file.uid);
-            setPublisherName("Unknown");
-          }
+          // Dynamically update file with the profile picture URL
+          file.profilePicture = avatarUrl;
         } else {
-          console.error("No matching UID found in S3 folder names!");
+          console.error("No matching Firestore document found for UID:", file.uid);
           setPublisherName("Unknown");
         }
       } catch (error) {
-        console.error("Error fetching publisher name:", error);
+        console.error("Error fetching publisher data:", error);
         setPublisherName("Unknown");
       }
     };
 
-
-
-    fetchPublisherName();
+    fetchPublisherData();
   }, [file.uid]);
 
   const initializeWaveSurfer = (url, index) => {
@@ -167,8 +135,8 @@ const AudioCard = ({
       onContextMenu={onContextMenu}
     >
       <Avatar
-        alt={file.publisher}
-        src={file.profilePicture}
+        alt={publisherName}
+        src={file.profilePicture || "/default-avatar.png"}
         sx={{
           position: "absolute",
           top: 8,
@@ -180,6 +148,7 @@ const AudioCard = ({
           boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
         }}
       />
+
 
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
@@ -214,25 +183,25 @@ const AudioCard = ({
             />
 
             {showExtras && (
-             <Button
-             variant="contained"
-             color="primary"
-             style={{
-                 position: "absolute",
-                 right: "20px",
-                 bottom: "20px",
-                 display: "flex",
-                 justifyContent: "center",
-                 alignItems: "center",
-                 width: "40px", // Set width for a square button
-                 height: "40px", // Set height for a square button
-                 padding: 0, // Remove default padding
-                 minWidth: "unset", // Prevent Material-UI from enforcing min-width
-             }}
-             onClick={() => window.open(file.url, "_blank")}
-         >
-             <DownloadIcon />
-         </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{
+                  position: "absolute",
+                  right: "20px",
+                  bottom: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "40px", // Set width for a square button
+                  height: "40px", // Set height for a square button
+                  padding: 0, // Remove default padding
+                  minWidth: "unset", // Prevent Material-UI from enforcing min-width
+                }}
+                onClick={() => window.open(file.url, "_blank")}
+              >
+                <DownloadIcon />
+              </Button>
             )}
           </CardContent>
         </Grid>
