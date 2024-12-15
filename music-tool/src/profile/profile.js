@@ -95,8 +95,9 @@ const Profile = () => {
             const metadataObject = await s3.getObject(metadataParams).promise();
             metadata = metadataObject?.Body ? JSON.parse(metadataObject.Body.toString()) : {};
           } catch (error) {
-            console.error("Error fetching metadata:", error.message);
-          }
+            console.warn(`Metadata not found for ${file.Key}: ${error.message}`);
+            metadata = { bpm: "Unknown", genre: "Unknown", musicalKey: "Unknown" }; // Default values
+          }          
 
           return {
             name: file.Key.split("/").pop(),
@@ -122,30 +123,34 @@ const Profile = () => {
 
   const handleSaveEdit = async () => {
     if (!editingFile) return;
-
+  
     const oldKey = editingFile.key;
-    const newKey = oldKey.replace(editingFile.name, newFileName);
-
+const newKey = oldKey.replace(editingFile.name, newFileName);
+  
     try {
       const s3 = new AWS.S3({
         accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-
+  
       await s3.copyObject({
         Bucket: "looplib-audio-bucket",
-        CopySource: `looplib-audio-bucket/${oldKey}`,
+        CopySource: `looplib-audio-bucket/${oldKey}`, // Full bucket path
         Key: newKey,
       }).promise();
-
+  
       await s3.deleteObject({
         Bucket: "looplib-audio-bucket",
         Key: oldKey,
       }).promise();
-
-      await fetchAudioFiles(user.uid);
-      
+  
+      setAudioFiles((prevFiles) =>
+        prevFiles.map((file) =>
+          file.key === oldKey ? { ...file, name: newFileName, key: newKey } : file
+        )
+      );
+  
       setEditingFile(null);
       setNewFileName("");
       alert("File renamed successfully!");
@@ -154,9 +159,9 @@ const Profile = () => {
       alert("Failed to rename the file.");
     }
   };
-
+  
   const handleDeleteFile = async (fileKey) => {
-    setOperationInProgress(true); // Block further actions
+    setOperationInProgress(true);
     try {
       const s3 = new AWS.S3({
         accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
@@ -169,15 +174,16 @@ const Profile = () => {
         Key: fileKey,
       }).promise();
   
-      await fetchAudioFiles(user.uid); // Refresh the audio file list
+      setAudioFiles((prevFiles) => prevFiles.filter((file) => file.key !== fileKey));
       alert("File deleted successfully!");
     } catch (error) {
       console.error("Error deleting file:", error.message);
       alert("Failed to delete the file.");
     } finally {
-      setOperationInProgress(false); // Re-enable interactions
+      setOperationInProgress(false);
     }
   };
+  
 
   const handleInputChange = (field, value) => {
     setProfileData((prev) => ({
