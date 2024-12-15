@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Box, Typography, CircularProgress, List, Menu, MenuItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  List,
+  Menu,
+  MenuItem,
+  Button,
+  Pagination,
+} from "@mui/material";
 import AWS from "aws-sdk";
 import { useNavigate } from "react-router-dom";
 import AudioCard from "../audio-card/audio-card";
@@ -10,6 +19,9 @@ const Library = ({ ownerUid = null }) => {
   const [audioFiles, setAudioFiles] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const waveSurferRefs = useRef({});
   const [activeIndexes, setActiveIndexes] = useState([]);
   const [contextMenu, setContextMenu] = useState(null);
@@ -20,7 +32,6 @@ const Library = ({ ownerUid = null }) => {
   useEffect(() => {
     fetchAudioFilesFromAWS();
     return () => {
-      // Clean up WaveSurfer instances
       Object.values(waveSurferRefs.current).forEach((waveSurfer) => waveSurfer.destroy());
     };
   }, [ownerUid]);
@@ -34,18 +45,14 @@ const Library = ({ ownerUid = null }) => {
         region: process.env.REACT_APP_AWS_REGION,
       });
 
-      // Set the S3 prefix based on `ownerUid`
       const prefix = ownerUid ? `users/${ownerUid}/audio/` : "users/";
       const params = { Bucket: "looplib-audio-bucket", Prefix: prefix };
 
-      // Fetch data from S3
       const data = await s3.listObjectsV2(params).promise();
 
-      // Separate audio files and metadata files
       const audioFiles = data.Contents.filter((file) => file.Key.includes("/audio/"));
       const metadataFiles = data.Contents.filter((file) => file.Key.includes("/metadata/"));
 
-      // Process files
       const files = await Promise.all(
         audioFiles.map(async (audioFile) => {
           const metadataKey = audioFile.Key.replace("/audio/", "/metadata/") + ".metadata.json";
@@ -61,24 +68,22 @@ const Library = ({ ownerUid = null }) => {
             metadata = JSON.parse(metadataObject.Body.toString());
           }
 
-          // Extract UID from the key (e.g., "users/uid123/audio/filename.mp3")
           const uid = audioFile.Key.split("/")[1];
 
           return {
             name: audioFile.Key.split("/").pop(),
             url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${audioFile.Key}`,
-            uid, // Add the extracted UID
-            publisher: "Anonymous Publisher", // Placeholder for publisher info
+            uid,
+            publisher: "Anonymous Publisher",
             duration: metadata.duration || "Unknown",
             bpm: metadata.bpm || "Unknown",
             musicalKey: metadata.key || "Unknown",
             genre: metadata.genre || "Unknown",
-            ownerUid: uid, // Extract owner UID from the key
+            ownerUid: uid,
           };
         })
       );
 
-      // Filter files based on `ownerUid` if provided
       const userSpecificFiles = ownerUid ? files.filter((file) => file.uid === ownerUid) : files;
 
       setAudioFiles(userSpecificFiles);
@@ -89,17 +94,22 @@ const Library = ({ ownerUid = null }) => {
       setLoading(false);
     }
   };
-  
+
   const handleSearchChange = (query) => {
     const lowerCaseQuery = query.toLowerCase();
-
-    // Filter only for the current user if `ownerUid` is provided
     const filtered = audioFiles.filter((file) =>
       file.name.toLowerCase().includes(lowerCaseQuery)
     );
-
     setFilteredFiles(filtered);
+    setCurrentPage(1); // Reset to the first page when search changes
   };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = filteredFiles.slice(startIndex, startIndex + itemsPerPage);
 
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -113,9 +123,9 @@ const Library = ({ ownerUid = null }) => {
     setContextMenu(
       contextMenu === null
         ? {
-          mouseX: event.clientX + 2,
-          mouseY: event.clientY - 6,
-        }
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
         : null
     );
   };
@@ -159,8 +169,8 @@ const Library = ({ ownerUid = null }) => {
       </Typography>
       <SearchBar onSearchChange={handleSearchChange} />
       <List>
-        {filteredFiles.length > 0 ? (
-          filteredFiles.map((file, index) => (
+        {currentItems.length > 0 ? (
+          currentItems.map((file, index) => (
             <AudioCard
               key={index}
               file={file}
@@ -177,7 +187,12 @@ const Library = ({ ownerUid = null }) => {
           </Typography>
         )}
       </List>
-
+      <Pagination
+        count={Math.ceil(filteredFiles.length / itemsPerPage)}
+        page={currentPage}
+        onChange={handlePageChange}
+        sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+      />
       <Menu
         open={contextMenu !== null}
         onClose={closeContextMenu}
