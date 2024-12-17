@@ -2,6 +2,9 @@
 Client-side code.
 
 
+# LoopLib System Architecture Diagram
+
+```mermaid
 graph TD
     A[User Interface (React)] -->|User Actions| B[Firebase Authentication]
     A -->|Uploads Audio| C[AWS S3 Bucket]
