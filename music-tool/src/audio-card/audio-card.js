@@ -111,28 +111,28 @@ const AudioCard = ({
     intervalRef.current = setInterval(async () => {
       const waveSurfer = waveSurferRefs.current[index];
       if (!waveSurfer || !waveSurfer.isPlaying()) return;
-
+  
       const currentTime = waveSurfer.getCurrentTime();
       const segment = await extractAudioSegment(file.url, currentTime);
-
+  
       if (segment.length === 0) {
         console.error("Empty audio segment, skipping key detection");
         return;
       }
-
+  
       try {
         const response = await axios.post("http://localhost:5000/analyze_segment", {
           segment,
           sr: 44100,
         });
-        console.log("Key Detection Response:", response.data);
         setLiveKey(response.data.key || "N/A");
         setLiveConfidence(response.data.confidence || 0);
       } catch (error) {
         console.error("Error detecting key:", error.response?.data || error.message);
       }
-    }, 2000);
+    }, 1000); // Update every 1 second
   };
+  
 
   const stopKeyDetection = () => {
     if (intervalRef.current) {
