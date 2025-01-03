@@ -130,8 +130,9 @@ const AudioCard = ({
       } catch (error) {
         console.error("Error detecting key:", error.response?.data || error.message);
       }
-    }, 1000); // Update every 1 second
+    }, 500); // Analyze every 0.5 seconds
   };
+  
   
 
   const stopKeyDetection = () => {
