@@ -26,6 +26,7 @@ const AudioCard = ({
   const [liveKey, setLiveKey] = useState("N/A");
   const [liveConfidence, setLiveConfidence] = useState(0);
   const intervalRef = useRef(null);
+  const audioBufferRef = useRef(null);
 
   // AWS S3 configuration
   const s3 = new AWS.S3({
@@ -142,21 +143,34 @@ const AudioCard = ({
     }
   };
 
-  const extractAudioSegment = async (url, currentTime) => {
-    try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+  useEffect(() => {
+    const cacheAudioBuffer = async () => {
+      try {
+        const response = await fetch(file.url);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioBufferRef.current = await audioCtx.decodeAudioData(arrayBuffer);
+      } catch (error) {
+        console.error("Error caching audio buffer:", error);
+      }
+    };
+  
+    cacheAudioBuffer();
+  }, [file.url]);
 
+  const extractAudioSegment = async (currentTime) => {
+    try {
+      const audioBuffer = audioBufferRef.current;
+      if (!audioBuffer) return [];
+  
       const startSample = Math.floor(currentTime * audioBuffer.sampleRate);
       const endSample = Math.min(startSample + audioBuffer.sampleRate * 2, audioBuffer.length);
-
+  
       if (startSample >= audioBuffer.length || startSample < 0) {
         console.error("Invalid segment time range");
         return [];
       }
-
+  
       return Array.from(audioBuffer.getChannelData(0).slice(startSample, endSample));
     } catch (error) {
       console.error("Error extracting audio segment:", error);
