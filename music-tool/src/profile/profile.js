@@ -102,7 +102,7 @@ const Profile = () => {
           } catch (error) {
             console.warn(`Metadata not found for ${file.Key}: ${error.message}`);
             metadata = { bpm: "Unknown", genre: "Unknown", musicalKey: "Unknown" }; // Default values
-          }          
+          }
 
           return {
             name: file.Key.split("/").pop(),
@@ -217,34 +217,34 @@ const Profile = () => {
 
   const handleSaveEdit = async () => {
     if (!editingFile) return;
-  
+
     const oldKey = editingFile.key;
-const newKey = oldKey.replace(editingFile.name, newFileName);
-  
+    const newKey = oldKey.replace(editingFile.name, newFileName);
+
     try {
       const s3 = new AWS.S3({
         accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-  
+
       await s3.copyObject({
         Bucket: "looplib-audio-bucket",
         CopySource: `looplib-audio-bucket/${oldKey}`, // Full bucket path
         Key: newKey,
       }).promise();
-  
+
       await s3.deleteObject({
         Bucket: "looplib-audio-bucket",
         Key: oldKey,
       }).promise();
-  
+
       setAudioFiles((prevFiles) =>
         prevFiles.map((file) =>
           file.key === oldKey ? { ...file, name: newFileName, key: newKey } : file
         )
       );
-  
+
       setEditingFile(null);
       setNewFileName("");
       alert("File renamed successfully!");
@@ -253,7 +253,7 @@ const newKey = oldKey.replace(editingFile.name, newFileName);
       alert("Failed to rename the file.");
     }
   };
-  
+
   const handleDeleteFile = async (fileKey) => {
     setOperationInProgress(true);
     try {
@@ -262,12 +262,12 @@ const newKey = oldKey.replace(editingFile.name, newFileName);
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-  
+
       await s3.deleteObject({
         Bucket: "looplib-audio-bucket",
         Key: fileKey,
       }).promise();
-  
+
       setAudioFiles((prevFiles) => prevFiles.filter((file) => file.key !== fileKey));
       alert("File deleted successfully!");
     } catch (error) {
@@ -277,7 +277,7 @@ const newKey = oldKey.replace(editingFile.name, newFileName);
       setOperationInProgress(false);
     }
   };
-  
+
 
   const handleInputChange = (field, value) => {
     setProfileData((prev) => ({
@@ -316,149 +316,149 @@ const newKey = oldKey.replace(editingFile.name, newFileName);
 
   return (
     <Box
-    className="all-audio-container"
-    sx={{
-      width: "80%",
-      maxWidth: "none",
-      margin: "20px auto",
-    }}
-  >
-    <Typography
-      variant="h4"
-      className="all-audio-title"
-      mb={4}
-      fontFamily={"Montserrat, sans-serif"}
-      fontWeight="bold"
+      className="all-audio-container"
+      sx={{
+        width: "80%",
+        maxWidth: "none",
+        margin: "20px auto",
+      }}
     >
-      P R O F I L E
-    </Typography>
+      <Typography
+        variant="h4"
+        className="all-audio-title"
+        mb={4}
+        fontFamily={"Montserrat, sans-serif"}
+        fontWeight="bold"
+      >
+        P R O F I L E
+      </Typography>
 
-    <Box mb={4} display="flex" alignItems="center" flexDirection="column">
-        {/* Show current profile picture or default icon */}
-        {profilePictureUrl ? (
-          <img
-            src={profilePictureUrl}
-            alt="Profile"
-            style={{ width: 100, height: 100, borderRadius: "50%", marginBottom: "20px" }}
-          />
-        ) : (
-          <AccountCircleIcon sx={{ fontSize: 80, color: "#888", marginBottom: "20px" }} />
+      <Box className="upload-image-container">
+        {/* Avatar Section */}
+        <Box className="avatar-container">
+          {profilePictureUrl ? (
+            <img src={profilePictureUrl} alt="Profile" className="profile-picture" />
+          ) : (
+            <AccountCircleIcon className="default-avatar-icon" />
+          )}
+
+          {/* Change Icon Overlay */}
+          <Box className="change-icon-overlay">Change</Box>
+        </Box>
+
+        {/* Image Preview */}
+        {selectedImage && (
+          <Box className="image-preview-container">
+            <img src={selectedImage} alt="Preview" className="image-preview" />
+          </Box>
         )}
 
-        {/* Show preview of the selected image */}
-        {selectedImage && (
-          <img
-            src={selectedImage}
-            alt="Preview"
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: "50%",
-              marginBottom: "10px",
-              border: "2px solid #ccc",
-            }}
-          />
-        )}
-
-        <Button variant="outlined" component="label" sx={{ mt: 2 }}>
-          {selectedImage ? "Change Image" : "Select Image"}
-          <input type="file" hidden onChange={handleImageChange} />
-        </Button>
-
-        {/* Upload button */}
-        {selectedImage && (
+        {/* Buttons */}
+        <Box className="upload-buttons">
           <Button
-            variant="contained"
-            color="primary"
-            onClick={handleProfilePictureUpload}
-            disabled={uploading}
-            sx={{ mt: 2 }}
+            variant="outlined"
+            component="label"
+            className="select-image-button"
           >
-            {uploading ? "Uploading..." : "Upload Picture"}
+            {selectedImage ? "Change Image" : "Select Image"}
+            <input type="file" hidden onChange={handleImageChange} />
           </Button>
-        )}
+
+          {selectedImage && (
+            <Button
+              variant="contained"
+              color="primary"
+              className="upload-picture-button"
+              onClick={handleProfilePictureUpload}
+              disabled={uploading}
+            >
+              {uploading ? "Uploading..." : "Upload Picture"}
+            </Button>
+          )}
+        </Box>
       </Box>
 
-    <Card className="user-info">
-      <CardContent>
-        <Typography variant="h5" className="user-info-title" gutterBottom>
-          Profile Overview
-        </Typography>
-        {user ? (
-          <Box className="user-info-details">
-            <Box className="user-info-row">
-              <Typography variant="subtitle1" className="user-info-label">
-                Name:
-              </Typography>
-              {editMode ? (
-                <TextField
-                  variant="outlined"
-                  value={profileData.displayName}
-                  onChange={(e) =>
-                    handleInputChange("displayName", e.target.value)
-                  }
-                  size="small"
-                />
-              ) : (
-                <Typography variant="body1" className="user-info-value">
-                  {profileData.displayName || "N/A"}
+
+      <Card className="user-info">
+        <CardContent>
+          <Typography variant="h5" className="user-info-title" gutterBottom>
+            Profile Overview
+          </Typography>
+          {user ? (
+            <Box className="user-info-details">
+              <Box className="user-info-row">
+                <Typography variant="subtitle1" className="user-info-label">
+                  Name:
                 </Typography>
-              )}
-            </Box>
-            <Box className="user-info-row">
-              <Typography variant="subtitle1" className="user-info-label">
-                Email:
-              </Typography>
-              {editMode ? (
-                <TextField
-                  variant="outlined"
-                  value={profileData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  size="small"
-                />
-              ) : (
-                <Typography variant="body1" className="user-info-value">
-                  {profileData.email}
+                {editMode ? (
+                  <TextField
+                    variant="outlined"
+                    value={profileData.displayName}
+                    onChange={(e) =>
+                      handleInputChange("displayName", e.target.value)
+                    }
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" className="user-info-value">
+                    {profileData.displayName || "N/A"}
+                  </Typography>
+                )}
+              </Box>
+              <Box className="user-info-row">
+                <Typography variant="subtitle1" className="user-info-label">
+                  Email:
                 </Typography>
-              )}
+                {editMode ? (
+                  <TextField
+                    variant="outlined"
+                    value={profileData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" className="user-info-value">
+                    {profileData.email}
+                  </Typography>
+                )}
+              </Box>
+              <Box className="user-info-row">
+                <Typography variant="subtitle1" className="user-info-label">
+                  UID:
+                </Typography>
+                <Typography variant="body1" className="user-info-value">
+                  {user.uid}
+                </Typography>
+              </Box>
+              <Box mt={2}>
+                {editMode ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SaveIcon />}
+                    onClick={saveProfileData}
+                  >
+                    Save
+                  </Button>
+                ) : (
+                  <IconButton
+                    color="primary"
+                    onClick={() => setEditMode(true)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                )}
+              </Box>
             </Box>
-            <Box className="user-info-row">
-              <Typography variant="subtitle1" className="user-info-label">
-                UID:
+          ) : (
+            <Box className="no-user-info">
+              <Typography variant="body1" color="error">
+                No user is logged in.
               </Typography>
-              <Typography variant="body1" className="user-info-value">
-                {user.uid}
-              </Typography>
             </Box>
-            <Box mt={2}>
-              {editMode ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<SaveIcon />}
-                  onClick={saveProfileData}
-                >
-                  Save
-                </Button>
-              ) : (
-                <IconButton
-                  color="primary"
-                  onClick={() => setEditMode(true)}
-                >
-                  <EditIcon />
-                </IconButton>
-              )}
-            </Box>
-          </Box>
-        ) : (
-          <Box className="no-user-info">
-            <Typography variant="body1" color="error">
-              No user is logged in.
-            </Typography>
-          </Box>
-        )}
-      </CardContent>
-    </Card>
+          )}
+        </CardContent>
+      </Card>
 
       <Button
         variant="contained"
