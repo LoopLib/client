@@ -84,7 +84,7 @@ const AudioCard = ({
   const initializeWaveSurfer = (url, index) => {
     const container = document.getElementById(`waveform-${index}`);
     if (!container) return;
-  
+
     if (!waveSurferRefs.current[index]) {
       const waveSurfer = WaveSurfer.create({
         container: `#waveform-${index}`,
@@ -96,14 +96,14 @@ const AudioCard = ({
         height: 80,
         backend: "MediaElement",
       });
-  
+
       waveSurfer.load(url);
       waveSurferRefs.current[index] = waveSurfer;
-  
+
       waveSurfer.on("ready", () => setDuration(formatDuration(waveSurfer.getDuration())));
       waveSurfer.on("play", startKeyDetection);
       waveSurfer.on("pause", stopKeyDetection);
-  
+
       // Add listener for seek events
       waveSurfer.on("seek", handleTimelineSeek);
       waveSurfer.on("finish", () => {
@@ -112,20 +112,20 @@ const AudioCard = ({
       });
     }
   };
-  
+
   const handleTimelineSeek = async (seekRatio) => {
     const waveSurfer = waveSurferRefs.current[index];
     if (!waveSurfer) return;
-  
+
     // Calculate the current time based on the seek ratio
     const currentTime = seekRatio * waveSurfer.getDuration();
     const segment = await extractAudioSegment(file.url, currentTime);
-  
+
     if (segment.length === 0) {
       console.error("Empty audio segment during seek, skipping key detection");
       return;
     }
-  
+
     try {
       const response = await axios.post("http://localhost:5000/analyze_segment", {
         segment,
@@ -138,8 +138,8 @@ const AudioCard = ({
       console.error("Error detecting key on seek:", error.response?.data || error.message);
     }
   };
-  
-  
+
+
 
   const startKeyDetection = () => {
     intervalRef.current = setInterval(async () => {
@@ -165,7 +165,7 @@ const AudioCard = ({
       } catch (error) {
         console.error("Error detecting key:", error.response?.data || error.message);
       }
-    }, 500);
+    }, 100);
   };
 
   const stopKeyDetection = () => {
@@ -236,8 +236,8 @@ const AudioCard = ({
           position: "absolute",
           top: 8,
           right: 20,
-          width: 50,
-          height: 50,
+          width: 65,
+          height: 65,
           border: "3px solid",
           borderColor: "primary.main",
           boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
@@ -321,15 +321,17 @@ const AudioCard = ({
               boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
               transition: "transform 0.1s ease",
               position: "relative",
-              top: "-20px",
+              width: 65,
+              height: 65,
+              right: "20px"
             }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             {waveSurferRefs.current[index]?.isPlaying() ? (
-              <PauseCircleIcon style={{ fontSize: "40px", color: "#fff" }} />
+              <PauseCircleIcon style={{ fontSize: "60px", color: "#fff" }} />
             ) : (
-              <PlayCircleIcon style={{ fontSize: "40px", color: "#1976D2" }} />
+              <PlayCircleIcon style={{ fontSize: "60px", color: "#1976D2" }} />
             )}
           </IconButton>
         </Grid>
