@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
@@ -6,6 +6,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { Avatar } from "@mui/material";
 import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
+import axios from "axios";
 import AWS from "aws-sdk";
 import { getFirestore, query, where, collection, getDocs } from "firebase/firestore";
 import "./audio-card.css";
@@ -22,6 +23,9 @@ const AudioCard = ({
 
   const [duration, setDuration] = useState("N/A");
   const [publisherName, setPublisherName] = useState("");
+  const [liveKey, setLiveKey] = useState("N/A");
+  const [liveConfidence, setLiveConfidence] = useState(0);
+  const intervalRef = useRef(null);
 
   // AWS S3 configuration
   const s3 = new AWS.S3({
@@ -70,14 +74,18 @@ const AudioCard = ({
     fetchPublisherData();
   }, [file.uid]);
 
+  useEffect(() => {
+    initializeWaveSurfer(file.url, index);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
   const initializeWaveSurfer = (url, index) => {
     const container = document.getElementById(`waveform-${index}`);
-    if (!container) {
-      console.error(`Container #waveform-${index} not found.`);
-      return;
-    }
+    if (!container) return;
+
     if (!waveSurferRefs.current[index]) {
-      console.log("Initializing WaveSurfer for index:", index);
       const waveSurfer = WaveSurfer.create({
         container: `#waveform-${index}`,
         waveColor: "#6a11cb",
@@ -92,13 +100,66 @@ const AudioCard = ({
       waveSurfer.load(url);
       waveSurferRefs.current[index] = waveSurfer;
 
-      waveSurfer.on("ready", () => {
-        setDuration(formatDuration(waveSurfer.getDuration()));
-      });
+      waveSurfer.on("ready", () => setDuration(formatDuration(waveSurfer.getDuration())));
+      waveSurfer.on("play", startKeyDetection);
+      waveSurfer.on("pause", stopKeyDetection);
+      waveSurfer.on("finish", stopKeyDetection);
+    }
+  };
 
-      waveSurfer.on("finish", () => {
-        setActiveIndexes((prev) => prev.filter((i) => i !== index));
-      });
+  const startKeyDetection = () => {
+    intervalRef.current = setInterval(async () => {
+      const waveSurfer = waveSurferRefs.current[index];
+      if (!waveSurfer || !waveSurfer.isPlaying()) return;
+
+      const currentTime = waveSurfer.getCurrentTime();
+      const segment = await extractAudioSegment(file.url, currentTime);
+
+      if (segment.length === 0) {
+        console.error("Empty audio segment, skipping key detection");
+        return;
+      }
+
+      try {
+        const response = await axios.post("http://localhost:5000/analyze_segment", {
+          segment,
+          sr: 44100,
+        });
+        console.log("Key Detection Response:", response.data);
+        setLiveKey(response.data.key || "N/A");
+        setLiveConfidence(response.data.confidence || 0);
+      } catch (error) {
+        console.error("Error detecting key:", error.response?.data || error.message);
+      }
+    }, 2000);
+  };
+
+  const stopKeyDetection = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const extractAudioSegment = async (url, currentTime) => {
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+      const startSample = Math.floor(currentTime * audioBuffer.sampleRate);
+      const endSample = Math.min(startSample + audioBuffer.sampleRate * 2, audioBuffer.length);
+
+      if (startSample >= audioBuffer.length || startSample < 0) {
+        console.error("Invalid segment time range");
+        return [];
+      }
+
+      return Array.from(audioBuffer.getChannelData(0).slice(startSample, endSample));
+    } catch (error) {
+      console.error("Error extracting audio segment:", error);
+      return [];
     }
   };
 
@@ -172,7 +233,19 @@ const AudioCard = ({
               {showExtras && `Publisher: ${publisherName}`}
             </Typography>
 
-            <div id={`waveform-${index}`} className="waveform-container"></div>
+            <div className="waveform-wrapper">
+              {/* Live Key Display */}
+              <div className="live-key-display">
+                {liveKey !== "N/A" && (
+                  <Typography variant="h6" className="live-key-text">
+                    🎵 {liveKey} ({liveConfidence}%)
+                  </Typography>
+                )}
+              </div>
+              {/* Waveform */}
+              <div id={`waveform-${index}`} className="waveform-container"></div>
+            </div>
+
 
             {/* Pass Duration to Metadata */}
             <Metadata
