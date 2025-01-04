@@ -140,18 +140,23 @@ const AudioCard = ({
   };
 
   const startKeyDetection = () => {
+    stopKeyDetection(); // Clear any existing interval
+  
     intervalRef.current = setInterval(async () => {
       const waveSurfer = waveSurferRefs.current[index];
-      if (!waveSurfer || !waveSurfer.isPlaying()) return;
-
+      if (!waveSurfer || !waveSurfer.isPlaying()) {
+        stopKeyDetection(); // Ensure no ghost intervals
+        return;
+      }
+  
       const currentTime = waveSurfer.getCurrentTime();
       const segment = await extractAudioSegment(file.url, currentTime);
-
+  
       if (segment.length === 0) {
         console.error("Empty audio segment, skipping key detection");
         return;
       }
-
+  
       try {
         const response = await axios.post("http://localhost:5000/analyze_segment", {
           segment,
@@ -163,13 +168,14 @@ const AudioCard = ({
       } catch (error) {
         console.error("Error detecting key:", error.response?.data || error.message);
       }
-    }, 100);
+    }, 1000); 
   };
 
   const stopKeyDetection = () => {
     if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+      clearInterval(intervalRef.current); // Clear the interval
+      intervalRef.current = null; // Reset the reference
+      console.log("Key detection stopped.");
     }
   };
 
