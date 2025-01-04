@@ -139,8 +139,6 @@ const AudioCard = ({
     }
   };
 
-
-
   const startKeyDetection = () => {
     intervalRef.current = setInterval(async () => {
       const waveSurfer = waveSurferRefs.current[index];
@@ -204,17 +202,32 @@ const AudioCard = ({
   };
 
   const togglePlay = (index) => {
+    // Stop all other players and their key detection except the current one
+    Object.keys(waveSurferRefs.current).forEach((key) => {
+      const i = parseInt(key, 10);
+      const waveSurfer = waveSurferRefs.current[i];
+      if (waveSurfer && i !== index && waveSurfer.isPlaying()) {
+        waveSurfer.pause();
+        stopKeyDetection(); // Stop key detection for other audio
+        setActiveIndexes((prev) => prev.filter((activeIndex) => activeIndex !== i));
+      }
+    });
+  
+    // Handle play/pause for the current audio
     const waveSurfer = waveSurferRefs.current[index];
     if (waveSurfer) {
       if (waveSurfer.isPlaying()) {
         waveSurfer.pause();
+        stopKeyDetection(); // Stop key detection for current audio
         setActiveIndexes((prev) => prev.filter((i) => i !== index));
       } else {
         waveSurfer.play();
+        startKeyDetection(); // Start key detection for current audio
         setActiveIndexes((prev) => [...prev, index]);
       }
     }
   };
+  
 
   return (
     <Card
