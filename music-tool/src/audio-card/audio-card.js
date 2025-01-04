@@ -234,8 +234,8 @@ const AudioCard = ({
         src={file.profilePicture || "/default-avatar.png"}
         sx={{
           position: "absolute",
-          top: 8,
-          right: 20,
+          top: 15,
+          right: 15,
           width: 65,
           height: 65,
           border: "3px solid",
@@ -323,7 +323,8 @@ const AudioCard = ({
               position: "relative",
               width: 65,
               height: 65,
-              right: "20px"
+              top: "-5px",
+              right: "60px"
             }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
