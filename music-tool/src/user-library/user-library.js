@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Card, CardContent, Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Library from "../library/library";
 import "./user-library.css";
 import { useParams } from "react-router-dom";
@@ -56,20 +58,8 @@ const UserLibrary = () => {
         fontFamily={"Montserrat, sans-serif"}
         fontWeight="bold"
       >
-        {user ? `${user.username || "User"}'s Library` : "User Library"}
+        {user ? `${user.username.toUpperCase() || "USER"}'S LIBRARY` : "User Library"}
       </Typography>
-
-      <Box className="profile-header" mb={4}>
-        <AccountCircleIcon sx={{ fontSize: 80, color: "##FFFFFF" }} />
-        <Typography variant="h4" className="profile-title" mt={2}>
-          {user ? user.username || "Anonymous" : "No User Found"}
-        </Typography>
-        {user && (
-          <Typography variant="subtitle1" color="textSecondary">
-            {user.email || "Email not available"}
-          </Typography>
-        )}
-      </Box>
 
       <Card className="user-info">
         <CardContent>
@@ -102,21 +92,11 @@ const UserLibrary = () => {
           )}
         </CardContent>
       </Card>
-
       <Button
         variant="contained"
-        color="primary"
-        sx={{
-          marginTop: "20px",
-          fontWeight: "bold",
-          background: "#6a11cb",
-          maxWidth: "200px",
-          boxShadow: "none",
-          "&:hover": {
-            boxShadow: "none",
-          },
-        }}
+        sx={{ mt: 4 }}
         onClick={() => setShowAudioFiles(!showAudioFiles)}
+        endIcon={showAudioFiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
       >
         {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
       </Button>
