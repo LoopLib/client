@@ -255,10 +255,9 @@ const AudioCard = ({
           position: "absolute",
           top: 15,
           right: 15,
-          width: 65,
-          height: 65,
+          width: 55,
+          height: 55,
           border: "3px solid",
-          borderColor: "primary.main",
           boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
         }}
       />
