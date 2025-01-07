@@ -40,20 +40,30 @@ const FileUpload = () => {
     const [openDialog, setOpenDialog] = useState(false); // State for dialog visibility
 
     const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-        setBpm(null);
-        setKey(null);
+        const newFile = event.target.files[0];
+        if (newFile) {
+            // Reset previous file state
+            setSelectedFile(newFile);
+            setBpm(null);
+            setKey(null);
+            setFileName(""); // Reset file name field in the dialog
+        }
     };
-
+    
     const handleDrop = (event) => {
         event.preventDefault();
         setIsDragging(false);
-        if (event.dataTransfer.files.length) {
-            setSelectedFile(event.dataTransfer.files[0]);
+    
+        const newFile = event.dataTransfer.files[0];
+        if (newFile) {
+            // Reset previous file state
+            setSelectedFile(newFile);
             setBpm(null);
             setKey(null);
+            setFileName(""); // Reset file name field in the dialog
         }
     };
+    
 
     const handleDragOver = (event) => {
         event.preventDefault();
