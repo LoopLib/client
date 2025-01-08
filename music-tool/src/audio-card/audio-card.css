@@ -1,10 +1,36 @@
-/* Audio card styles */
 .audio-card {
   width: 100%; /* Stretch card to container's width */
   max-width: 1200px; /* Limit card size for larger screens */
   margin: 16px 0; /* Add spacing between cards */
   box-sizing: border-box; /* Consistent sizing */
+
+  /* Base Styles */
+  background: #fff; /* Background for card content */
   border: 5px solid #1976D2;
+  border-radius: 16px; /* Rounded corners */
+  position: relative; /* For pseudo-element positioning */
+  overflow: hidden; /* Prevent content overflow */
+  z-index: 0;
+
+  /* Inner Padding */
+  padding: 16px;
+
+  /* Depth Effect */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.audio-card::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  background: transparent; /* Transparent border space */
+  border: 8px solid rgba(25, 118, 210, 0.5); /* Thick transparent border with your color */
+  border-radius: 24px; /* Rounded border */
+  z-index: -1;
+  pointer-events: none; /* Allow interaction with the card content */
 }
 
 /* Removed hover effect styles */
