@@ -25,6 +25,10 @@ const AudioCard = ({
   const [publisherName, setPublisherName] = useState("");
   const [liveKey, setLiveKey] = useState("N/A");
   const [liveConfidence, setLiveConfidence] = useState(0);
+
+  const [likes, setLikes] = useState(0);
+  const [downloads, setDownloads] = useState(0);
+
   const intervalRef = useRef(null);
 
   // AWS S3 configuration
@@ -73,6 +77,26 @@ const AudioCard = ({
 
     fetchPublisherData();
   }, [file.uid]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const statsKey = `users/${file.uid}/stats/${file.name}.stats.json`;
+        const statsUrl = s3.getSignedUrl("getObject", {
+          Bucket: "looplib-audio-bucket",
+          Key: statsKey,
+        });
+
+        const response = await axios.get(statsUrl);
+        setLikes(response.data.likes || 0);
+        setDownloads(response.data.downloads || 0);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
+
+    fetchStats();
+  }, [file.name, file.uid]);
 
   useEffect(() => {
     initializeWaveSurfer(file.url, index);
@@ -141,22 +165,22 @@ const AudioCard = ({
 
   const startKeyDetection = () => {
     stopKeyDetection(); // Clear any existing interval
-  
+
     intervalRef.current = setInterval(async () => {
       const waveSurfer = waveSurferRefs.current[index];
       if (!waveSurfer || !waveSurfer.isPlaying()) {
         stopKeyDetection(); // Ensure no ghost intervals
         return;
       }
-  
+
       const currentTime = waveSurfer.getCurrentTime();
       const segment = await extractAudioSegment(file.url, currentTime);
-  
+
       if (segment.length === 0) {
         console.error("Empty audio segment, skipping key detection");
         return;
       }
-  
+
       try {
         const response = await axios.post("http://localhost:5000/analyze_segment", {
           segment,
@@ -168,7 +192,7 @@ const AudioCard = ({
       } catch (error) {
         console.error("Error detecting key:", error.response?.data || error.message);
       }
-    }, 1000); 
+    }, 1000);
   };
 
   const stopKeyDetection = () => {
@@ -218,7 +242,7 @@ const AudioCard = ({
         setActiveIndexes((prev) => prev.filter((activeIndex) => activeIndex !== i));
       }
     });
-  
+
     // Handle play/pause for the current audio
     const waveSurfer = waveSurferRefs.current[index];
     if (waveSurfer) {
@@ -233,7 +257,35 @@ const AudioCard = ({
       }
     }
   };
-  
+
+  const handleLike = async () => {
+    const updatedLikes = likes + 1;
+    await updateStats({ likes: updatedLikes });
+    setLikes(updatedLikes);
+  };
+
+  const handleDownload = async () => {
+    const updatedDownloads = downloads + 1;
+    await updateStats({ downloads: updatedDownloads });
+    setDownloads(updatedDownloads);
+  };
+
+  const updateStats = async (updatedFields) => {
+    try {
+      const statsKey = `users/${file.uid}/stats/${file.name}.stats.json`;
+      const updatedStats = { likes, downloads, ...updatedFields };
+
+      await s3.upload({
+        Bucket: "looplib-audio-bucket",
+        Key: statsKey,
+        Body: JSON.stringify(updatedStats, null, 2),
+        ContentType: "application/json",
+      }).promise();
+    } catch (error) {
+      console.error("Error updating stats:", error);
+    }
+  };
+
 
   return (
     <Card
@@ -328,6 +380,10 @@ const AudioCard = ({
                 <DownloadIcon />
               </Button>
             )}
+            <Typography variant="body2">👍 Likes: {likes}</Typography>
+            <Typography variant="body2">⬇️ Downloads: {downloads}</Typography>
+            <Button onClick={handleLike} variant="outlined">Like</Button>
+            <Button onClick={handleDownload} variant="outlined">Download</Button>
           </CardContent>
         </Grid>
 
