@@ -106,44 +106,35 @@ const FileUpload = () => {
             setError("Please provide a file name.");
             return;
         }
-
+    
         setIsLoading(true);
-
+    
         try {
             const auth = getAuth();
             const user = auth.currentUser;
-
+    
             if (!user) {
                 throw new Error("User not authenticated");
             }
-
+    
             const uid = user.uid;
-
-            const userDocRef = doc(db, "users", uid);
-            const userDoc = await getDoc(userDocRef);
-
-            if (!userDoc.exists()) {
-                throw new Error("User not found in Firestore");
-            }
-
+    
             const s3 = new AWS.S3({
                 region: process.env.REACT_APP_AWS_REGION,
                 accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
                 secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
             });
-
-            // Use the user-specified file name
+    
+            // Audio Upload
             const audioParams = {
                 Bucket: "looplib-audio-bucket",
-                Key: `users/${uid}/audio/${fileName}`, // User-defined file name
+                Key: `users/${uid}/audio/${fileName}`,
                 Body: selectedFile,
                 ContentType: selectedFile.type,
             };
-
-            console.log("Uploading audio file with params:", audioParams);
-            const uploadResult = await s3.upload(audioParams).promise();
-            console.log("Audio file uploaded successfully:", uploadResult);
-
+            await s3.upload(audioParams).promise();
+    
+            // Metadata Upload
             const metadata = {
                 name: fileName,
                 type: selectedFile.type,
@@ -153,19 +144,24 @@ const FileUpload = () => {
                 key: key || null,
                 uploadTimestamp: new Date().toISOString(),
             };
-
             const metadataParams = {
                 Bucket: "looplib-audio-bucket",
-                Key: `users/${uid}/metadata/${fileName}.metadata.json`, // Use file name for metadata
+                Key: `users/${uid}/metadata/${fileName}.metadata.json`,
                 Body: JSON.stringify(metadata, null, 2),
                 ContentType: "application/json",
             };
-
-            console.log("Uploading metadata with params:", metadataParams);
-            const metadataUploadResult = await s3.upload(metadataParams).promise();
-            console.log("Metadata uploaded successfully:", metadataUploadResult);
-
-            alert("Audio and metadata have been published successfully!");
+            await s3.upload(metadataParams).promise();
+    
+            // Stats Upload (Likes and Downloads)
+            const statsParams = {
+                Bucket: "looplib-audio-bucket",
+                Key: `users/${uid}/stats/${fileName}.stats.json`,
+                Body: JSON.stringify({ likes: 0, downloads: 0 }, null, 2),
+                ContentType: "application/json",
+            };
+            await s3.upload(statsParams).promise();
+    
+            alert("Audio, metadata, and stats have been published successfully!");
             setError(null);
         } catch (error) {
             console.error("Error publishing file:", error);
@@ -175,6 +171,7 @@ const FileUpload = () => {
             setOpenDialog(false);
         }
     };
+    
 
 
     const handleOpenDialog = () => {
