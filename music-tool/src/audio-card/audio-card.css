@@ -1,21 +1,15 @@
 .audio-card {
-  width: 100%; /* Stretch card to container's width */
-  max-width: 1200px; /* Limit card size for larger screens */
-  margin: 16px 0; /* Add spacing between cards */
-  box-sizing: border-box; /* Consistent sizing */
-
-  /* Base Styles */
-  background: #fff; /* Background for card content */
+  width: 100%;
+  max-width: 1200px;
+  margin: 16px 0;
+  box-sizing: border-box;
+  background: #fff;
   border: 5px solid #1976D2;
-  border-radius: 16px; /* Rounded corners */
-  position: relative; /* For pseudo-element positioning */
-  overflow: hidden; /* Prevent content overflow */
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
   z-index: 0;
-
-  /* Inner Padding */
   padding: 16px;
-
-  /* Depth Effect */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -26,19 +20,17 @@
   left: -8px;
   right: -8px;
   bottom: -8px;
-  background: transparent; /* Transparent border space */
-  border: 8px solid rgba(25, 118, 210, 0.5); /* Thick transparent border with your color */
-  border-radius: 24px; /* Rounded border */
+  background: transparent;
+  border: 8px solid rgba(25, 118, 210, 0.5);
+  border-radius: 24px;
   z-index: -1;
-  pointer-events: none; /* Allow interaction with the card content */
+  pointer-events: none;
 }
 
-/* Removed hover effect styles */
 .audio-card:hover {
-  box-shadow: 10px 6px 20px rgba(106, 17, 203, 0.15); /* Same as default */
+  box-shadow: 10px 6px 20px rgba(106, 17, 203, 0.15);
 }
 
-/* Active state remains unchanged */
 .audio-card.active {
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: white;
@@ -47,80 +39,85 @@
 }
 
 .audio-card-title {
-  font-size: 1.25rem; /* Larger font size for better visibility */
-  letter-spacing: 0.5px; /* Slight spacing between letters */
-  text-transform: capitalize; /* Capitalize the first letter of each word */
-  text-overflow: ellipsis; /* Handle overflow with ellipsis */
-  white-space: nowrap; /* Prevent text from wrapping */
-  overflow: hidden; /* Ensure the text stays within its container */
-  display: block; /* Block display for consistent behavior */
-  margin-bottom: 8px; /* Space below the title */
-  color: var(--text-primary-color, #000); /* Use a variable for flexibility */
-  cursor: default; /* Default cursor behavior */
+  font-size: 1.25rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  margin-bottom: 8px;
+  cursor: default;
 }
 
 .audio-card-publisher {
-  font-size: 1rem; /* Standard size for body text */
-  font-weight: normal; /* Normal weight to differentiate from the title */
-  color: var(--primary-color, #1976D2); /* Use a primary color for emphasis */
-  text-decoration: underline; /* To indicate interactivity */
-  cursor: pointer; /* Pointer cursor for clickable text */
-  margin-bottom: 8px; /* Add spacing below if needed */
-  white-space: nowrap; /* Prevent wrapping */
-  overflow: hidden; /* Ensure text doesn't overflow */
-  text-overflow: ellipsis; /* Add ellipsis for long text */
-  display: inline-block; /* Maintain block behavior for layout consistency */
-}
-
-
-
-@media (max-width: 768px) {
-  .audio-card {
-      flex-direction: column;
-      align-items: flex-start;
-  }
-
-  .audio-card .MuiTypography-root {
-      max-width: 100%;
-      margin-bottom: 8px;
-  }
-
-  .audio-card .MuiIconButton-root {
-      margin-top: 8px;
-  }
-
-  .audio-card .delete-icon {
-      position: static;
-      align-self: flex-end;
-  }
+  font-size: 1rem;
+  font-weight: normal;
+  color: var(--primary-color, #1976D2);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
 
 .waveform-container {
-    width: 100%; /* Adjust width to fit the container */
-    height: 80px; /* Set a height for the waveform */
-    background-color: #f5f5f5; /* Light background for contrast */
-    border: 1px solid #ccc; /* Add a subtle border */
-    border-radius: 5px; /* Rounded corners */
-    overflow: hidden; /* Prevent overflow of elements */
-    position: relative; /* For positioning child elements if needed */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    cursor: pointer; /* Show pointer cursor for interactivity */
-  }
-  
-
-  .waveform-container:active {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Enhanced shadow when active */
-  }
-
-
-/* Adjust layout on smaller screens */
-@media (max-width: 768px) {
-  .audio-card {
-    flex-direction: column; /* Stack content vertically */
-    align-items: flex-start;
-    width: 100%; /* Ensure cards take full width of the container */
-  }
+  width: 100%;
+  height: 80px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
+.waveform-container:active {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 
-  
+.audio-card-play-button {
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease;
+  position: relative;
+  width: 65px;
+  height: 65px;
+  top: -5px;
+  right: 60px;
+}
+
+.audio-card-play-button:hover {
+  transform: scale(1.1);
+}
+
+.audio-card .live-key-display {
+  margin-top: 8px;
+}
+
+.audio-card .live-key-text {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #6a11cb;
+}
+
+@media (max-width: 768px) {
+  .audio-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .audio-card .MuiTypography-root {
+    max-width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .audio-card .MuiIconButton-root {
+    margin-top: 8px;
+  }
+
+  .audio-card .delete-icon {
+    position: static;
+    align-self: flex-end;
+  }
+}
