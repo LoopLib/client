@@ -2,10 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Avatar } from "@mui/material";
 import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
+import { getAuth } from "firebase/auth";
 import axios from "axios";
 import AWS from "aws-sdk";
 import { getFirestore, query, where, collection, getDocs } from "firebase/firestore";
@@ -27,6 +30,8 @@ const AudioCard = ({
   const [liveConfidence, setLiveConfidence] = useState(0);
 
   const [likes, setLikes] = useState(0);
+  const [userLiked, setUserLiked] = useState(false); // Track if the user has liked the audio
+  const [isLoadingUserLiked, setIsLoadingUserLiked] = useState(true);
   const [downloads, setDownloads] = useState(0);
 
   const intervalRef = useRef(null);
@@ -96,6 +101,41 @@ const AudioCard = ({
     };
 
     fetchStats();
+  }, [file.name, file.uid]);
+
+  useEffect(() => {
+    const fetchUserLikedStatus = async () => {
+      setIsLoadingUserLiked(true); // Start loading
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) {
+          setUserLiked(false);
+          setIsLoadingUserLiked(false); // Done loading
+          return;
+        }
+
+        const uid = user.uid;
+        const statsKey = `users/${file.uid}/stats/${file.name}.stats.json`;
+
+        const statsUrl = s3.getSignedUrl("getObject", {
+          Bucket: "looplib-audio-bucket",
+          Key: statsKey,
+        });
+
+        const response = await axios.get(statsUrl);
+        const likedBy = response.data.likedBy || [];
+
+        setUserLiked(likedBy.includes(uid)); // Check if the user has liked the audio
+      } catch (error) {
+        console.error("Error fetching user like status:", error);
+      } finally {
+        setIsLoadingUserLiked(false); // Done loading
+      }
+    };
+
+    fetchUserLikedStatus();
   }, [file.name, file.uid]);
 
   useEffect(() => {
@@ -259,10 +299,60 @@ const AudioCard = ({
   };
 
   const handleLike = async () => {
-    const updatedLikes = likes + 1;
-    await updateStats({ likes: updatedLikes });
-    setLikes(updatedLikes);
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      alert("Please log in to like this audio.");
+      return;
+    }
+
+    const uid = user.uid;
+
+    try {
+      const statsKey = `users/${file.uid}/stats/${file.name}.stats.json`;
+
+      // Fetch existing stats
+      const statsUrl = s3.getSignedUrl("getObject", {
+        Bucket: "looplib-audio-bucket",
+        Key: statsKey,
+      });
+
+      const response = await axios.get(statsUrl);
+      const currentStats = response.data;
+      const likedBy = currentStats.likedBy || [];
+
+      // Check if the user has already liked the audio
+      if (likedBy.includes(uid)) {
+        alert("You have already liked this audio.");
+        return;
+      }
+
+      // Update stats
+      const updatedStats = {
+        ...currentStats,
+        likes: (currentStats.likes || 0) + 1,
+        likedBy: [...likedBy, uid], // Add user ID to likedBy array
+      };
+
+      // Upload updated stats
+      await s3
+        .upload({
+          Bucket: "looplib-audio-bucket",
+          Key: statsKey,
+          Body: JSON.stringify(updatedStats, null, 2),
+          ContentType: "application/json",
+        })
+        .promise();
+
+      // Update UI state only after a successful S3 update
+      setLikes(updatedStats.likes);
+      setUserLiked(true); // Update UI state
+    } catch (error) {
+      console.error("Error updating like:", error);
+    }
   };
+
 
   const handleDownload = async () => {
     const updatedDownloads = downloads + 1;
@@ -382,8 +472,20 @@ const AudioCard = ({
             )}
             <Typography variant="body2">👍 Likes: {likes}</Typography>
             <Typography variant="body2">⬇️ Downloads: {downloads}</Typography>
-            <Button onClick={handleLike} variant="outlined">Like</Button>
-            <Button onClick={handleDownload} variant="outlined">Download</Button>
+            {isLoadingUserLiked ? (
+              <IconButton disabled>
+                <FavoriteBorderIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                onClick={handleLike}
+                color={userLiked ? "error" : "default"} // Red for liked, grey for not liked
+              >
+                {userLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+              </IconButton>
+            )}
+
+
           </CardContent>
         </Grid>
 

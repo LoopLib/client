@@ -156,10 +156,10 @@ const FileUpload = () => {
             const statsParams = {
                 Bucket: "looplib-audio-bucket",
                 Key: `users/${uid}/stats/${fileName}.stats.json`,
-                Body: JSON.stringify({ likes: 0, downloads: 0 }, null, 2),
+                Body: JSON.stringify({ likes: 0, downloads: 0, likedBy: [] }, null, 2),
                 ContentType: "application/json",
-            };
-            await s3.upload(statsParams).promise();
+              };
+              await s3.upload(statsParams).promise();
     
             alert("Audio, metadata, and stats have been published successfully!");
             setError(null);
