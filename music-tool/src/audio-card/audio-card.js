@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -322,18 +323,25 @@ const AudioCard = ({
       const currentStats = response.data;
       const likedBy = currentStats.likedBy || [];
 
-      // Check if the user has already liked the audio
-      if (likedBy.includes(uid)) {
-        alert("You have already liked this audio.");
-        return;
-      }
+      let updatedStats;
 
-      // Update stats
-      const updatedStats = {
-        ...currentStats,
-        likes: (currentStats.likes || 0) + 1,
-        likedBy: [...likedBy, uid], // Add user ID to likedBy array
-      };
+      if (likedBy.includes(uid)) {
+        // Remove like
+        updatedStats = {
+          ...currentStats,
+          likes: Math.max((currentStats.likes || 1) - 1, 0),
+          likedBy: likedBy.filter((id) => id !== uid), // Remove user ID
+        };
+        setUserLiked(false); // Update UI state
+      } else {
+        // Add like
+        updatedStats = {
+          ...currentStats,
+          likes: (currentStats.likes || 0) + 1,
+          likedBy: [...likedBy, uid], // Add user ID
+        };
+        setUserLiked(true); // Update UI state
+      }
 
       // Upload updated stats
       await s3
@@ -345,14 +353,11 @@ const AudioCard = ({
         })
         .promise();
 
-      // Update UI state only after a successful S3 update
-      setLikes(updatedStats.likes);
-      setUserLiked(true); // Update UI state
+      setLikes(updatedStats.likes); // Update likes count
     } catch (error) {
       console.error("Error updating like:", error);
     }
   };
-
 
   const handleDownload = async () => {
     const updatedDownloads = downloads + 1;
@@ -404,7 +409,6 @@ const AudioCard = ({
         }}
       />
 
-
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
           <CardContent>
@@ -416,7 +420,6 @@ const AudioCard = ({
             >
               {file.name}
             </Typography>
-
 
             <Typography
               variant="p"
@@ -470,8 +473,38 @@ const AudioCard = ({
                 <DownloadIcon />
               </Button>
             )}
-            <Typography variant="body2">👍 Likes: {likes}</Typography>
-            <Typography variant="body2">⬇️ Downloads: {downloads}</Typography>
+            <div
+              style={{
+                position: "absolute",
+                right: "200px",
+                bottom: "220px",
+                display: "flex",
+                alignItems: "center",
+                gap: "20px", // Space between the icon sets
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px", // Space between the icon and counter
+                }}
+              >
+                <FavoriteIcon style={{ fontSize: "24px" }} /> {/* Consistent size */}
+                <Typography variant="body2" style={{ fontSize: "16px" }}>{likes}</Typography>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px", // Space between the icon and counter
+                }}
+              >
+                <CloudDownloadIcon style={{ fontSize: "24px" }} /> {/* Consistent size */}
+                <Typography variant="body2" style={{ fontSize: "16px" }}>{downloads}</Typography>
+              </div>
+            </div>
+
             {isLoadingUserLiked ? (
               <IconButton disabled>
                 <FavoriteBorderIcon />
@@ -480,9 +513,18 @@ const AudioCard = ({
               <IconButton
                 onClick={handleLike}
                 color={userLiked ? "error" : "default"} // Red for liked, grey for not liked
+                style={{
+                  position: "absolute",
+                  right: "80px",
+                  bottom: "20px",
+                  border: "3px solid blue", // Always show the blue border
+                  borderRadius: "50%", // Make it a circle
+                  padding: "5px", // Add some padding
+                }}
               >
                 {userLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
               </IconButton>
+
             )}
 
 
