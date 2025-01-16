@@ -13,18 +13,23 @@ import PlayButton from "./play-button";
 import AvatarComponent from "./avatar";
 import Stats from "./stats"; // Import the Stats component
 import DownloadButton from "./download-button";
+import { useLiveKeyDetection } from "./live-key";
 
 const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRefs, onContextMenu, showExtras = true }) => {
 
   const [duration, setDuration] = useState("N/A");
   const [publisherName, setPublisherName] = useState("");
-  const [liveKey, setLiveKey] = useState("N/A");
-  const [liveConfidence, setLiveConfidence] = useState(0);
 
   const [likes, setLikes] = useState(0);
   const [userLiked, setUserLiked] = useState(false); // Track if the user has liked the audio
   const [isLoadingUserLiked, setIsLoadingUserLiked] = useState(true);
   const [downloads, setDownloads] = useState(0);
+
+  const { liveKey, liveConfidence, startKeyDetection, stopKeyDetection, handleTimelineSeek } = useLiveKeyDetection(
+    waveSurferRefs,
+    file.url,
+    index
+  );
 
   const isPlaying = waveSurferRefs.current[index]?.isPlaying();
 
@@ -170,94 +175,6 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
     }
   };
 
-  const handleTimelineSeek = async (seekRatio) => {
-    const waveSurfer = waveSurferRefs.current[index];
-    if (!waveSurfer) return;
-
-    // Calculate the current time based on the seek ratio
-    const currentTime = seekRatio * waveSurfer.getDuration();
-    const segment = await extractAudioSegment(file.url, currentTime);
-
-    if (segment.length === 0) {
-      console.error("Empty audio segment during seek, skipping key detection");
-      return;
-    }
-
-    try {
-      const response = await axios.post("http://localhost:5000/analyze_segment", {
-        segment,
-        sr: 44100,
-      });
-      console.log("Key Detection Response (Seek):", response.data);
-      setLiveKey(response.data.key || "N/A");
-      setLiveConfidence(response.data.confidence || 0);
-    } catch (error) {
-      console.error("Error detecting key on seek:", error.response?.data || error.message);
-    }
-  };
-
-  const startKeyDetection = () => {
-    stopKeyDetection(); // Clear any existing interval
-
-    intervalRef.current = setInterval(async () => {
-      const waveSurfer = waveSurferRefs.current[index];
-      if (!waveSurfer || !waveSurfer.isPlaying()) {
-        stopKeyDetection(); // Ensure no ghost intervals
-        return;
-      }
-
-      const currentTime = waveSurfer.getCurrentTime();
-      const segment = await extractAudioSegment(file.url, currentTime);
-
-      if (segment.length === 0) {
-        console.error("Empty audio segment, skipping key detection");
-        return;
-      }
-
-      try {
-        const response = await axios.post("http://localhost:5000/analyze_segment", {
-          segment,
-          sr: 44100,
-        });
-        console.log("Key Detection Response:", response.data);
-        setLiveKey(response.data.key || "N/A");
-        setLiveConfidence(response.data.confidence || 0);
-      } catch (error) {
-        console.error("Error detecting key:", error.response?.data || error.message);
-      }
-    }, 1000);
-  };
-
-  const stopKeyDetection = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current); // Clear the interval
-      intervalRef.current = null; // Reset the reference
-      console.log("Key detection stopped.");
-    }
-  };
-
-  const extractAudioSegment = async (url, currentTime) => {
-    try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-      const startSample = Math.floor(currentTime * audioBuffer.sampleRate);
-      const endSample = Math.min(startSample + audioBuffer.sampleRate * 2, audioBuffer.length);
-
-      if (startSample >= audioBuffer.length || startSample < 0) {
-        console.error("Invalid segment time range");
-        return [];
-      }
-
-      return Array.from(audioBuffer.getChannelData(0).slice(startSample, endSample));
-    } catch (error) {
-      console.error("Error extracting audio segment:", error);
-      return [];
-    }
-  };
-
   const formatDuration = (durationInSeconds) => {
     const minutes = Math.floor(durationInSeconds / 60);
     const seconds = Math.round(durationInSeconds % 60);
@@ -346,12 +263,6 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
     } catch (error) {
       console.error("Error updating like:", error);
     }
-  };
-
-  const handleDownload = async () => {
-    const updatedDownloads = downloads + 1;
-    await updateStats({ downloads: updatedDownloads });
-    setDownloads(updatedDownloads);
   };
 
   const updateStats = async (updatedFields) => {
