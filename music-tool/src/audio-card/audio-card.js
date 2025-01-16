@@ -14,16 +14,9 @@ import axios from "axios";
 import AWS from "aws-sdk";
 import { getFirestore, query, where, collection, getDocs } from "firebase/firestore";
 import "./audio-card.css";
+import PlayButton from "./play-button";
 
-const AudioCard = ({
-  file,
-  index,
-  activeIndexes,
-  setActiveIndexes,
-  waveSurferRefs,
-  onContextMenu,
-  showExtras = true, // Default to true
-}) => {
+const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRefs, onContextMenu, showExtras = true }) => {
 
   const [duration, setDuration] = useState("N/A");
   const [publisherName, setPublisherName] = useState("");
@@ -34,6 +27,8 @@ const AudioCard = ({
   const [userLiked, setUserLiked] = useState(false); // Track if the user has liked the audio
   const [isLoadingUserLiked, setIsLoadingUserLiked] = useState(true);
   const [downloads, setDownloads] = useState(0);
+
+  const isPlaying = waveSurferRefs.current[index]?.isPlaying();
 
   const intervalRef = useRef(null);
 
@@ -272,32 +267,29 @@ const AudioCard = ({
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const togglePlay = (index) => {
-    // Stop all other players and their key detection except the current one
+  const togglePlay = () => {
+    // Stop other players and handle current audio play/pause logic
     Object.keys(waveSurferRefs.current).forEach((key) => {
       const i = parseInt(key, 10);
       const waveSurfer = waveSurferRefs.current[i];
       if (waveSurfer && i !== index && waveSurfer.isPlaying()) {
         waveSurfer.pause();
-        stopKeyDetection(); // Stop key detection for other audio
         setActiveIndexes((prev) => prev.filter((activeIndex) => activeIndex !== i));
       }
     });
 
-    // Handle play/pause for the current audio
     const waveSurfer = waveSurferRefs.current[index];
     if (waveSurfer) {
       if (waveSurfer.isPlaying()) {
         waveSurfer.pause();
-        stopKeyDetection(); // Stop key detection for current audio
         setActiveIndexes((prev) => prev.filter((i) => i !== index));
       } else {
         waveSurfer.play();
-        startKeyDetection(); // Start key detection for current audio
         setActiveIndexes((prev) => [...prev, index]);
       }
     }
   };
+
 
   const handleLike = async () => {
     const auth = getAuth();
@@ -532,28 +524,18 @@ const AudioCard = ({
         </Grid>
 
         <Grid item xs={3} textAlign="center">
-          <IconButton
-            onClick={() => togglePlay(index)}
-            className="audio-card-play-button"
-            style={{
-              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-              transition: "transform 0.1s ease",
-              position: "relative",
-              width: 65,
-              height: 65,
-              top: "-5px",
-              right: "60px"
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
-            {waveSurferRefs.current[index]?.isPlaying() ? (
-              <PauseCircleIcon style={{ fontSize: "60px", color: "#fff" }} />
-            ) : (
-              <PlayCircleIcon style={{ fontSize: "60px", color: "#1976D2" }} />
-            )}
-          </IconButton>
-        </Grid>
+      <PlayButton
+        isPlaying={isPlaying}
+        togglePlay={togglePlay}
+        positionStyles={{
+          position: "relative",
+          width: 65,
+          height: 65,
+          top: "-5px",
+          right: "60px",
+        }}
+      />
+    </Grid>
       </Grid>
     </Card>
   );
