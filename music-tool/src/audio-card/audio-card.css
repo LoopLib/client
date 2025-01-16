@@ -98,7 +98,7 @@
 .audio-card .live-key-text {
   font-size: 1rem;
   font-weight: bold;
-  color: #6a11cb;
+  color: #333;
 }
 
 @media (max-width: 768px) {

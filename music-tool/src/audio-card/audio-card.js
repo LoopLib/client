@@ -5,25 +5,32 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
 import { getAuth } from "firebase/auth";
-import axios from "axios";
-import AWS from "aws-sdk";
-import { getFirestore, query, where, collection, getDocs } from "firebase/firestore";
+import { fetchPublisherData, fetchStats, fetchUserLikedStatus } from "./fetch-data"; // Import functions
 import "./audio-card.css";
 import PlayButton from "./play-button";
 import AvatarComponent from "./avatar";
-import Stats from "./stats"; // Import the Stats component
+import Stats from "./stats";
 import DownloadButton from "./download-button";
 import { useLiveKeyDetection } from "./live-key";
+import axios from "axios";
+import AWS from "aws-sdk";
+
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+  region: process.env.REACT_APP_AWS_REGION,
+});
 
 const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRefs, onContextMenu, showExtras = true }) => {
-
   const [duration, setDuration] = useState("N/A");
   const [publisherName, setPublisherName] = useState("");
-
   const [likes, setLikes] = useState(0);
-  const [userLiked, setUserLiked] = useState(false); // Track if the user has liked the audio
+  const [userLiked, setUserLiked] = useState(false);
   const [isLoadingUserLiked, setIsLoadingUserLiked] = useState(true);
   const [downloads, setDownloads] = useState(0);
+  const isPlaying = waveSurferRefs.current[index]?.isPlaying();
+  const intervalRef = useRef(null);
 
   const { liveKey, liveConfidence, startKeyDetection, stopKeyDetection, handleTimelineSeek } = useLiveKeyDetection(
     waveSurferRefs,
@@ -31,110 +38,44 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
     index
   );
 
-  const isPlaying = waveSurferRefs.current[index]?.isPlaying();
-
-  const intervalRef = useRef(null);
-
-  // AWS S3 configuration
-  const s3 = new AWS.S3({
-    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
-    region: process.env.REACT_APP_AWS_REGION,
-  });
-
   useEffect(() => {
-    const fetchPublisherData = async () => {
-      try {
-        if (!file.uid) {
-          console.error("Error: file.uid is undefined");
-          setPublisherName("Unknown");
-          return;
-        }
-
-        const db = getFirestore();
-        const usersCollection = collection(db, "users");
-        const q = query(usersCollection, where("uid", "==", file.uid));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const userData = querySnapshot.docs[0].data();
-          setPublisherName(userData.username || "Unknown");
-
-          // Construct profile picture URL from S3
-          const avatarKey = `users/${file.uid}/avatar/profile-picture.jpg`;
-          const avatarUrl = s3.getSignedUrl("getObject", {
-            Bucket: "looplib-audio-bucket",
-            Key: avatarKey,
-          });
-
-          file.profilePicture = avatarUrl;
-        } else {
-          console.error("No matching Firestore document found for UID:", file.uid);
-          setPublisherName("Unknown");
-        }
-      } catch (error) {
-        console.error("Error fetching publisher data:", error);
-        setPublisherName("Unknown");
-      }
+    // Fetch publisher data
+    const loadPublisherData = async () => {
+      const { publisherName, profilePicture } = await fetchPublisherData(file);
+      setPublisherName(publisherName);
+      file.profilePicture = profilePicture;
     };
 
-    fetchPublisherData();
+    loadPublisherData();
   }, [file.uid]);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const statsKey = `users/${file.uid}/stats/${file.name}.stats.json`;
-        const statsUrl = s3.getSignedUrl("getObject", {
-          Bucket: "looplib-audio-bucket",
-          Key: statsKey,
-        });
-
-        const response = await axios.get(statsUrl);
-        setLikes(response.data.likes || 0);
-        setDownloads(response.data.downloads || 0);
-      } catch (error) {
-        console.error("Error fetching stats:", error);
-      }
+    // Fetch stats
+    const loadStats = async () => {
+      const { likes, downloads } = await fetchStats(file);
+      setLikes(likes);
+      setDownloads(downloads);
     };
 
-    fetchStats();
-  }, [file.name, file.uid]);
+    loadStats();
+  }, [file.uid, file.name]);
 
   useEffect(() => {
-    const fetchUserLikedStatus = async () => {
-      setIsLoadingUserLiked(true); // Start loading
-      try {
-        const auth = getAuth();
-        const user = auth.currentUser;
+    // Fetch user like status
+    const loadUserLikedStatus = async () => {
+      setIsLoadingUserLiked(true);
+      const auth = getAuth();
+      const user = auth.currentUser;
 
-        if (!user) {
-          setUserLiked(false);
-          setIsLoadingUserLiked(false); // Done loading
-          return;
-        }
-
-        const uid = user.uid;
-        const statsKey = `users/${file.uid}/stats/${file.name}.stats.json`;
-
-        const statsUrl = s3.getSignedUrl("getObject", {
-          Bucket: "looplib-audio-bucket",
-          Key: statsKey,
-        });
-
-        const response = await axios.get(statsUrl);
-        const likedBy = response.data.likedBy || [];
-
-        setUserLiked(likedBy.includes(uid)); // Check if the user has liked the audio
-      } catch (error) {
-        console.error("Error fetching user like status:", error);
-      } finally {
-        setIsLoadingUserLiked(false); // Done loading
+      if (user) {
+        const isLiked = await fetchUserLikedStatus(file, user.uid);
+        setUserLiked(isLiked);
       }
+      setIsLoadingUserLiked(false);
     };
 
-    fetchUserLikedStatus();
-  }, [file.name, file.uid]);
+    loadUserLikedStatus();
+  }, [file.uid, file.name]);
 
   useEffect(() => {
     initializeWaveSurfer(file.url, index);
