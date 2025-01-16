@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import DownloadIcon from "@mui/icons-material/Download";
 import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
 import { getAuth } from "firebase/auth";
@@ -14,6 +12,7 @@ import "./audio-card.css";
 import PlayButton from "./play-button";
 import AvatarComponent from "./avatar";
 import Stats from "./stats"; // Import the Stats component
+import DownloadButton from "./download-button";
 
 const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRefs, onContextMenu, showExtras = true }) => {
 
@@ -436,25 +435,13 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
             />
 
             {showExtras && (
-              <Button
-                variant="contained"
-                color="primary"
-                style={{
-                  position: "absolute",
-                  right: "20px",
-                  bottom: "20px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "40px", // Set width for a square button
-                  height: "40px", // Set height for a square button
-                  padding: 0, // Remove default padding
-                  minWidth: "unset", // Prevent Material-UI from enforcing min-width
-                }}
-                onClick={() => window.open(file.url, "_blank")}
-              >
-                <DownloadIcon />
-              </Button>
+              <DownloadButton
+                fileUrl={file.url}
+                statsKey={`users/${file.uid}/stats/${file.name}.stats.json`}
+                s3={s3}
+                downloads={downloads}
+                setDownloads={setDownloads}
+              />
             )}
             <Stats likes={likes} downloads={downloads} /> {/* Use the Stats component */}
             {isLoadingUserLiked ? (
