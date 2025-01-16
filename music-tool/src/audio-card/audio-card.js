@@ -15,6 +15,7 @@ import AWS from "aws-sdk";
 import { getFirestore, query, where, collection, getDocs } from "firebase/firestore";
 import "./audio-card.css";
 import PlayButton from "./play-button";
+import AvatarComponent from "./avatar";
 
 const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRefs, onContextMenu, showExtras = true }) => {
 
@@ -64,7 +65,6 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
             Key: avatarKey,
           });
 
-          // Dynamically update file with the profile picture URL
           file.profilePicture = avatarUrl;
         } else {
           console.error("No matching Firestore document found for UID:", file.uid);
@@ -376,30 +376,23 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
 
   return (
     <Card
-      className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
-      sx={{
-        mb: 8,
-        borderRadius: 4,
-        position: "relative",
-        width: "100%",
-        mx: "auto",
-      }}
-      onMouseEnter={() => initializeWaveSurfer(file.url, index)}
-      onContextMenu={onContextMenu}
-    >
-      <Avatar
-        alt={publisherName}
-        src={file.profilePicture || "/default-avatar.png"}
-        sx={{
-          position: "absolute",
-          top: 15,
-          right: 15,
-          width: 55,
-          height: 55,
-          border: "3px solid",
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
-        }}
-      />
+    className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
+    sx={{
+      mb: 8,
+      borderRadius: 4,
+      position: "relative",
+      width: "100%",
+      mx: "auto",
+    }}
+    onMouseEnter={() => initializeWaveSurfer(file.url, index)}
+    onContextMenu={onContextMenu}
+  >
+    {/* Use AvatarComponent */}
+    <AvatarComponent
+      publisherName={publisherName}
+      profilePicture={file.profilePicture}
+    />
+
 
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={9}>
