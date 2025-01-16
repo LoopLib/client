@@ -1,12 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import DownloadIcon from "@mui/icons-material/Download";
-import { Avatar } from "@mui/material";
 import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
 import { getAuth } from "firebase/auth";
@@ -16,6 +13,7 @@ import { getFirestore, query, where, collection, getDocs } from "firebase/firest
 import "./audio-card.css";
 import PlayButton from "./play-button";
 import AvatarComponent from "./avatar";
+import Stats from "./stats"; // Import the Stats component
 
 const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRefs, onContextMenu, showExtras = true }) => {
 
@@ -376,22 +374,22 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
 
   return (
     <Card
-    className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
-    sx={{
-      mb: 8,
-      borderRadius: 4,
-      position: "relative",
-      width: "100%",
-      mx: "auto",
-    }}
-    onMouseEnter={() => initializeWaveSurfer(file.url, index)}
-    onContextMenu={onContextMenu}
-  >
-    {/* Use AvatarComponent */}
-    <AvatarComponent
-      publisherName={publisherName}
-      profilePicture={file.profilePicture}
-    />
+      className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
+      sx={{
+        mb: 8,
+        borderRadius: 4,
+        position: "relative",
+        width: "100%",
+        mx: "auto",
+      }}
+      onMouseEnter={() => initializeWaveSurfer(file.url, index)}
+      onContextMenu={onContextMenu}
+    >
+      {/* Use AvatarComponent */}
+      <AvatarComponent
+        publisherName={publisherName}
+        profilePicture={file.profilePicture}
+      />
 
 
       <Grid container spacing={2} alignItems="center">
@@ -458,38 +456,7 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
                 <DownloadIcon />
               </Button>
             )}
-            <div
-              style={{
-                position: "absolute",
-                right: "200px",
-                bottom: "220px",
-                display: "flex",
-                alignItems: "center",
-                gap: "20px", // Space between the icon sets
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px", // Space between the icon and counter
-                }}
-              >
-                <FavoriteIcon style={{ fontSize: "24px" }} /> {/* Consistent size */}
-                <Typography variant="body2" style={{ fontSize: "16px" }}>{likes}</Typography>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px", // Space between the icon and counter
-                }}
-              >
-                <CloudDownloadIcon style={{ fontSize: "24px" }} /> {/* Consistent size */}
-                <Typography variant="body2" style={{ fontSize: "16px" }}>{downloads}</Typography>
-              </div>
-            </div>
-
+            <Stats likes={likes} downloads={downloads} /> {/* Use the Stats component */}
             {isLoadingUserLiked ? (
               <IconButton disabled>
                 <FavoriteBorderIcon />
@@ -517,18 +484,18 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
         </Grid>
 
         <Grid item xs={3} textAlign="center">
-      <PlayButton
-        isPlaying={isPlaying}
-        togglePlay={togglePlay}
-        positionStyles={{
-          position: "relative",
-          width: 65,
-          height: 65,
-          top: "-5px",
-          right: "60px",
-        }}
-      />
-    </Grid>
+          <PlayButton
+            isPlaying={isPlaying}
+            togglePlay={togglePlay}
+            positionStyles={{
+              position: "relative",
+              width: 65,
+              height: 65,
+              top: "-5px",
+              right: "60px",
+            }}
+          />
+        </Grid>
       </Grid>
     </Card>
   );
