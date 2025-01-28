@@ -26,6 +26,7 @@ import AWS from "aws-sdk";
 import { onAuthStateChanged, updateProfile, updateEmail } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import LoadingPage from "../loading/loading";
 import "./profile.css";
 
 const Profile = () => {
@@ -207,7 +208,7 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <LoadingPage />;
   }
 
   const handleEditFile = (file) => {

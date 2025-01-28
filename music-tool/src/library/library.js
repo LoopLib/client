@@ -13,6 +13,7 @@ import AWS from "aws-sdk";
 import { useNavigate } from "react-router-dom";
 import AudioCard from "../audio-card/audio-card";
 import SearchBar from "../searchbar/searchbar";
+import LoadingPage from "../loading/loading";
 import "./library.css";
 
 const Library = ({ ownerUid = null }) => {
@@ -146,7 +147,7 @@ const Library = ({ ownerUid = null }) => {
   };
 
   if (loading) {
-    return <CircularProgress />;
+    return <LoadingPage />;
   }
 
   return (
