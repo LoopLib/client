@@ -101,7 +101,7 @@ const AudioCard = ({
   const initializeWaveSurfer = (url, index) => {
     const container = document.getElementById(`waveform-${index}`);
     if (!container || waveSurferRefs.current[index]) return;
-
+  
     const waveSurfer = WaveSurfer.create({
       container: `#waveform-${index}`,
       waveColor: "#6a11cb",
@@ -112,12 +112,25 @@ const AudioCard = ({
       height: 80,
       backend: "MediaElement",
     });
-
+  
     waveSurfer.load(url);
     waveSurferRefs.current[index] = waveSurfer;
-
+  
     waveSurfer.on("ready", () => setDuration(formatDuration(waveSurfer.getDuration())));
+  
+    // Handle when audio finishes playing
+    waveSurfer.on("finish", () => {
+      // Reset the waveform
+      waveSurfer.seekTo(0);
+  
+      // Update active indexes to remove the current index
+      setActiveIndexes((prev) => prev.filter((i) => i !== index));
+  
+      // Stop key detection
+      stopKeyDetection(index);
+    });
   };
+  
 
   const formatDuration = (durationInSeconds) => {
     const minutes = Math.floor(durationInSeconds / 60);
@@ -132,20 +145,30 @@ const AudioCard = ({
       if (waveSurfer && i !== index && waveSurfer.isPlaying()) {
         waveSurfer.pause();
         setActiveIndexes((prev) => prev.filter((activeIndex) => activeIndex !== i));
+  
+        // Stop key detection for other active waveforms
+        stopKeyDetection(i);
       }
     });
-
+  
     const waveSurfer = waveSurferRefs.current[index];
     if (waveSurfer) {
       if (waveSurfer.isPlaying()) {
         waveSurfer.pause();
         setActiveIndexes((prev) => prev.filter((i) => i !== index));
+  
+        // Stop key detection when playback is paused
+        stopKeyDetection(index);
       } else {
         waveSurfer.play();
         setActiveIndexes((prev) => [...prev, index]);
+  
+        // Start key detection when playback starts
+        startKeyDetection(index);
       }
     }
   };
+  
 
   const handleLike = async () => {
     const auth = getAuth();
