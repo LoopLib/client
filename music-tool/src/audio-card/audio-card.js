@@ -39,8 +39,6 @@ const AudioCard = ({
   const [likes, setLikes] = useState(0);
   const [userLiked, setUserLiked] = useState(false);
   const [isLoadingUserLiked, setIsLoadingUserLiked] = useState(true);
-  const [recommendations, setRecommendations] = useState([]); // State for recommended songs
-  const [loadingRecommendations, setLoadingRecommendations] = useState(false); // Loading state for recommendations
   const [downloads, setDownloads] = useState(0);
   const isPlaying = waveSurferRefs.current[index]?.isPlaying();
   const intervalRef = useRef(null);
@@ -145,24 +143,7 @@ const AudioCard = ({
       } else {
         waveSurfer.play();
         setActiveIndexes((prev) => [...prev, index]);
-        fetchRecommendations(); // Fetch recommendations when played
       }
-    }
-  };
-
-  const fetchRecommendations = async () => {
-    setLoadingRecommendations(true);
-    try {
-      const response = await axios.post("http://localhost:5000/recommend_songs", {
-        key: file.musicalKey || "C", // Default to "C" if no key
-        bpm: file.bpm || 120, // Default to 120 BPM if no BPM
-      });
-
-      setRecommendations(response.data.songs || []);
-    } catch (error) {
-      console.error("Error fetching recommendations:", error);
-    } finally {
-      setLoadingRecommendations(false);
     }
   };
 
@@ -338,27 +319,6 @@ const AudioCard = ({
             }}
           />
         </Grid>
-         {/* Display Recommendations */}
-      {loadingRecommendations ? (
-        <Typography variant="body2" color="textSecondary" sx={{ mt: 2, ml: 2 }}>
-          Fetching recommendations...
-        </Typography>
-      ) : (
-        recommendations.length > 0 && (
-          <div style={{ marginTop: "16px", marginLeft: "16px" }}>
-            <Typography variant="subtitle1">Recommended Songs:</Typography>
-            <ul>
-              {recommendations.map((song, idx) => (
-                <li key={idx}>
-                  <a href={song.url} target="_blank" rel="noopener noreferrer">
-                    {song.title} by {song.artist}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      )}
       </Grid>
     </Card>
   );
