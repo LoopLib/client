@@ -1,22 +1,36 @@
 import React from "react";
-import { CircularProgress, Box, Typography } from "@mui/material";
+import { CircularProgress, Box } from "@mui/material";
 
 const LoadingPage = () => {
   return (
     <Box
       sx={{
         display: "flex",
-        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        backgroundColor: "#f5f5f5",
       }}
     >
-      <CircularProgress sx={{ marginBottom: 2 }} />
-      <Typography variant="h6" color="textSecondary">
-        Loading, please wait...
-      </Typography>
+      <CircularProgress
+        size={60}
+        thickness={4}
+        sx={{
+          color: "#fff", // Custom color
+          animation: "spin 1.5s linear infinite", // Smooth spinning
+        }}
+      />
+      <style>
+        {`
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        `}
+      </style>
     </Box>
   );
 };
