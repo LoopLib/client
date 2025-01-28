@@ -22,12 +22,25 @@ const s3 = new AWS.S3({
   region: process.env.REACT_APP_AWS_REGION,
 });
 
-const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRefs, onContextMenu, showExtras = true }) => {
+const AudioCard = ({
+  file,
+  index,
+  activeIndexes,
+  setActiveIndexes,
+  waveSurferRefs,
+  onContextMenu,
+  showExtras = true,
+  showAvatar = true, // New prop to control avatar visibility
+  showLikeButton = true, // New prop to control like button visibility
+  showStats = true, // New prop to control stats visibility
+}) => {
   const [duration, setDuration] = useState("N/A");
   const [publisherName, setPublisherName] = useState("");
   const [likes, setLikes] = useState(0);
   const [userLiked, setUserLiked] = useState(false);
   const [isLoadingUserLiked, setIsLoadingUserLiked] = useState(true);
+  const [recommendations, setRecommendations] = useState([]); // State for recommended songs
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false); // Loading state for recommendations
   const [downloads, setDownloads] = useState(0);
   const isPlaying = waveSurferRefs.current[index]?.isPlaying();
   const intervalRef = useRef(null);
@@ -80,40 +93,32 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
   useEffect(() => {
     initializeWaveSurfer(file.url, index);
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (waveSurferRefs.current[index]) {
+        waveSurferRefs.current[index].destroy();
+        waveSurferRefs.current[index] = null;
+      }
     };
   }, []);
 
   const initializeWaveSurfer = (url, index) => {
     const container = document.getElementById(`waveform-${index}`);
-    if (!container) return;
+    if (!container || waveSurferRefs.current[index]) return;
 
-    if (!waveSurferRefs.current[index]) {
-      const waveSurfer = WaveSurfer.create({
-        container: `#waveform-${index}`,
-        waveColor: "#6a11cb",
-        progressColor: "#000000",
-        cursorColor: "#000000",
-        barWidth: 5,
-        responsive: true,
-        height: 80,
-        backend: "MediaElement",
-      });
+    const waveSurfer = WaveSurfer.create({
+      container: `#waveform-${index}`,
+      waveColor: "#6a11cb",
+      progressColor: "#000000",
+      cursorColor: "#000000",
+      barWidth: 5,
+      responsive: true,
+      height: 80,
+      backend: "MediaElement",
+    });
 
-      waveSurfer.load(url);
-      waveSurferRefs.current[index] = waveSurfer;
+    waveSurfer.load(url);
+    waveSurferRefs.current[index] = waveSurfer;
 
-      waveSurfer.on("ready", () => setDuration(formatDuration(waveSurfer.getDuration())));
-      waveSurfer.on("play", startKeyDetection);
-      waveSurfer.on("pause", stopKeyDetection);
-
-      // Add listener for seek events
-      waveSurfer.on("seek", handleTimelineSeek);
-      waveSurfer.on("finish", () => {
-        stopKeyDetection();
-        setActiveIndexes((prev) => prev.filter((i) => i !== index));
-      });
-    }
+    waveSurfer.on("ready", () => setDuration(formatDuration(waveSurfer.getDuration())));
   };
 
   const formatDuration = (durationInSeconds) => {
@@ -123,7 +128,6 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
   };
 
   const togglePlay = () => {
-    // Stop other players and handle current audio play/pause logic
     Object.keys(waveSurferRefs.current).forEach((key) => {
       const i = parseInt(key, 10);
       const waveSurfer = waveSurferRefs.current[i];
@@ -141,10 +145,26 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
       } else {
         waveSurfer.play();
         setActiveIndexes((prev) => [...prev, index]);
+        fetchRecommendations(); // Fetch recommendations when played
       }
     }
   };
 
+  const fetchRecommendations = async () => {
+    setLoadingRecommendations(true);
+    try {
+      const response = await axios.post("http://localhost:5000/recommend_songs", {
+        key: file.musicalKey || "C", // Default to "C" if no key
+        bpm: file.bpm || 120, // Default to 120 BPM if no BPM
+      });
+
+      setRecommendations(response.data.songs || []);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
 
   const handleLike = async () => {
     const auth = getAuth();
@@ -206,23 +226,6 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
     }
   };
 
-  const updateStats = async (updatedFields) => {
-    try {
-      const statsKey = `users/${file.uid}/stats/${file.name}.stats.json`;
-      const updatedStats = { likes, downloads, ...updatedFields };
-
-      await s3.upload({
-        Bucket: "looplib-audio-bucket",
-        Key: statsKey,
-        Body: JSON.stringify(updatedStats, null, 2),
-        ContentType: "application/json",
-      }).promise();
-    } catch (error) {
-      console.error("Error updating stats:", error);
-    }
-  };
-
-
   return (
     <Card
       className={`audio-card ${activeIndexes.includes(index) ? "active" : ""}`}
@@ -236,11 +239,13 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
       onMouseEnter={() => initializeWaveSurfer(file.url, index)}
       onContextMenu={onContextMenu}
     >
-      {/* Use AvatarComponent */}
-      <AvatarComponent
-        publisherName={publisherName}
-        profilePicture={file.profilePicture}
-      />
+      {/* Conditionally Render Avatar */}
+      {showAvatar && (
+        <AvatarComponent
+          publisherName={publisherName}
+          profilePicture={file.profilePicture}
+        />
+      )}
 
 
       <Grid container spacing={2} alignItems="center">
@@ -295,12 +300,11 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
                 setDownloads={setDownloads}
               />
             )}
-            <Stats likes={likes} downloads={downloads} /> {/* Use the Stats component */}
-            {isLoadingUserLiked ? (
-              <IconButton disabled>
-                <FavoriteBorderIcon />
-              </IconButton>
-            ) : (
+            {/* Conditionally Render Stats */}
+            {showStats && <Stats likes={likes} downloads={downloads} />}
+
+            {/* Conditionally Render Like Button */}
+            {showLikeButton && (
               <IconButton
                 onClick={handleLike}
                 color={userLiked ? "error" : "default"} // Red for liked, grey for not liked
@@ -315,7 +319,6 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
               >
                 {userLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
               </IconButton>
-
             )}
 
 
@@ -335,6 +338,27 @@ const AudioCard = ({ file, index, activeIndexes, setActiveIndexes, waveSurferRef
             }}
           />
         </Grid>
+         {/* Display Recommendations */}
+      {loadingRecommendations ? (
+        <Typography variant="body2" color="textSecondary" sx={{ mt: 2, ml: 2 }}>
+          Fetching recommendations...
+        </Typography>
+      ) : (
+        recommendations.length > 0 && (
+          <div style={{ marginTop: "16px", marginLeft: "16px" }}>
+            <Typography variant="subtitle1">Recommended Songs:</Typography>
+            <ul>
+              {recommendations.map((song, idx) => (
+                <li key={idx}>
+                  <a href={song.url} target="_blank" rel="noopener noreferrer">
+                    {song.title} by {song.artist}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      )}
       </Grid>
     </Card>
   );

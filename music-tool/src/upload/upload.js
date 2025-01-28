@@ -49,11 +49,11 @@ const FileUpload = () => {
             setFileName(""); // Reset file name field in the dialog
         }
     };
-    
+
     const handleDrop = (event) => {
         event.preventDefault();
         setIsDragging(false);
-    
+
         const newFile = event.dataTransfer.files[0];
         if (newFile) {
             // Reset previous file state
@@ -63,7 +63,7 @@ const FileUpload = () => {
             setFileName(""); // Reset file name field in the dialog
         }
     };
-    
+
 
     const handleDragOver = (event) => {
         event.preventDefault();
@@ -106,25 +106,25 @@ const FileUpload = () => {
             setError("Please provide a file name.");
             return;
         }
-    
+
         setIsLoading(true);
-    
+
         try {
             const auth = getAuth();
             const user = auth.currentUser;
-    
+
             if (!user) {
                 throw new Error("User not authenticated");
             }
-    
+
             const uid = user.uid;
-    
+
             const s3 = new AWS.S3({
                 region: process.env.REACT_APP_AWS_REGION,
                 accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
                 secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
             });
-    
+
             // Audio Upload
             const audioParams = {
                 Bucket: "looplib-audio-bucket",
@@ -133,7 +133,7 @@ const FileUpload = () => {
                 ContentType: selectedFile.type,
             };
             await s3.upload(audioParams).promise();
-    
+
             // Metadata Upload
             const metadata = {
                 name: fileName,
@@ -151,16 +151,16 @@ const FileUpload = () => {
                 ContentType: "application/json",
             };
             await s3.upload(metadataParams).promise();
-    
+
             // Stats Upload (Likes and Downloads)
             const statsParams = {
                 Bucket: "looplib-audio-bucket",
                 Key: `users/${uid}/stats/${fileName}.stats.json`,
                 Body: JSON.stringify({ likes: 0, downloads: 0, likedBy: [] }, null, 2),
                 ContentType: "application/json",
-              };
-              await s3.upload(statsParams).promise();
-    
+            };
+            await s3.upload(statsParams).promise();
+
             alert("Audio, metadata, and stats have been published successfully!");
             setError(null);
         } catch (error) {
@@ -171,7 +171,7 @@ const FileUpload = () => {
             setOpenDialog(false);
         }
     };
-    
+
 
 
     const handleOpenDialog = () => {
@@ -216,15 +216,20 @@ const FileUpload = () => {
                         bpm: bpm || "N/A",
                         genre: "N/A",
                         publisher: "You",
+                        likes: 0,
+                        downloads: 0,
                     }}
                     index={0}
                     activeIndexes={activeIndexes}
                     setActiveIndexes={setActiveIndexes}
                     waveSurferRefs={waveSurferRefs}
-                    showExtras={false} // Hide download button and publisher name
+                    showExtras={false} // Show key and BPM
+                    showAvatar={false} // Hide avatar
+                    showLikeButton={false} // Hide like button
+                    showStats={false} // Show likes and downloads
                 />
-
             )}
+            
 
             {isLoading && (
                 <Box display="flex" justifyContent="center" marginTop="16px">
