@@ -315,7 +315,7 @@ const AudioCard = ({
               width: 65,
               height: 65,
               top: "-5px",
-              right: "60px",
+              right: "30px",
             }}
           />
         </Grid>
