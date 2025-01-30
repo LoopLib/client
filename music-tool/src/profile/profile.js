@@ -26,7 +26,7 @@ import AWS from "aws-sdk";
 import { onAuthStateChanged, updateProfile, updateEmail } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-import LoadingPage from "../structure/loading/loading";
+import LoadingPage from "../loading/loading";
 import "./profile.css";
 
 const Profile = () => {
