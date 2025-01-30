@@ -22,10 +22,13 @@ import AudioCard from "../home/audio-card/audio-card";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { Snackbar, SnackbarContent } from "@mui/material";
 import BrowseFiles from "./browse-files/browse-files";
-
+import { useNavigate } from 'react-router-dom';
 
 const FileUpload = () => {
+
+    const navigate = useNavigate();
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [bpm, setBpm] = useState(null);
@@ -38,6 +41,9 @@ const FileUpload = () => {
 
     const [fileName, setFileName] = useState(""); // Added state for file name
     const [openDialog, setOpenDialog] = useState(false); // State for dialog visibility
+
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     const handleFileChange = (event) => {
         const newFile = event.target.files[0];
@@ -106,7 +112,7 @@ const FileUpload = () => {
             setError("Please provide a file name.");
             return;
         }
-        
+
         handleCloseDialog();
         setIsLoading(true);
 
@@ -162,7 +168,8 @@ const FileUpload = () => {
             };
             await s3.upload(statsParams).promise();
 
-            alert("Audio, metadata, and stats have been published successfully!");
+            setSnackbarMessage("Audio, metadata, and stats have been published successfully!");
+            setOpenSnackbar(true);
             setError(null);
         } catch (error) {
             console.error("Error publishing file:", error);
@@ -170,6 +177,7 @@ const FileUpload = () => {
         } finally {
             setIsLoading(false);
             setOpenDialog(false);
+            navigate("/homepage");
         }
     };
 
@@ -296,7 +304,20 @@ const FileUpload = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000} // The snackbar will disappear after 6 seconds
+                onClose={() => setOpenSnackbar(false)}
+            >
+                <SnackbarContent
+                    message={snackbarMessage}
+                    style={{
+                        backgroundColor: "#4caf50", // Success green color
+                        color: "white",
+                        fontWeight: "bold",
+                    }}
+                />
+            </Snackbar>
         </Box>
 
     );
