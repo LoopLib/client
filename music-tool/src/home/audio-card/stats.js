@@ -7,12 +7,12 @@ const Stats = ({ likes, downloads }) => {
   return (
     <div
       style={{
-        position: "absolute",
-        right: "200px",
-        bottom: "220px",
+        position: "absolute", // Position relative to the parent container (AudioCard)
+        right: "230px", // Adjust as needed
+        bottom: "220px", // Adjust as needed
         display: "flex",
         alignItems: "center",
-        gap: "20px", // Space between the icon sets
+        gap: "10px", // Space between the icon sets
       }}
     >
       <div
