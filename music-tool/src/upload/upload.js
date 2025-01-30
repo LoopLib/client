@@ -229,14 +229,11 @@ const FileUpload = () => {
                     showStats={false} // Show likes and downloads
                 />
             )}
-            
+
 
             {isLoading && (
-                <Box display="flex" justifyContent="center" marginTop="16px">
-                    <CircularProgress size={24} />
-                    <Typography variant="body1" marginLeft="8px">
-                        Processing...
-                    </Typography>
+                <Box className="loading-overlay">
+                    <CircularProgress size={50} />
                 </Box>
             )}
 
