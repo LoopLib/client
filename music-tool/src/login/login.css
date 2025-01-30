@@ -51,12 +51,6 @@ body {
     /* Increases the font size for better visibility */
 }
 
-/* You can also make the label even more visible when active */
-.MuiInputLabel-root.Mui-focused {
-    transform: translate(0, -25px) scale(1.05);
-    /* Label moves up a little and grows in size when focused */
-}
-
 .login-container .MuiOutlinedInput-root {
     background-color: white;
     /* Set the background color to white */
