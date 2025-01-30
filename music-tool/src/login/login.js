@@ -51,15 +51,6 @@ const Login = () => {
                 case "auth/invalid-email":
                     setErrorMessage("Invalid email format.");
                     break;
-                case "auth/user-disabled":
-                    setErrorMessage("This account has been disabled.");
-                    break;
-                case "auth/user-not-found":
-                    setErrorMessage("No account found with this email.");
-                    break;
-                case "auth/wrong-password":
-                    setErrorMessage("Incorrect password. Please try again.");
-                    break;
                 case "auth/invalid-credential":
                     setErrorMessage("Invalid credentials provided. Please check your email and password.");
                     break;
