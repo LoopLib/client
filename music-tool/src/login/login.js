@@ -8,7 +8,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 import "./login.css";
 
 const Login = () => {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState(""); // State for error messages
     const navigate = useNavigate();
@@ -17,21 +17,21 @@ const Login = () => {
     const handleLogin = async () => {
         setErrorMessage(""); // Clear previous error messages
 
-        if (!username || !password) {
+        if (!email || !password) {
             setErrorMessage("Please fill in both fields.");
             return;
         }
 
-        // Check if the username is a valid email format
+        // Check if the email is a valid email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(username)) {
+        if (!emailRegex.test(email)) {
             setErrorMessage("Invalid email format.");
             return;
         }
 
         try {
             // Attempt to sign in with email and password
-            const userCredential = await signInWithEmailAndPassword(auth, username, password);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             console.log("Login successful", user);
 
@@ -92,12 +92,12 @@ const Login = () => {
                 </Typography>
             </Paper>
             <TextField
-                label="Username"
+                label="Email"
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
                 label="Password"
