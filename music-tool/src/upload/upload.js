@@ -106,7 +106,8 @@ const FileUpload = () => {
             setError("Please provide a file name.");
             return;
         }
-
+        
+        handleCloseDialog();
         setIsLoading(true);
 
         try {
