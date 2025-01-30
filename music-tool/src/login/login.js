@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext"; // Import AuthContext
+import ErrorIcon from "@mui/icons-material/Error";
 import "./login.css";
 
 const Login = () => {
@@ -21,7 +22,15 @@ const Login = () => {
             return;
         }
 
+        // Check if the username is a valid email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(username)) {
+            setErrorMessage("Invalid email format.");
+            return;
+        }
+
         try {
+            // Attempt to sign in with email and password
             const userCredential = await signInWithEmailAndPassword(auth, username, password);
             const user = userCredential.user;
             console.log("Login successful", user);
@@ -33,7 +42,9 @@ const Login = () => {
 
             navigate("/homepage");
         } catch (error) {
-            console.error("Login error:", error.message);
+            console.error("Login error:", error);
+            console.log("Error code:", error.code); // Log the error code
+            console.log("Error message:", error.message); // Log the error message
 
             // Handle specific error codes from Firebase
             switch (error.code) {
@@ -49,21 +60,24 @@ const Login = () => {
                 case "auth/wrong-password":
                     setErrorMessage("Incorrect password. Please try again.");
                     break;
+                case "auth/invalid-credential":
+                    setErrorMessage("Invalid credentials provided. Please check your email and password.");
+                    break;
                 default:
-                    setErrorMessage("An unexpected error occurred. Please try again.");
+                    setErrorMessage(`Error: ${error.message || "An unexpected error occurred. Please try again."}`);
             }
         }
     };
 
     return (
         <Box className="login-container" display="flex" flexDirection="column" alignItems="center">
-            <Paper 
+            <Paper
                 elevation={3}
-                className="title-box" 
+                className="title-box"
                 style={{
-                    padding: "20px", 
-                    backgroundColor: "white", 
-                    marginBottom: "20px", 
+                    padding: "20px",
+                    backgroundColor: "white",
+                    marginBottom: "20px",
                     textAlign: "center"
                 }}
             >
@@ -105,10 +119,11 @@ const Login = () => {
             </Button>
 
             {errorMessage && (
-                <Alert severity="error" className="login-error">
+                <Alert severity="error" className="login-error" icon={<ErrorIcon />} variant="filled">
                     {errorMessage}
                 </Alert>
             )}
+
         </Box>
     );
 };

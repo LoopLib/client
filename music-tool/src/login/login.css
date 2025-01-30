@@ -78,7 +78,6 @@ body {
     animation: pulse 2s infinite ease-in-out;
 }
 
-
 /* Animation */
 @keyframes pulse {
     0% {
