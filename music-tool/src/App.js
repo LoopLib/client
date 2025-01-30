@@ -1,12 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import FileUpload from "./upload/upload";
-import HomePage from "./homepage/homepage";
-import Login from "./login/login";
-import Register from "./register/register";
-import Layout from "./layout/layout";
+import HomePage from "./home/homepage";
+import Login from "./authentication/login";
+import Register from "./authentication/register";
+import Layout from "./structure/layout/layout";
 import Profile from "./profile/profile";
-import { AuthProvider, useAuth } from "./AuthContext";
+import { AuthProvider, useAuth } from "./authentication/AuthContext";
 import Edit from "./edit/edit";
 import UserLibrary from "./user-library/user-library";
 

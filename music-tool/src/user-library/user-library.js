@@ -4,7 +4,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Library from "../library/library";
+import Library from "../home/library/library";
 import "./user-library.css";
 import { useParams } from "react-router-dom";
 

@@ -6,7 +6,7 @@ import { db } from "../firebaseConfig"; // Import Firestore instance
 import { doc, setDoc } from "firebase/firestore"; // Import Firestore methods
 import { useNavigate } from "react-router-dom";
 import ErrorIcon from "@mui/icons-material/Error";
-import "../login/login.css";
+import "./authentication.css";
 
 const Register = () => {
     const [username, setUsername] = useState("");

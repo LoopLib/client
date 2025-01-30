@@ -18,11 +18,11 @@ import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import axios from "axios";
 import AWS from "aws-sdk";
 import "./upload.css";
-import AudioCard from "../audio-card/audio-card";
+import AudioCard from "../home/audio-card/audio-card";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import BrowseFiles from "../browse-files/browse-files";
+import BrowseFiles from "./browse-files/browse-files";
 
 
 const FileUpload = () => {

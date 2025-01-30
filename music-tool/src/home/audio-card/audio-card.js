@@ -6,7 +6,6 @@ import Metadata from "../metadata-card/metadata-card";
 import WaveSurfer from "wavesurfer.js";
 import { getAuth } from "firebase/auth";
 import { fetchPublisherData, fetchStats, fetchUserLikedStatus } from "./fetch-data"; // Import functions
-import "./audio-card.css";
 import PlayButton from "./play-button";
 import AvatarComponent from "./avatar";
 import Stats from "./stats";
@@ -14,6 +13,7 @@ import DownloadButton from "./download-button";
 import { useLiveKeyDetection } from "./live-key";
 import axios from "axios";
 import AWS from "aws-sdk";
+import "./audio-card.css";
 
 
 const s3 = new AWS.S3({

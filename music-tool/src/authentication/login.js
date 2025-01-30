@@ -3,9 +3,9 @@ import { Box, Button, Typography, TextField, Alert, Paper } from "@mui/material"
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../AuthContext"; // Import AuthContext
+import { useAuth } from "./AuthContext"; // Import AuthContext
 import ErrorIcon from "@mui/icons-material/Error";
-import "./login.css";
+import "./authentication.css";
 
 const Login = () => {
     const [email, setEmail] = useState("");
