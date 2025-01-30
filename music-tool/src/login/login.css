@@ -79,6 +79,7 @@ body {
 }
 
 .login-error {
+    margin-top: 20px;
     margin-bottom: 16px;
     border-radius: 8px;
     font-size: 0.9rem;

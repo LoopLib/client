@@ -5,6 +5,7 @@ import { auth } from "../firebaseConfig";
 import { db } from "../firebaseConfig"; // Import Firestore instance
 import { doc, setDoc } from "firebase/firestore"; // Import Firestore methods
 import { useNavigate } from "react-router-dom";
+import ErrorIcon from "@mui/icons-material/Error";
 import "../login/login.css";
 
 const Register = () => {
@@ -16,6 +17,13 @@ const Register = () => {
 
     const handleRegister = async () => {
         setErrorMessage(""); // Clear previous error messages
+
+          // Check if the email is a valid email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+              setErrorMessage("Invalid email format.");
+              return;
+          }  
 
         // Basic validation
         if (!username || !email || !password) {
@@ -128,7 +136,7 @@ const Register = () => {
             </Button>
 
             {errorMessage && (
-                <Alert severity="error" className="login-error">
+                <Alert severity="error" className="login-error" icon={<ErrorIcon />} variant="filled">
                     {errorMessage}
                 </Alert>
             )}
