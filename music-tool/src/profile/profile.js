@@ -17,6 +17,8 @@ import {
   Tooltip,
   Chip
 } from "@mui/material";
+import { Alert } from "@mui/material";
+import ErrorIcon from "@mui/icons-material/Error";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -24,7 +26,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import PianoIcon from "@mui/icons-material/Piano"; 
+import PianoIcon from "@mui/icons-material/Piano";
 import { styled } from '@mui/material/styles';
 import AWS from "aws-sdk";
 import {
@@ -65,6 +67,8 @@ const Profile = () => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -326,20 +330,20 @@ const Profile = () => {
 
   const saveProfileData = async () => {
     setErrorMessage(""); // Clear previous errors
-  
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(profileData.email)) {
       setErrorMessage("Invalid email format.");
       return;
     }
-  
+
     try {
       if (user) {
         const db = getFirestore();
         const userDocRef = doc(db, "users", user.uid);
         await setDoc(userDocRef, profileData, { merge: true });
-  
+
         // Update Firebase displayName / email
         if (profileData.displayName !== user.displayName) {
           await updateProfile(user, { displayName: profileData.displayName });
@@ -347,7 +351,7 @@ const Profile = () => {
         if (profileData.email !== user.email) {
           await updateEmail(user, profileData.email);
         }
-  
+
         setUser({ ...user, ...profileData });
         setEditMode(false);
         alert("Profile updated successfully!");
@@ -366,7 +370,7 @@ const Profile = () => {
       }
     }
   };
-  
+
   const handlePasswordUpdate = async () => {
     setErrorMessage(""); // Clear previous error messages
   
@@ -386,7 +390,13 @@ const Profile = () => {
     }
   
     try {
-      await updatePassword(user, newPassword);
+      const currentUser = auth.currentUser; // Get the latest authenticated user
+      if (!currentUser) {
+        setErrorMessage("User is not authenticated. Please log in again.");
+        return;
+      }
+  
+      await updatePassword(currentUser, newPassword);
       alert("Password updated successfully!");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -394,6 +404,11 @@ const Profile = () => {
     } catch (error) {
       console.error("Error updating password:", error.message);
       switch (error.code) {
+        case "auth/requires-recent-login":
+          setErrorMessage(
+            "This operation requires recent authentication. Please log out and log in again."
+          );
+          break;
         case "auth/weak-password":
           setErrorMessage("Password is too weak. Must be at least 6 characters.");
           break;
@@ -403,6 +418,7 @@ const Profile = () => {
     }
   };
   
+
   if (loading) {
     return <LoadingPage />;
   }
@@ -608,6 +624,11 @@ const Profile = () => {
           )}
         </CardContent>
       </Card>
+      {errorMessage && (
+        <Alert severity="error" className="profile-error" icon={<ErrorIcon />} variant="filled">
+          {errorMessage}
+        </Alert>
+      )}
 
       {/* Show/Hide Audio Files Button */}
       <Button
