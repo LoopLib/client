@@ -23,7 +23,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AWS from "aws-sdk";
-import { onAuthStateChanged, updateProfile, updateEmail } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  updateProfile,
+  updateEmail,
+  updatePassword,
+} from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import LoadingPage from "../loading/loading";
@@ -32,6 +37,7 @@ import "./profile.css";
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const [editMode, setEditMode] = useState(false);
   const [showAudioFiles, setShowAudioFiles] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -41,12 +47,16 @@ const Profile = () => {
   const [audioFiles, setAudioFiles] = useState([]);
   const [editingFile, setEditingFile] = useState(null);
   const [newFileName, setNewFileName] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null); // For preview
-  const [uploading, setUploading] = useState(false); // Upload progress indicator
 
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
-
   const [operationInProgress, setOperationInProgress] = useState(false);
+
+  // For password change
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -88,21 +98,36 @@ const Profile = () => {
         region: process.env.REACT_APP_AWS_REGION,
       });
 
-      const params = { Bucket: "looplib-audio-bucket", Prefix: `users/${uid}/audio/` };
+      const params = {
+        Bucket: "looplib-audio-bucket",
+        Prefix: `users/${uid}/audio/`,
+      };
       const data = await s3.listObjectsV2(params).promise();
 
       const files = await Promise.all(
         data.Contents.map(async (file) => {
-          const metadataKey = file.Key.replace("/audio/", "/metadata/") + ".metadata.json";
+          const metadataKey =
+            file.Key.replace("/audio/", "/metadata/") + ".metadata.json";
 
           let metadata = {};
           try {
-            const metadataParams = { Bucket: params.Bucket, Key: metadataKey };
+            const metadataParams = {
+              Bucket: params.Bucket,
+              Key: metadataKey,
+            };
             const metadataObject = await s3.getObject(metadataParams).promise();
-            metadata = metadataObject?.Body ? JSON.parse(metadataObject.Body.toString()) : {};
+            metadata = metadataObject?.Body
+              ? JSON.parse(metadataObject.Body.toString())
+              : {};
           } catch (error) {
-            console.warn(`Metadata not found for ${file.Key}: ${error.message}`);
-            metadata = { bpm: "Unknown", genre: "Unknown", musicalKey: "Unknown" }; // Default values
+            console.warn(
+              `Metadata not found for ${file.Key}: ${error.message}`
+            );
+            metadata = {
+              bpm: "Unknown",
+              genre: "Unknown",
+              musicalKey: "Unknown",
+            };
           }
 
           return {
@@ -160,7 +185,6 @@ const Profile = () => {
       return;
     }
 
-    // Show preview
     setSelectedImage(URL.createObjectURL(file));
   };
 
@@ -196,20 +220,16 @@ const Profile = () => {
         })
         .promise();
 
-      fetchProfilePicture(user.uid); // Refresh the profile picture
+      fetchProfilePicture(user.uid);
       alert("Profile picture uploaded successfully!");
     } catch (error) {
       console.error("Error uploading profile picture:", error.message);
       alert(`Failed to upload profile picture: ${error.message}`);
     } finally {
       setUploading(false);
-      setSelectedImage(null); // Clear the preview
+      setSelectedImage(null);
     }
   };
-
-  if (loading) {
-    return <LoadingPage />;
-  }
 
   const handleEditFile = (file) => {
     setEditingFile(file);
@@ -229,20 +249,28 @@ const Profile = () => {
         region: process.env.REACT_APP_AWS_REGION,
       });
 
-      await s3.copyObject({
-        Bucket: "looplib-audio-bucket",
-        CopySource: `looplib-audio-bucket/${oldKey}`, // Full bucket path
-        Key: newKey,
-      }).promise();
+      // Copy to new key
+      await s3
+        .copyObject({
+          Bucket: "looplib-audio-bucket",
+          CopySource: `looplib-audio-bucket/${oldKey}`,
+          Key: newKey,
+        })
+        .promise();
 
-      await s3.deleteObject({
-        Bucket: "looplib-audio-bucket",
-        Key: oldKey,
-      }).promise();
+      // Delete old key
+      await s3
+        .deleteObject({
+          Bucket: "looplib-audio-bucket",
+          Key: oldKey,
+        })
+        .promise();
 
       setAudioFiles((prevFiles) =>
         prevFiles.map((file) =>
-          file.key === oldKey ? { ...file, name: newFileName, key: newKey } : file
+          file.key === oldKey
+            ? { ...file, name: newFileName, key: newKey }
+            : file
         )
       );
 
@@ -264,10 +292,12 @@ const Profile = () => {
         region: process.env.REACT_APP_AWS_REGION,
       });
 
-      await s3.deleteObject({
-        Bucket: "looplib-audio-bucket",
-        Key: fileKey,
-      }).promise();
+      await s3
+        .deleteObject({
+          Bucket: "looplib-audio-bucket",
+          Key: fileKey,
+        })
+        .promise();
 
       setAudioFiles((prevFiles) => prevFiles.filter((file) => file.key !== fileKey));
       alert("File deleted successfully!");
@@ -278,7 +308,6 @@ const Profile = () => {
       setOperationInProgress(false);
     }
   };
-
 
   const handleInputChange = (field, value) => {
     setProfileData((prev) => ({
@@ -294,7 +323,7 @@ const Profile = () => {
         const userDocRef = doc(db, "users", user.uid);
         await setDoc(userDocRef, profileData, { merge: true });
 
-        // Update Firebase Authentication (Optional: Update displayName or email)
+        // Update Firebase displayName / email
         if (profileData.displayName !== user.displayName) {
           await updateProfile(user, { displayName: profileData.displayName });
         }
@@ -302,7 +331,6 @@ const Profile = () => {
           await updateEmail(user, profileData.email);
         }
 
-        // Reflect changes in the local state
         setUser({ ...user, ...profileData });
         setEditMode(false);
       }
@@ -311,8 +339,36 @@ const Profile = () => {
     }
   };
 
+  const handlePasswordUpdate = async () => {
+    try {
+      if (!newPassword || !confirmNewPassword) {
+        alert("Please fill out both password fields.");
+        return;
+      }
+      if (newPassword !== confirmNewPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+      if (newPassword.length < 6) {
+        alert("Password should be at least 6 characters long.");
+        return;
+      }
+
+      await updatePassword(user, newPassword);
+      alert("Password updated successfully!");
+
+      // Clear fields
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setShowPasswordFields(false);
+    } catch (error) {
+      console.error("Error updating password:", error.message);
+      alert("Failed to update password: " + error.message);
+    }
+  };
+
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <LoadingPage />;
   }
 
   return (
@@ -330,31 +386,32 @@ const Profile = () => {
         mb={4}
         fontFamily={"Montserrat, sans-serif"}
         fontWeight="bold"
+        sx={{ textAlign: "center" }}
       >
         P R O F I L E
       </Typography>
 
+      {/* Avatar / Image Upload */}
       <Box className="upload-image-container">
-        {/* Avatar Section */}
-        <Box className="avatar-container">
+        <Box className="avatar-wrapper">
           {profilePictureUrl ? (
-            <img src={profilePictureUrl} alt="Profile" className="profile-picture" />
+            <img
+              src={profilePictureUrl}
+              alt="Profile"
+              className="profile-picture"
+            />
           ) : (
             <AccountCircleIcon className="default-avatar-icon" />
           )}
-
-          {/* Change Icon Overlay */}
           <Box className="change-icon-overlay">Change</Box>
         </Box>
 
-        {/* Image Preview */}
         {selectedImage && (
           <Box className="image-preview-container">
             <img src={selectedImage} alt="Preview" className="image-preview" />
           </Box>
         )}
 
-        {/* Buttons */}
         <Box className="upload-buttons">
           <Button
             variant="outlined"
@@ -379,50 +436,66 @@ const Profile = () => {
         </Box>
       </Box>
 
-
+      {/* User Info Section */}
       <Card className="user-info">
         <CardContent>
           <Typography variant="h5" className="user-info-title" gutterBottom>
             Profile Overview
           </Typography>
+
           {user ? (
             <Box className="user-info-details">
+              {/* NAME */}
               <Box className="user-info-row">
-                <Typography variant="subtitle1" className="user-info-label">
-                  Name:
-                </Typography>
                 {editMode ? (
                   <TextField
+                    label="Name"
+                    type="text"
                     variant="outlined"
-                    value={profileData.displayName}
-                    onChange={(e) =>
-                      handleInputChange("displayName", e.target.value)
-                    }
                     size="small"
+                    className="custom-text-field"
+                    value={profileData.displayName}
+                    onChange={(e) => handleInputChange("displayName", e.target.value)}
+                    fullWidth
                   />
                 ) : (
-                  <Typography variant="body1" className="user-info-value">
-                    {profileData.displayName || "N/A"}
-                  </Typography>
+                  <>
+                    <Typography variant="subtitle1" className="user-info-label">
+                      Name:
+                    </Typography>
+                    <Typography variant="body1" className="user-info-value">
+                      {profileData.displayName || "N/A"}
+                    </Typography>
+                  </>
                 )}
               </Box>
+
+              {/* EMAIL */}
               <Box className="user-info-row">
-                <Typography variant="subtitle1" className="user-info-label">
-                  Email:
-                </Typography>
                 {editMode ? (
                   <TextField
+                    label="Email"
+                    type="email"
                     variant="outlined"
+                    size="small"
+                    className="custom-text-field"
                     value={profileData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    size="small"
+                    fullWidth
                   />
                 ) : (
-                  <Typography variant="body1" className="user-info-value">
-                    {profileData.email}
-                  </Typography>
+                  <>
+                    <Typography variant="subtitle1" className="user-info-label">
+                      Email:
+                    </Typography>
+                    <Typography variant="body1" className="user-info-value">
+                      {profileData.email}
+                    </Typography>
+                  </>
                 )}
               </Box>
+
+              {/* UID */}
               <Box className="user-info-row">
                 <Typography variant="subtitle1" className="user-info-label">
                   UID:
@@ -431,7 +504,9 @@ const Profile = () => {
                   {user.uid}
                 </Typography>
               </Box>
-              <Box mt={2}>
+
+              {/* SAVE / EDIT BUTTON */}
+              <Box mt={2} sx={{ textAlign: "center" }}>
                 {editMode ? (
                   <Button
                     variant="contained"
@@ -442,12 +517,49 @@ const Profile = () => {
                     Save
                   </Button>
                 ) : (
-                  <IconButton
-                    color="primary"
-                    onClick={() => setEditMode(true)}
-                  >
+                  <IconButton color="primary" onClick={() => setEditMode(true)}>
                     <EditIcon />
                   </IconButton>
+                )}
+              </Box>
+
+              {/* CHANGE PASSWORD SECTION */}
+              <Box mt={3} sx={{ textAlign: "center" }}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setShowPasswordFields(!showPasswordFields)}
+                >
+                  Change Password
+                </Button>
+                {showPasswordFields && (
+                  <Box mt={2} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <TextField
+                      label="New Password"
+                      type="password"
+                      size="small"
+                      className="custom-text-field"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      fullWidth
+                    />
+                    <TextField
+                      label="Confirm Password"
+                      type="password"
+                      size="small"
+                      className="custom-text-field"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      fullWidth
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handlePasswordUpdate}
+                    >
+                      Update Password
+                    </Button>
+                  </Box>
                 )}
               </Box>
             </Box>
@@ -461,6 +573,7 @@ const Profile = () => {
         </CardContent>
       </Card>
 
+      {/* Show/Hide Audio Files Button */}
       <Button
         variant="contained"
         sx={{ mt: 4 }}
@@ -470,6 +583,7 @@ const Profile = () => {
         {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
       </Button>
 
+      {/* Audio Files Table */}
       {showAudioFiles && (
         <TableContainer component={Paper} sx={{ mt: 4 }}>
           <Table>
@@ -488,9 +602,13 @@ const Profile = () => {
                   <TableCell>
                     {editingFile?.key === file.key ? (
                       <TextField
+                        label="New File Name"
+                        variant="outlined"
+                        size="small"
+                        className="custom-text-field"
                         value={newFileName}
                         onChange={(e) => setNewFileName(e.target.value)}
-                        size="small"
+                        fullWidth
                       />
                     ) : (
                       file.name
