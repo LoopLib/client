@@ -500,16 +500,19 @@ const Profile = () => {
               {/* NAME */}
               <Box className="user-info-row">
                 {editMode ? (
-                  <TextField
-                    label="Name"
-                    type="text"
-                    variant="outlined"
-                    size="small"
-                    className="custom-text-field"
-                    value={profileData.displayName}
-                    onChange={(e) => handleInputChange("displayName", e.target.value)}
-                    fullWidth
-                  />
+                 <TextField
+                 label="Name"
+                 type="text"
+                 variant="outlined"
+                 size="small"
+                 className="custom-text-field"
+                 value={profileData.displayName}
+                 onChange={(e) => handleInputChange("displayName", e.target.value)}
+                 fullWidth
+                 InputProps={{
+                   style: { fontFamily: "Montserrat, sans-serif", fontSize: "16px" }
+                 }}
+               />
                 ) : (
                   <>
                     <Typography variant="subtitle1" className="user-info-label">
