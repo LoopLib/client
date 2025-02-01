@@ -442,15 +442,6 @@ const Profile = () => {
         margin: "20px auto",
       }}
     >
-      <Typography
-        variant="h4"
-        className="all-audio-title"
-        mb={4}
-        fontWeight="bold"
-        sx={{ textAlign: "center" }}
-      >
-        P R O F I L E
-      </Typography>
 
       {/* Avatar / Image Upload */}
       <Box className="upload-image-container">

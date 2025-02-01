@@ -159,15 +159,6 @@ const Library = ({ ownerUid = null }) => {
         margin: "20px auto",
       }}
     >
-      <Typography
-        variant="h4"
-        className="all-audio-title"
-        mb={4}
-        fontFamily={"Montserrat, sans-serif"}
-        fontWeight="bold"
-      >
-        {ownerUid ? "User's Library" : "L I B R A R Y"}
-      </Typography>
       <SearchBar onSearchChange={handleSearchChange} />
       <List>
         {currentItems.length > 0 ? (

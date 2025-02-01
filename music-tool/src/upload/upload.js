@@ -190,16 +190,6 @@ const FileUpload = () => {
 
     return (
         <Box className="file-upload-container">
-            <Typography
-                variant="h4"
-                className="upload-title"
-                mb={4}
-                fontFamily={"Montserrat, sans-serif"}
-                fontWeight="bold"
-            >
-                U P L O A D
-            </Typography>
-
             <BrowseFiles
                 onFileChange={handleFileChange}
                 isDragging={isDragging}
