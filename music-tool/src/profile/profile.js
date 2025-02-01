@@ -91,7 +91,7 @@ const Profile = () => {
       const timer = setTimeout(() => {
         setErrorMessage(""); // Clear the error message after 5 seconds
       }, 5000);
-  
+
       return () => clearTimeout(timer); // Cleanup timeout when component unmounts or message changes
     }
   }, [errorMessage]);
@@ -428,6 +428,67 @@ const Profile = () => {
     }
   };
 
+  const Container = styled(Box)({
+    display: "flex",
+    flexDirection: "row",
+    gap: "1.5rem",
+    alignItems: "flex-start",
+    // Add responsiveness if desired:
+    // For small screens, stack vertically:
+    "@media (max-width: 600px)": {
+      flexDirection: "column",
+    },
+  });
+  
+  const LeftSection = styled(Box)(({ theme }) => ({
+    flexBasis: "300px",
+    flexShrink: 0,
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: theme.shadows[1],
+    padding: theme.spacing(2),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: theme.spacing(2),
+  }));
+  
+  const RightSection = styled(Card)(({ theme }) => ({
+    flexGrow: 1,
+    boxShadow: theme.shadows[1],
+    borderRadius: theme.shape.borderRadius,
+  }));
+  
+  const AvatarWrapper = styled(Box)(({ theme }) => ({
+    position: "relative",
+    width: "120px",
+    height: "120px",
+    borderRadius: "50%",
+    overflow: "hidden",
+    border: `2px solid ${theme.palette.primary.main}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& img": {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "50%",
+    },
+  }));
+  
+  const ChangeOverlay = styled(Box)(({ theme }) => ({
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    textAlign: "center",
+    padding: "4px 0",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    color: "#fff",
+    fontSize: "0.8rem",
+    cursor: "pointer",
+  }));
+
 
   if (loading) {
     return <LoadingPage />;
@@ -443,151 +504,174 @@ const Profile = () => {
       }}
     >
 
-      {/* Avatar / Image Upload */}
-      <Box className="upload-image-container">
-        <Box className="avatar-wrapper">
-          {profilePictureUrl ? (
-            <img
-              src={profilePictureUrl}
-              alt="Profile"
-              className="profile-picture"
-            />
-          ) : (
-            <AccountCircleIcon className="default-avatar-icon" />
-          )}
-          <Box className="change-icon-overlay">Change</Box>
-        </Box>
-
-        {selectedImage && (
-          <Box className="image-preview-container">
-            <img src={selectedImage} alt="Preview" className="image-preview" />
-          </Box>
-        )}
-
-        <Box className="upload-buttons">
-          <Button
-            variant="outlined"
-            component="label"
-            className="select-image-button"
-          >
-            {selectedImage ? "Change Image" : "Select Image"}
-            <input type="file" hidden onChange={handleImageChange} />
-          </Button>
-
-          {selectedImage && (
-            <Button
-              variant="contained"
-              color="primary"
-              className="upload-picture-button"
-              onClick={handleProfilePictureUpload}
-              disabled={uploading}
-            >
-              {uploading ? "Uploading..." : "Upload Picture"}
-            </Button>
-          )}
-        </Box>
-      </Box>
-
-      {/* User Info Section */}
-      <Card className="user-info">
-        <CardContent>
-          <Typography variant="h5" className="user-info-title" gutterBottom>
-            Profile Overview
+      <Container>
+        {/* Left Section: Avatar & Image Upload */}
+        <LeftSection>
+          <Typography variant="h6" gutterBottom>
+            My Avatar
           </Typography>
+          {/* Avatar / Image Upload */}
+          <AvatarWrapper>
+            {profilePictureUrl ? (
+              <img src={profilePictureUrl} alt="Profile" />
+            ) : (
+              <AccountCircleIcon style={{ fontSize: 80, color: "#ccc" }} />
+            )}
+            <ChangeOverlay>Change</ChangeOverlay>
+          </AvatarWrapper>
 
-          {user ? (
-            <Box className="user-info-details">
-              {/* NAME */}
-              {!editMode && (
-                <Box display="flex" justifyContent="center">
-                  <IconButton color="primary" onClick={() => setEditMode(true)}>
-                    <EditIcon />
-                  </IconButton>
-                </Box>
-              )}
+          {/* Selected image preview (optional) */}
+          {selectedImage && (
+            <Box>
+              <img
+                src={selectedImage}
+                alt="Preview"
+                style={{ maxWidth: "100%", borderRadius: 8 }}
+              />
+            </Box>
+          )}
 
-              {editMode && (
-                <Box mt={2} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <TextField
-                    label="Name"
-                    type="text"
-                    variant="outlined"
-                    size="small"
-                    value={profileData.displayName}
-                    onChange={(e) => handleInputChange("displayName", e.target.value)}
-                    fullWidth
-                  />
+          {/* Upload Buttons */}
+          <Box display="flex" flexDirection="column" gap={1} width="100%">
+            <Button variant="outlined" component="label">
+              {selectedImage ? "Change Image" : "Select Image"}
+              <input type="file" hidden onChange={handleImageChange} />
+            </Button>
+            {selectedImage && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleProfilePictureUpload}
+                disabled={uploading}
+              >
+                {uploading ? "Uploading..." : "Upload Picture"}
+              </Button>
+            )}
+          </Box>
+        </LeftSection>
 
-                  <TextField
-                    label="Email"
-                    type="email"
-                    variant="outlined"
-                    size="small"
-                    value={profileData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    fullWidth
-                  />
+        {/* Right Section: User Info */}
+        <RightSection>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Profile Overview
+            </Typography>
 
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SaveIcon />}
-                    onClick={saveProfileData}
+            {user ? (
+              <Box>
+                {/* Edit Button (appears only if not editing) */}
+                {!editMode && (
+                  <Box display="flex" justifyContent="flex-end">
+                    <IconButton
+                      color="primary"
+                      onClick={() => setEditMode(true)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </Box>
+                )}
+
+                {/* Edit fields if editMode is true */}
+                {editMode && (
+                  <Box
+                    mt={2}
+                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
                   >
-                    Save
-                  </Button>
-                </Box>
-              )}
-
-              {/* CHANGE PASSWORD SECTION */}
-              <Box mt={3} sx={{ textAlign: "center" }}>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => setShowPasswordFields(!showPasswordFields)}
-                >
-                  Change Password
-                </Button>
-                {showPasswordFields && (
-                  <Box mt={2} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                     <TextField
-                      label="New Password"
-                      type="password"
+                      label="Name"
+                      type="text"
+                      variant="outlined"
                       size="small"
-                      className="custom-text-field"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      value={profileData.displayName}
+                      onChange={(e) =>
+                        handleInputChange("displayName", e.target.value)
+                      }
                       fullWidth
                     />
                     <TextField
-                      label="Confirm Password"
-                      type="password"
+                      label="Email"
+                      type="email"
+                      variant="outlined"
                       size="small"
-                      className="custom-text-field"
-                      value={confirmNewPassword}
-                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      value={profileData.email}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
                       fullWidth
                     />
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={handlePasswordUpdate}
+                      startIcon={<SaveIcon />}
+                      onClick={saveProfileData}
                     >
-                      Update Password
+                      Save
                     </Button>
                   </Box>
                 )}
+
+                {/* Change Password Section */}
+                <Box mt={3} sx={{ textAlign: "center" }}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setShowPasswordFields(!showPasswordFields)}
+                  >
+                    Change Password
+                  </Button>
+                  {showPasswordFields && (
+                    <Box
+                      mt={2}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                        maxWidth: "400px",
+                        margin: "0 auto",
+                      }}
+                    >
+                      <TextField
+                        label="New Password"
+                        type="password"
+                        size="small"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        fullWidth
+                      />
+                      <TextField
+                        label="Confirm Password"
+                        type="password"
+                        size="small"
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        fullWidth
+                      />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handlePasswordUpdate}
+                      >
+                        Update Password
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
               </Box>
-            </Box>
-          ) : (
-            <Box className="no-user-info">
-              <Typography variant="body1" color="error">
-                No user is logged in.
-              </Typography>
-            </Box>
-          )}
-        </CardContent>
-      </Card>
+            ) : (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="100px"
+              >
+                <Typography variant="body1" color="error">
+                  No user is logged in.
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </RightSection>
+      </Container>
       {errorMessage && (
         <Alert severity="error" className="profile-error" icon={<ErrorIcon />} variant="filled">
           {errorMessage}
