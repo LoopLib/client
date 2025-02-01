@@ -373,29 +373,29 @@ const Profile = () => {
 
   const handlePasswordUpdate = async () => {
     setErrorMessage(""); // Clear previous error messages
-  
+
     if (!newPassword || !confirmNewPassword) {
       setErrorMessage("Please fill out both password fields.");
       return;
     }
-  
+
     if (newPassword !== confirmNewPassword) {
       setErrorMessage("Passwords do not match.");
       return;
     }
-  
+
     if (newPassword.length < 6) {
       setErrorMessage("Password must be at least 6 characters long.");
       return;
     }
-  
+
     try {
       const currentUser = auth.currentUser; // Get the latest authenticated user
       if (!currentUser) {
         setErrorMessage("User is not authenticated. Please log in again.");
         return;
       }
-  
+
       await updatePassword(currentUser, newPassword);
       alert("Password updated successfully!");
       setNewPassword("");
@@ -417,7 +417,7 @@ const Profile = () => {
       }
     }
   };
-  
+
 
   if (loading) {
     return <LoadingPage />;
@@ -436,7 +436,6 @@ const Profile = () => {
         variant="h4"
         className="all-audio-title"
         mb={4}
-        fontFamily={"Montserrat, sans-serif"}
         fontWeight="bold"
         sx={{ textAlign: "center" }}
       >
@@ -498,71 +497,36 @@ const Profile = () => {
           {user ? (
             <Box className="user-info-details">
               {/* NAME */}
-              <Box className="user-info-row">
-                {editMode ? (
-                 <TextField
-                 label="Name"
-                 type="text"
-                 variant="outlined"
-                 size="small"
-                 className="custom-text-field"
-                 value={profileData.displayName}
-                 onChange={(e) => handleInputChange("displayName", e.target.value)}
-                 fullWidth
-                 InputProps={{
-                   style: { fontFamily: "Montserrat, sans-serif", fontSize: "16px" }
-                 }}
-               />
-                ) : (
-                  <>
-                    <Typography variant="subtitle1" className="user-info-label">
-                      Name:
-                    </Typography>
-                    <Typography variant="body1" className="user-info-value">
-                      {profileData.displayName || "N/A"}
-                    </Typography>
-                  </>
-                )}
-              </Box>
+              {!editMode && (
+                <Box display="flex" justifyContent="center">
+                  <IconButton color="primary" onClick={() => setEditMode(true)}>
+                    <EditIcon />
+                  </IconButton>
+                </Box>
+              )}
 
-              {/* EMAIL */}
-              <Box className="user-info-row">
-                {editMode ? (
+              {editMode && (
+                <Box mt={2} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <TextField
+                    label="Name"
+                    type="text"
+                    variant="outlined"
+                    size="small"
+                    value={profileData.displayName}
+                    onChange={(e) => handleInputChange("displayName", e.target.value)}
+                    fullWidth
+                  />
+
                   <TextField
                     label="Email"
                     type="email"
                     variant="outlined"
                     size="small"
-                    className="custom-text-field"
                     value={profileData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     fullWidth
                   />
-                ) : (
-                  <>
-                    <Typography variant="subtitle1" className="user-info-label">
-                      Email:
-                    </Typography>
-                    <Typography variant="body1" className="user-info-value">
-                      {profileData.email}
-                    </Typography>
-                  </>
-                )}
-              </Box>
 
-              {/* UID */}
-              <Box className="user-info-row">
-                <Typography variant="subtitle1" className="user-info-label">
-                  UID:
-                </Typography>
-                <Typography variant="body1" className="user-info-value">
-                  {user.uid}
-                </Typography>
-              </Box>
-
-              {/* SAVE / EDIT BUTTON */}
-              <Box mt={2} sx={{ textAlign: "center" }}>
-                {editMode ? (
                   <Button
                     variant="contained"
                     color="primary"
@@ -571,12 +535,8 @@ const Profile = () => {
                   >
                     Save
                   </Button>
-                ) : (
-                  <IconButton color="primary" onClick={() => setEditMode(true)}>
-                    <EditIcon />
-                  </IconButton>
-                )}
-              </Box>
+                </Box>
+              )}
 
               {/* CHANGE PASSWORD SECTION */}
               <Box mt={3} sx={{ textAlign: "center" }}>
