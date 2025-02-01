@@ -535,125 +535,132 @@ const Profile = () => {
 
         {/* Right Section: User Info */}
         <RightSection>
-          <CardContent>
-            <Typography variant="h5" gutterBottom>
-              Profile Overview
-            </Typography>
+        <CardContent>
 
-            {user ? (
-              <Box mt={2}>
-                {/* If NOT in edit mode, show Name & Email as plain text */}
-                {!editMode ? (
-                  <Box>
-                    <Typography variant="body1">
-                      <strong>Name:</strong> {profileData?.displayName}
-                    </Typography>
-                    <Typography variant="body1">
-                      <strong>Email:</strong> {profileData?.email}
-                    </Typography>
+          {user ? (
+            <Box mt={2}>
+              {/* If NOT in edit mode, show Name & Email as plain text */}
+              {!editMode ? (
+                <Box>
+                  <Typography variant="body1" sx={{ mb: 1 }}>
+                    <strong>Name:</strong> {profileData?.displayName}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Email:</strong> {profileData?.email}
+                  </Typography>
 
-                    <Box mt={1} display="flex" justifyContent="flex-end">
-                      <IconButton
-                        color="primary"
-                        onClick={() => setEditMode(true)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Box>
+                  <Box mt={2} display="flex" justifyContent="flex-end">
+                    <IconButton
+                      color="primary"
+                      onClick={() => setEditMode(true)}
+                      sx={{
+                        border: "1px solid",
+                        borderColor: "primary.main",
+                        ":hover": {
+                          backgroundColor: "primary.main",
+                          color: "#fff",
+                        },
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
                   </Box>
-                ) : (
-                  // If in edit mode, show TextFields
+                </Box>
+              ) : (
+                // If in edit mode, show TextFields
+                <Box
+                  mt={2}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    maxWidth: 400,
+                  }}
+                >
+                  <TextField
+                    label="Name"
+                    type="text"
+                    variant="outlined"
+                    size="small"
+                    value={profileData.displayName}
+                    onChange={(e) =>
+                      handleInputChange("displayName", e.target.value)
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    label="Email"
+                    type="email"
+                    variant="outlined"
+                    size="small"
+                    value={profileData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    fullWidth
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SaveIcon />}
+                    onClick={saveProfileData}
+                  >
+                    Save
+                  </Button>
+                </Box>
+              )}
+
+              {/* Change Password Section */}
+              <Box mt={5} textAlign="center">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setShowPasswordFields(!showPasswordFields)}
+                >
+                  Change Password
+                </Button>
+                {showPasswordFields && (
                   <Box
                     mt={2}
-                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      maxWidth: 400,
+                      margin: "0 auto",
+                    }}
                   >
                     <TextField
-                      label="Name"
-                      type="text"
-                      variant="outlined"
+                      label="New Password"
+                      type="password"
                       size="small"
-                      value={profileData.displayName}
-                      onChange={(e) =>
-                        handleInputChange("displayName", e.target.value)
-                      }
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
                       fullWidth
                     />
                     <TextField
-                      label="Email"
-                      type="email"
-                      variant="outlined"
+                      label="Confirm Password"
+                      type="password"
                       size="small"
-                      value={profileData.email}
-                      onChange={(e) =>
-                        handleInputChange("email", e.target.value)
-                      }
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
                       fullWidth
                     />
                     <Button
                       variant="contained"
                       color="primary"
-                      startIcon={<SaveIcon />}
-                      onClick={saveProfileData}
+                      onClick={handlePasswordUpdate}
                     >
-                      Save
+                      Update Password
                     </Button>
                   </Box>
                 )}
-
-                {/* Change Password Section */}
-                <Box mt={3} sx={{ textAlign: "center" }}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => setShowPasswordFields(!showPasswordFields)}
-                  >
-                    Change Password
-                  </Button>
-                  {showPasswordFields && (
-                    <Box
-                      mt={2}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                        maxWidth: "400px",
-                        margin: "0 auto",
-                      }}
-                    >
-                      <TextField
-                        label="New Password"
-                        type="password"
-                        size="small"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        fullWidth
-                      />
-                      <TextField
-                        label="Confirm Password"
-                        type="password"
-                        size="small"
-                        value={confirmNewPassword}
-                        onChange={(e) => setConfirmNewPassword(e.target.value)}
-                        fullWidth
-                      />
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handlePasswordUpdate}
-                      >
-                        Update Password
-                      </Button>
-                    </Box>
-                  )}
-                </Box>
               </Box>
-            ) : (
-              <Typography variant="body1" color="error">
-                No user is logged in.
-              </Typography>
-            )}
-          </CardContent>
-        </RightSection>
+            </Box>
+          ) : (
+            <Typography variant="body1" color="error">
+              No user is logged in.
+            </Typography>
+          )}
+        </CardContent>
+      </RightSection>
       </Container>
 
       {errorMessage && (
