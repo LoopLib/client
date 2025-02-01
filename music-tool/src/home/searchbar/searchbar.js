@@ -15,21 +15,27 @@ import "./searchbar.css";
 
 const SearchBar = ({ onSearchChange }) => {
     const [genre, setGenre] = useState("");
-    const [key, setKey] = useState("");
     const [mode, setMode] = useState("");
+    const [key, setKey] = useState("");
     const [bpmRange, setBpmRange] = useState({ min: "", max: "" });
     const [publishedDate, setPublishedDate] = useState("");
 
     const handleGenreChange = (event) => setGenre(event.target.value);
+    const handleModeChange = (event) => {
+        setMode(event.target.value);
+        setKey(""); // Reset key selection when mode changes
+    };
     const handleKeyChange = (event) => setKey(event.target.value);
-    const handleModeChange = (event) => setMode(event.target.value);
     const handleBpmRangeChange = (event) => {
         const { name, value } = event.target;
         setBpmRange((prevRange) => ({ ...prevRange, [name]: value }));
     };
     const handleSearchClick = () => {
-        console.log("Filters Applied:", { genre, key, mode, bpmRange, publishedDate });
+        console.log("Filters Applied:", { genre, mode, key, bpmRange, publishedDate });
     };
+
+    // Define key options
+    const keyOptions = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
     return (
         <Box className="search-bar-container">
@@ -63,9 +69,8 @@ const SearchBar = ({ onSearchChange }) => {
                             InputLabelProps={{ shrink: true }}
                             className="filter-item"
                             sx={{ flex: 1 }}
-                            inputProps={{ max: new Date().toISOString().split('T')[0] }}  // Set max to today
+                            inputProps={{ max: new Date().toISOString().split('T')[0] }}
                         />
-
 
                         {/* Genre */}
                         <FormControl className="filter-item" sx={{ flex: 1 }}>
@@ -86,27 +91,9 @@ const SearchBar = ({ onSearchChange }) => {
                         </FormControl>
                     </Box>
 
-                    {/* Row 2 */}
-                    <Box sx={{ display: 'flex', flex: '1 1 100%', gap: 2, justifyContent: 'space-between', alignItems: 'center' }}>
-                        {/* Key */}
-                        <FormControl className="filter-item" sx={{ flex: 1 }}>
-                            <InputLabel>Key</InputLabel>
-                            <Select
-                                value={key}
-                                onChange={handleKeyChange}
-                                variant="outlined"
-                                className="filter-select"
-                            >
-                                <MenuItem value="">-</MenuItem>
-                                {["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"].map((note) => (
-                                    <MenuItem key={note} value={note}>
-                                        {note}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                        {/* Mode */}
+                    {/* Row 2 - Mode & Key Selection */}
+                    <Box sx={{ display: 'flex', flex: '1 1 100%', gap: 2, justifyContent: 'space-between' }}>
+                        {/* Mode Selection */}
                         <FormControl className="filter-item" sx={{ flex: 1 }}>
                             <InputLabel>Mode</InputLabel>
                             <Select
@@ -121,6 +108,29 @@ const SearchBar = ({ onSearchChange }) => {
                             </Select>
                         </FormControl>
 
+                        {/* Key Selection - Only appears if Mode is selected */}
+                        {mode && (
+                            <FormControl className="filter-item" sx={{ flex: 1 }}>
+                                <InputLabel>Key</InputLabel>
+                                <Select
+                                    value={key}
+                                    onChange={handleKeyChange}
+                                    variant="outlined"
+                                    className="filter-select"
+                                >
+                                    <MenuItem value="">-</MenuItem>
+                                    {keyOptions.map((note) => (
+                                        <MenuItem key={note} value={note}>
+                                            {note} {mode}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
+                    </Box>
+
+                    {/* Row 3 - BPM Range */}
+                    <Box sx={{ display: 'flex', flex: '1 1 100%', gap: 2, justifyContent: 'space-between', alignItems: 'center' }}>
                         {/* BPM Range */}
                         <Box className="filter-item bpm-range-container" sx={{ display: 'flex', gap: 1, alignItems: 'center', flex: 1 }}>
                             <TextField
@@ -129,7 +139,7 @@ const SearchBar = ({ onSearchChange }) => {
                                 name="min"
                                 value={bpmRange.min}
                                 onChange={handleBpmRangeChange}
-                                placeholder="Min BPM"
+                                placeholder="Min"
                                 InputLabelProps={{ shrink: true }}
                                 className="bpm-input"
                                 sx={{ flex: 1 }}
@@ -141,7 +151,7 @@ const SearchBar = ({ onSearchChange }) => {
                                 name="max"
                                 value={bpmRange.max}
                                 onChange={handleBpmRangeChange}
-                                placeholder="Max BPM"
+                                placeholder="Max"
                                 InputLabelProps={{ shrink: true }}
                                 className="bpm-input"
                                 sx={{ flex: 1 }}
@@ -164,7 +174,6 @@ const SearchBar = ({ onSearchChange }) => {
                     </Box>
                 </Box>
             </Card>
-
         </Box>
     );
 };
