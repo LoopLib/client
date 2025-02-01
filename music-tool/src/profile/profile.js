@@ -439,7 +439,7 @@ const Profile = () => {
       flexDirection: "column",
     },
   });
-  
+
   const LeftSection = styled(Box)(({ theme }) => ({
     flexBasis: "300px",
     flexShrink: 0,
@@ -452,17 +452,17 @@ const Profile = () => {
     alignItems: "center",
     gap: theme.spacing(2),
   }));
-  
+
   const RightSection = styled(Card)(({ theme }) => ({
     flexGrow: 1,
     boxShadow: theme.shadows[1],
     borderRadius: theme.shape.borderRadius,
   }));
-  
+
   const AvatarWrapper = styled(Box)(({ theme }) => ({
     position: "relative",
-    width: "120px",
-    height: "120px",
+    width: "180px",
+    height: "180px",
     borderRadius: "50%",
     overflow: "hidden",
     border: `2px solid ${theme.palette.primary.main}`,
@@ -476,7 +476,7 @@ const Profile = () => {
       borderRadius: "50%",
     },
   }));
-  
+
   const ChangeOverlay = styled(Box)(({ theme }) => ({
     position: "absolute",
     bottom: 0,
@@ -558,21 +558,25 @@ const Profile = () => {
             </Typography>
 
             {user ? (
-              <Box>
-                {/* Edit Button (appears only if not editing) */}
-                {!editMode && (
-                  <Box display="flex" justifyContent="flex-end">
-                    <IconButton
-                      color="primary"
-                      onClick={() => setEditMode(true)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Box>
-                )}
+              <Box mt={2}>
+                {/* If NOT in edit mode, show Name & Email as plain text */}
+                {!editMode ? (
+                  <Box>
+                    <Typography variant="body1">
+                      <strong>Name:</strong> {profileData?.displayName}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Email:</strong> {profileData?.email}
+                    </Typography>
 
-                {/* Edit fields if editMode is true */}
-                {editMode && (
+                    <Box mt={1} display="flex" justifyContent="flex-end">
+                      <IconButton color="primary" onClick={() => setEditMode(true)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                ) : (
+                  // If in edit mode, show TextFields
                   <Box
                     mt={2}
                     sx={{ display: "flex", flexDirection: "column", gap: 2 }}
@@ -588,6 +592,7 @@ const Profile = () => {
                       }
                       fullWidth
                     />
+
                     <TextField
                       label="Email"
                       type="email"
@@ -599,6 +604,7 @@ const Profile = () => {
                       }
                       fullWidth
                     />
+
                     <Button
                       variant="contained"
                       color="primary"
@@ -609,65 +615,11 @@ const Profile = () => {
                     </Button>
                   </Box>
                 )}
-
-                {/* Change Password Section */}
-                <Box mt={3} sx={{ textAlign: "center" }}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => setShowPasswordFields(!showPasswordFields)}
-                  >
-                    Change Password
-                  </Button>
-                  {showPasswordFields && (
-                    <Box
-                      mt={2}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                        maxWidth: "400px",
-                        margin: "0 auto",
-                      }}
-                    >
-                      <TextField
-                        label="New Password"
-                        type="password"
-                        size="small"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        fullWidth
-                      />
-                      <TextField
-                        label="Confirm Password"
-                        type="password"
-                        size="small"
-                        value={confirmNewPassword}
-                        onChange={(e) => setConfirmNewPassword(e.target.value)}
-                        fullWidth
-                      />
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handlePasswordUpdate}
-                      >
-                        Update Password
-                      </Button>
-                    </Box>
-                  )}
-                </Box>
               </Box>
             ) : (
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                minHeight="100px"
-              >
-                <Typography variant="body1" color="error">
-                  No user is logged in.
-                </Typography>
-              </Box>
+              <Typography variant="body1" color="error">
+                No user is logged in.
+              </Typography>
             )}
           </CardContent>
         </RightSection>
