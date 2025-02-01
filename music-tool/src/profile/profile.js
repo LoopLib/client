@@ -40,10 +40,7 @@ const Profile = () => {
 
   const [editMode, setEditMode] = useState(false);
   const [showAudioFiles, setShowAudioFiles] = useState(false);
-  const [profileData, setProfileData] = useState({
-    displayName: "",
-    email: "",
-  });
+  const [profileData, setProfileData] = useState({ displayName: "", email: "" });
   const [audioFiles, setAudioFiles] = useState([]);
   const [editingFile, setEditingFile] = useState(null);
   const [newFileName, setNewFileName] = useState("");
