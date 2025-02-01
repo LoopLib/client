@@ -15,6 +15,7 @@ import {
   TableRow,
   Paper,
   Tooltip,
+  Chip
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EditIcon from "@mui/icons-material/Edit";
@@ -22,6 +23,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import PianoIcon from "@mui/icons-material/Piano"; 
+import { styled } from '@mui/material/styles';
 import AWS from "aws-sdk";
 import {
   onAuthStateChanged,
@@ -33,6 +37,13 @@ import { auth } from "../firebaseConfig";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import LoadingPage from "../loading/loading";
 import "./profile.css";
+
+const StyledTableRow = styled(TableRow)(({ theme, striped }) => ({
+  backgroundColor: striped ? theme.palette.action.hover : "inherit",
+  "&:hover": {
+    backgroundColor: theme.palette.action.selected
+  }
+}));
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -314,12 +325,21 @@ const Profile = () => {
   };
 
   const saveProfileData = async () => {
+    setErrorMessage(""); // Clear previous errors
+  
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(profileData.email)) {
+      setErrorMessage("Invalid email format.");
+      return;
+    }
+  
     try {
       if (user) {
         const db = getFirestore();
         const userDocRef = doc(db, "users", user.uid);
         await setDoc(userDocRef, profileData, { merge: true });
-
+  
         // Update Firebase displayName / email
         if (profileData.displayName !== user.displayName) {
           await updateProfile(user, { displayName: profileData.displayName });
@@ -327,43 +347,62 @@ const Profile = () => {
         if (profileData.email !== user.email) {
           await updateEmail(user, profileData.email);
         }
-
+  
         setUser({ ...user, ...profileData });
         setEditMode(false);
+        alert("Profile updated successfully!");
       }
     } catch (error) {
       console.error("Error saving profile data:", error.message);
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setErrorMessage("Email is already in use.");
+          break;
+        case "auth/invalid-email":
+          setErrorMessage("Invalid email format.");
+          break;
+        default:
+          setErrorMessage("Failed to update email. Please try again.");
+      }
     }
   };
-
+  
   const handlePasswordUpdate = async () => {
+    setErrorMessage(""); // Clear previous error messages
+  
+    if (!newPassword || !confirmNewPassword) {
+      setErrorMessage("Please fill out both password fields.");
+      return;
+    }
+  
+    if (newPassword !== confirmNewPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+  
+    if (newPassword.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long.");
+      return;
+    }
+  
     try {
-      if (!newPassword || !confirmNewPassword) {
-        alert("Please fill out both password fields.");
-        return;
-      }
-      if (newPassword !== confirmNewPassword) {
-        alert("Passwords do not match.");
-        return;
-      }
-      if (newPassword.length < 6) {
-        alert("Password should be at least 6 characters long.");
-        return;
-      }
-
       await updatePassword(user, newPassword);
       alert("Password updated successfully!");
-
-      // Clear fields
       setNewPassword("");
       setConfirmNewPassword("");
       setShowPasswordFields(false);
     } catch (error) {
       console.error("Error updating password:", error.message);
-      alert("Failed to update password: " + error.message);
+      switch (error.code) {
+        case "auth/weak-password":
+          setErrorMessage("Password is too weak. Must be at least 6 characters.");
+          break;
+        default:
+          setErrorMessage("An unexpected error occurred. Please try again.");
+      }
     }
   };
-
+  
   if (loading) {
     return <LoadingPage />;
   }
@@ -580,22 +619,39 @@ const Profile = () => {
         {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
       </Button>
 
-      {/* Audio Files Table */}
       {showAudioFiles && (
-        <TableContainer component={Paper} sx={{ mt: 4 }}>
-          <Table>
-            <TableHead>
+        <TableContainer
+          component={Paper}
+          sx={{
+            mt: 4,
+            borderRadius: 2,
+            boxShadow: 3,
+            overflow: "hidden" // hides any corner overlap
+          }}
+        >
+          <Table sx={{ minWidth: 600 }}>
+            {/* Table Head with a background color */}
+            <TableHead sx={{ backgroundColor: "primary.main" }}>
               <TableRow>
-                <TableCell>FILE NAME</TableCell>
-                <TableCell>BPM</TableCell>
-                <TableCell>GENRE</TableCell>
-                <TableCell>KEY</TableCell>
-                <TableCell>ACTIONS</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                  FILE NAME
+                </TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>BPM</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                  GENRE
+                </TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                  KEY
+                </TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                  ACTIONS
+                </TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
-              {audioFiles.map((file) => (
-                <TableRow key={file.key}>
+              {audioFiles.map((file, index) => (
+                <StyledTableRow key={file.key} striped={index % 2 === 0}>
                   <TableCell>
                     {editingFile?.key === file.key ? (
                       <TextField
@@ -608,16 +664,47 @@ const Profile = () => {
                         fullWidth
                       />
                     ) : (
-                      file.name
+                      <Typography variant="body1" fontWeight="500">
+                        {file.name}
+                      </Typography>
                     )}
                   </TableCell>
-                  <TableCell>{file.bpm}</TableCell>
-                  <TableCell>{file.genre}</TableCell>
-                  <TableCell>{file.musicalKey}</TableCell>
+
+                  {/* BPM */}
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {file.bpm} bpm
+                    </Typography>
+                  </TableCell>
+
+                  {/* Genre as a Chip */}
+                  <TableCell>
+                    <Chip
+                      label={file.genre}
+                      color="secondary"
+                      size="small"
+                      icon={<MusicNoteIcon />}
+                      sx={{ fontWeight: 500 }}
+                    />
+                  </TableCell>
+
+                  {/* Musical Key as a Chip */}
+                  <TableCell>
+                    <Chip
+                      label={file.musicalKey}
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      icon={<PianoIcon />}
+                      sx={{ fontWeight: 500 }}
+                    />
+                  </TableCell>
+
+                  {/* Actions */}
                   <TableCell>
                     {editingFile?.key === file.key ? (
                       <Tooltip title="Save">
-                        <IconButton onClick={handleSaveEdit}>
+                        <IconButton onClick={handleSaveEdit} color="success">
                           <SaveIcon />
                         </IconButton>
                       </Tooltip>
@@ -629,12 +716,15 @@ const Profile = () => {
                       </Tooltip>
                     )}
                     <Tooltip title="Delete">
-                      <IconButton onClick={() => handleDeleteFile(file.key)}>
+                      <IconButton
+                        onClick={() => handleDeleteFile(file.key)}
+                        color="error"
+                      >
                         <DeleteIcon />
                       </IconButton>
                     </Tooltip>
                   </TableCell>
-                </TableRow>
+                </StyledTableRow>
               ))}
             </TableBody>
           </Table>

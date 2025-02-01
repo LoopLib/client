@@ -196,6 +196,69 @@
   color: #333;
 }
 
+/* Table Container */
+.audio-table-container {
+  border-radius: 16px;
+  overflow: hidden; /* So corners aren't visible outside */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+  background-color: #ffffff; /* Adjust as needed */
+}
+
+/* Actual Table */
+.audio-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0; /* Ensures border styling is consistent */
+}
+
+/* Table Header */
+.audio-table thead {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+.audio-table thead th {
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px;
+  text-align: left;
+  border: none; /* Remove any default borders */
+}
+
+/* Table Body */
+.audio-table tbody tr {
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Zebra striping for rows */
+.audio-table tbody tr:nth-of-type(even) {
+  background-color: #f7f9fc;
+}
+
+/* Hover effect on rows */
+.audio-table tbody tr:hover {
+  background-color: #ebf2ff; /* Light highlight color */
+}
+
+/* Table Cells */
+.audio-table tbody td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Actions Cell - align icons */
+.audio-table-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center; /* or "flex-start"/"flex-end" */
+  align-items: center;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .user-info-row {
