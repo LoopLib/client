@@ -86,6 +86,16 @@ const Profile = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(""); // Clear the error message after 5 seconds
+      }, 5000);
+  
+      return () => clearTimeout(timer); // Cleanup timeout when component unmounts or message changes
+    }
+  }, [errorMessage]);
+
   const fetchProfileData = async (userId) => {
     try {
       const db = getFirestore();
