@@ -43,8 +43,8 @@ import "./profile.css";
 const StyledTableRow = styled(TableRow)(({ theme, striped }) => ({
   backgroundColor: striped ? theme.palette.action.hover : "inherit",
   "&:hover": {
-    backgroundColor: theme.palette.action.selected
-  }
+    backgroundColor: theme.palette.action.selected,
+  },
 }));
 
 const Profile = () => {
@@ -91,8 +91,7 @@ const Profile = () => {
       const timer = setTimeout(() => {
         setErrorMessage(""); // Clear the error message after 5 seconds
       }, 5000);
-
-      return () => clearTimeout(timer); // Cleanup timeout when component unmounts or message changes
+      return () => clearTimeout(timer);
     }
   }, [errorMessage]);
 
@@ -128,23 +127,17 @@ const Profile = () => {
 
       const files = await Promise.all(
         data.Contents.map(async (file) => {
-          const metadataKey =
-            file.Key.replace("/audio/", "/metadata/") + ".metadata.json";
-
+          const metadataKey = file.Key.replace("/audio/", "/metadata/") + ".metadata.json";
           let metadata = {};
           try {
-            const metadataParams = {
-              Bucket: params.Bucket,
-              Key: metadataKey,
-            };
-            const metadataObject = await s3.getObject(metadataParams).promise();
+            const metadataObject = await s3
+              .getObject({ Bucket: params.Bucket, Key: metadataKey })
+              .promise();
             metadata = metadataObject?.Body
               ? JSON.parse(metadataObject.Body.toString())
               : {};
           } catch (error) {
-            console.warn(
-              `Metadata not found for ${file.Key}: ${error.message}`
-            );
+            console.warn(`Metadata not found for ${file.Key}: ${error.message}`);
             metadata = {
               bpm: "Unknown",
               genre: "Unknown",
@@ -218,7 +211,6 @@ const Profile = () => {
 
     const fileInput = document.querySelector('input[type="file"]');
     const file = fileInput.files[0];
-
     if (!file) return;
 
     const fileName = "profile-picture.jpg";
@@ -289,10 +281,8 @@ const Profile = () => {
         .promise();
 
       setAudioFiles((prevFiles) =>
-        prevFiles.map((file) =>
-          file.key === oldKey
-            ? { ...file, name: newFileName, key: newKey }
-            : file
+        prevFiles.map((f) =>
+          f.key === oldKey ? { ...f, name: newFileName, key: newKey } : f
         )
       );
 
@@ -321,7 +311,7 @@ const Profile = () => {
         })
         .promise();
 
-      setAudioFiles((prevFiles) => prevFiles.filter((file) => file.key !== fileKey));
+      setAudioFiles((prevFiles) => prevFiles.filter((f) => f.key !== fileKey));
       alert("File deleted successfully!");
     } catch (error) {
       console.error("Error deleting file:", error.message);
@@ -354,7 +344,7 @@ const Profile = () => {
         const userDocRef = doc(db, "users", user.uid);
         await setDoc(userDocRef, profileData, { merge: true });
 
-        // Update Firebase displayName / email
+        // Update Firebase Auth displayName / email
         if (profileData.displayName !== user.displayName) {
           await updateProfile(user, { displayName: profileData.displayName });
         }
@@ -400,7 +390,7 @@ const Profile = () => {
     }
 
     try {
-      const currentUser = auth.currentUser; // Get the latest authenticated user
+      const currentUser = auth.currentUser;
       if (!currentUser) {
         setErrorMessage("User is not authenticated. Please log in again.");
         return;
@@ -433,8 +423,6 @@ const Profile = () => {
     flexDirection: "row",
     gap: "1.5rem",
     alignItems: "flex-start",
-    // Add responsiveness if desired:
-    // For small screens, stack vertically:
     "@media (max-width: 600px)": {
       flexDirection: "column",
     },
@@ -489,7 +477,6 @@ const Profile = () => {
     cursor: "pointer",
   }));
 
-
   if (loading) {
     return <LoadingPage />;
   }
@@ -503,13 +490,9 @@ const Profile = () => {
         margin: "20px auto",
       }}
     >
-
       <Container>
         {/* Left Section: Avatar & Image Upload */}
         <LeftSection>
-          <Typography variant="h6" gutterBottom>
-            My Avatar
-          </Typography>
           {/* Avatar / Image Upload */}
           <AvatarWrapper>
             {profilePictureUrl ? (
@@ -570,7 +553,10 @@ const Profile = () => {
                     </Typography>
 
                     <Box mt={1} display="flex" justifyContent="flex-end">
-                      <IconButton color="primary" onClick={() => setEditMode(true)}>
+                      <IconButton
+                        color="primary"
+                        onClick={() => setEditMode(true)}
+                      >
                         <EditIcon />
                       </IconButton>
                     </Box>
@@ -592,7 +578,6 @@ const Profile = () => {
                       }
                       fullWidth
                     />
-
                     <TextField
                       label="Email"
                       type="email"
@@ -604,7 +589,6 @@ const Profile = () => {
                       }
                       fullWidth
                     />
-
                     <Button
                       variant="contained"
                       color="primary"
@@ -615,6 +599,53 @@ const Profile = () => {
                     </Button>
                   </Box>
                 )}
+
+                {/* Change Password Section */}
+                <Box mt={3} sx={{ textAlign: "center" }}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setShowPasswordFields(!showPasswordFields)}
+                  >
+                    Change Password
+                  </Button>
+                  {showPasswordFields && (
+                    <Box
+                      mt={2}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                        maxWidth: "400px",
+                        margin: "0 auto",
+                      }}
+                    >
+                      <TextField
+                        label="New Password"
+                        type="password"
+                        size="small"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        fullWidth
+                      />
+                      <TextField
+                        label="Confirm Password"
+                        type="password"
+                        size="small"
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        fullWidth
+                      />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handlePasswordUpdate}
+                      >
+                        Update Password
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
               </Box>
             ) : (
               <Typography variant="body1" color="error">
@@ -624,8 +655,14 @@ const Profile = () => {
           </CardContent>
         </RightSection>
       </Container>
+
       {errorMessage && (
-        <Alert severity="error" className="profile-error" icon={<ErrorIcon />} variant="filled">
+        <Alert
+          severity="error"
+          className="profile-error"
+          icon={<ErrorIcon />}
+          variant="filled"
+        >
           {errorMessage}
         </Alert>
       )}
@@ -647,7 +684,7 @@ const Profile = () => {
             mt: 4,
             borderRadius: 2,
             boxShadow: 3,
-            overflow: "hidden" // hides any corner overlap
+            overflow: "hidden", // hides any corner overlap
           }}
         >
           <Table sx={{ minWidth: 600 }}>
@@ -657,7 +694,9 @@ const Profile = () => {
                 <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
                   FILE NAME
                 </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>BPM</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                  BPM
+                </TableCell>
                 <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
                   GENRE
                 </TableCell>
@@ -690,15 +729,11 @@ const Profile = () => {
                       </Typography>
                     )}
                   </TableCell>
-
-                  {/* BPM */}
                   <TableCell>
                     <Typography variant="body2" color="text.secondary">
                       {file.bpm} bpm
                     </Typography>
                   </TableCell>
-
-                  {/* Genre as a Chip */}
                   <TableCell>
                     <Chip
                       label={file.genre}
@@ -708,8 +743,6 @@ const Profile = () => {
                       sx={{ fontWeight: 500 }}
                     />
                   </TableCell>
-
-                  {/* Musical Key as a Chip */}
                   <TableCell>
                     <Chip
                       label={file.musicalKey}
@@ -720,8 +753,6 @@ const Profile = () => {
                       sx={{ fontWeight: 500 }}
                     />
                   </TableCell>
-
-                  {/* Actions */}
                   <TableCell>
                     {editingFile?.key === file.key ? (
                       <Tooltip title="Save">
