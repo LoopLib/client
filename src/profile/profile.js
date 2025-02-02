@@ -15,7 +15,9 @@ import {
   TableRow,
   Paper,
   Tooltip,
-  Chip
+  Chip,
+  CardActions,
+  Stack
 } from "@mui/material";
 import { Alert } from "@mui/material";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -541,31 +543,45 @@ const Profile = () => {
               <Box mt={2}>
                 {/* If NOT in edit mode, show Name & Email as plain text */}
                 {!editMode ? (
-                  <Box>
-                    <Typography variant="body1" sx={{ mb: 1 }}>
-                      <strong>Name:</strong> {profileData?.displayName}
-                    </Typography>
-                    <Typography variant="body1">
-                      <strong>Email:</strong> {profileData?.email}
-                    </Typography>
-
-                    <Box mt={2} display="flex" justifyContent="flex-end">
-                      <IconButton
-                        color="primary"
-                        onClick={() => setEditMode(true)}
-                        sx={{
-                          border: "1px solid",
-                          borderColor: "primary.main",
-                          ":hover": {
-                            backgroundColor: "primary.main",
-                            color: "#fff",
-                          },
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Box>
-                  </Box>
+                  <Card
+                    sx={{
+                      borderRadius: 2,
+                      boxShadow: 3,
+                      
+                      maxWidth: 400,
+                      margin: "auto",
+                    }}
+                  >
+                    <CardContent>
+                      <Stack spacing={1}>
+                        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                          {profileData?.displayName}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {profileData?.email}
+                        </Typography>
+                      </Stack>
+                    </CardContent>
+                    <CardActions sx={{ justifyContent: "flex-end", paddingX: 2, paddingBottom: 2 }}>
+                      <Tooltip title="Edit Profile">
+                        <IconButton
+                          color="primary"
+                          onClick={() => setEditMode(true)}
+                          sx={{
+                            border: "1px solid",
+                            borderColor: "primary.main",
+                            transition: "all 0.3s ease-in-out",
+                            "&:hover": {
+                              backgroundColor: "primary.main",
+                              color: "#fff",
+                            },
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </CardActions>
+                  </Card>
                 ) : (
                   // If in edit mode, show TextFields
                   <Box
