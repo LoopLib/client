@@ -1,36 +1,14 @@
+// Profile.js
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Typography,
-  Card,
-  CardContent,
   Button,
-  TextField,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Tooltip,
-  Chip,
-  CardActions,
-  Stack
+  Alert,
 } from "@mui/material";
-import { Alert } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import ErrorIcon from "@mui/icons-material/Error";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SaveIcon from "@mui/icons-material/Save";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import PianoIcon from "@mui/icons-material/Piano";
-import { styled } from '@mui/material/styles';
-import AWS from "aws-sdk";
 import {
   onAuthStateChanged,
   updateProfile,
@@ -39,38 +17,45 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import AWS from "aws-sdk";
 import LoadingPage from "../loading/loading";
+import ProfileLeftSection from "./profile-left";
+import ProfileRightSection from "./profile-right";
+import AudioFilesTable from "./audio-table";
 import "./profile.css";
 
-const StyledTableRow = styled(TableRow)(({ theme, striped }) => ({
-  backgroundColor: striped ? theme.palette.action.hover : "inherit",
-  "&:hover": {
-    backgroundColor: theme.palette.action.selected,
+const Container = styled(Box)({
+  display: "flex",
+  flexDirection: "row",
+  gap: "1.5rem",
+  alignItems: "flex-start",
+  "@media (max-width: 600px)": {
+    flexDirection: "column",
   },
-}));
+});
 
 const Profile = () => {
+  // STATE VARIABLES
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [editMode, setEditMode] = useState(false);
   const [showAudioFiles, setShowAudioFiles] = useState(false);
   const [profileData, setProfileData] = useState({ displayName: "", email: "" });
   const [audioFiles, setAudioFiles] = useState([]);
   const [editingFile, setEditingFile] = useState(null);
   const [newFileName, setNewFileName] = useState("");
-
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
   const [operationInProgress, setOperationInProgress] = useState(false);
-
-  // For password change
+  // For password change:
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  // For error messages:
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
+  // EFFECTS
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -91,11 +76,13 @@ const Profile = () => {
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
-        setErrorMessage(""); // Clear the error message after 5 seconds
+        setErrorMessage("");
       }, 5000);
       return () => clearTimeout(timer);
     }
   }, [errorMessage]);
+
+  // FUNCTIONS
 
   const fetchProfileData = async (userId) => {
     try {
@@ -129,7 +116,8 @@ const Profile = () => {
 
       const files = await Promise.all(
         data.Contents.map(async (file) => {
-          const metadataKey = file.Key.replace("/audio/", "/metadata/") + ".metadata.json";
+          const metadataKey =
+            file.Key.replace("/audio/", "/metadata/") + ".metadata.json";
           let metadata = {};
           try {
             const metadataObject = await s3
@@ -139,7 +127,9 @@ const Profile = () => {
               ? JSON.parse(metadataObject.Body.toString())
               : {};
           } catch (error) {
-            console.warn(`Metadata not found for ${file.Key}: ${error.message}`);
+            console.warn(
+              `Metadata not found for ${file.Key}: ${error.message}`
+            );
             metadata = {
               bpm: "Unknown",
               genre: "Unknown",
@@ -196,7 +186,7 @@ const Profile = () => {
     }
 
     // Validate file size (5MB max)
-    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+    const maxSizeInBytes = 5 * 1024 * 1024;
     if (file.size > maxSizeInBytes) {
       alert("File size exceeds 5MB. Please select a smaller file.");
       return;
@@ -331,7 +321,7 @@ const Profile = () => {
   };
 
   const saveProfileData = async () => {
-    setErrorMessage(""); // Clear previous errors
+    setErrorMessage("");
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -374,7 +364,7 @@ const Profile = () => {
   };
 
   const handlePasswordUpdate = async () => {
-    setErrorMessage(""); // Clear previous error messages
+    setErrorMessage("");
 
     if (!newPassword || !confirmNewPassword) {
       setErrorMessage("Please fill out both password fields.");
@@ -420,65 +410,6 @@ const Profile = () => {
     }
   };
 
-  const Container = styled(Box)({
-    display: "flex",
-    flexDirection: "row",
-    gap: "1.5rem",
-    alignItems: "flex-start",
-    "@media (max-width: 600px)": {
-      flexDirection: "column",
-    },
-  });
-
-  const LeftSection = styled(Box)(({ theme }) => ({
-    flexBasis: "300px",
-    flexShrink: 0,
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[1],
-    padding: theme.spacing(2),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: theme.spacing(2),
-  }));
-
-  const RightSection = styled(Card)(({ theme }) => ({
-    flexGrow: 1,
-    boxShadow: theme.shadows[1],
-    borderRadius: theme.shape.borderRadius,
-  }));
-
-  const AvatarWrapper = styled(Box)(({ theme }) => ({
-    position: "relative",
-    width: "180px",
-    height: "180px",
-    borderRadius: "50%",
-    overflow: "hidden",
-    border: `2px solid ${theme.palette.primary.main}`,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    "& img": {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      borderRadius: "50%",
-    },
-  }));
-
-  const ChangeOverlay = styled(Box)(({ theme }) => ({
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    textAlign: "center",
-    padding: "4px 0",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    color: "#fff",
-    fontSize: "0.8rem",
-    cursor: "pointer",
-  }));
-
   if (loading) {
     return <LoadingPage />;
   }
@@ -493,194 +424,28 @@ const Profile = () => {
       }}
     >
       <Container>
-        {/* Left Section: Avatar & Image Upload */}
-        <LeftSection>
-          {/* Avatar / Image Upload */}
-          <AvatarWrapper>
-            {profilePictureUrl ? (
-              <img src={profilePictureUrl} alt="Profile" />
-            ) : (
-              <AccountCircleIcon style={{ fontSize: 80, color: "#ccc" }} />
-            )}
-            <ChangeOverlay>Change</ChangeOverlay>
-          </AvatarWrapper>
-
-          {/* Selected image preview (optional) */}
-          {selectedImage && (
-            <Box>
-              <img
-                src={selectedImage}
-                alt="Preview"
-                style={{ maxWidth: "100%", borderRadius: 8 }}
-              />
-            </Box>
-          )}
-
-          {/* Upload Buttons */}
-          <Box display="flex" flexDirection="column" gap={1} width="100%">
-            <Button variant="outlined" component="label">
-              {selectedImage ? "Change Image" : "Select Image"}
-              <input type="file" hidden onChange={handleImageChange} />
-            </Button>
-            {selectedImage && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleProfilePictureUpload}
-                disabled={uploading}
-              >
-                {uploading ? "Uploading..." : "Upload Picture"}
-              </Button>
-            )}
-          </Box>
-        </LeftSection>
-
-        {/* Right Section: User Info */}
-        <RightSection>
-          <CardContent>
-
-            {user ? (
-              <Box mt={2}>
-                {/* If NOT in edit mode, show Name & Email as plain text */}
-                {!editMode ? (
-                  <Card
-                    sx={{
-                      borderRadius: 2,
-                      boxShadow: 3,
-                      
-                      maxWidth: 400,
-                      margin: "auto",
-                    }}
-                  >
-                    <CardContent>
-                      <Stack spacing={1}>
-                        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                          {profileData?.displayName}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {profileData?.email}
-                        </Typography>
-                      </Stack>
-                    </CardContent>
-                    <CardActions sx={{ justifyContent: "flex-end", paddingX: 2, paddingBottom: 2 }}>
-                      <Tooltip title="Edit Profile">
-                        <IconButton
-                          color="primary"
-                          onClick={() => setEditMode(true)}
-                          sx={{
-                            border: "1px solid",
-                            borderColor: "primary.main",
-                            transition: "all 0.3s ease-in-out",
-                            "&:hover": {
-                              backgroundColor: "primary.main",
-                              color: "#fff",
-                            },
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </CardActions>
-                  </Card>
-                ) : (
-                  // If in edit mode, show TextFields
-                  <Box
-                    mt={2}
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 2,
-                      maxWidth: 400,
-                    }}
-                  >
-                    <TextField
-                      label="Name"
-                      type="text"
-                      variant="outlined"
-                      size="small"
-                      value={profileData.displayName}
-                      onChange={(e) =>
-                        handleInputChange("displayName", e.target.value)
-                      }
-                      fullWidth
-                    />
-                    <TextField
-                      label="Email"
-                      type="email"
-                      variant="outlined"
-                      size="small"
-                      value={profileData.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
-                      fullWidth
-                    />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<SaveIcon />}
-                      onClick={saveProfileData}
-                    >
-                      Save
-                    </Button>
-                  </Box>
-                )}
-
-                {/* Change Password Section */}
-                {/* Change Password Section */}
-                <Box mt={5} textAlign="center">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setShowPasswordFields(!showPasswordFields)}
-                  >
-                    Change Password
-                  </Button>
-                  {showPasswordFields && (
-                    <Box
-                      mt={2}
-                      sx={{
-                        maxWidth: 400,
-                        margin: "0 auto",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <TextField
-                        label="New Password"
-                        type="password"
-                        size="small"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                      />
-                      <TextField
-                        label="Confirm Password"
-                        type="password"
-                        size="small"
-                        value={confirmNewPassword}
-                        onChange={(e) => setConfirmNewPassword(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                      />
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handlePasswordUpdate}
-                        sx={{ mt: 2 }}
-                      >
-                        Update Password
-                      </Button>
-                    </Box>
-                  )}
-                </Box>
-              </Box>
-            ) : (
-              <Typography variant="body1" color="error">
-                No user is logged in.
-              </Typography>
-            )}
-          </CardContent>
-        </RightSection>
+        <ProfileLeftSection
+          profilePictureUrl={profilePictureUrl}
+          selectedImage={selectedImage}
+          uploading={uploading}
+          handleImageChange={handleImageChange}
+          handleProfilePictureUpload={handleProfilePictureUpload}
+        />
+        <ProfileRightSection
+          user={user}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          profileData={profileData}
+          handleInputChange={handleInputChange}
+          saveProfileData={saveProfileData}
+          showPasswordFields={showPasswordFields}
+          setShowPasswordFields={setShowPasswordFields}
+          newPassword={newPassword}
+          setNewPassword={setNewPassword}
+          confirmNewPassword={confirmNewPassword}
+          setConfirmNewPassword={setConfirmNewPassword}
+          handlePasswordUpdate={handlePasswordUpdate}
+        />
       </Container>
 
       {errorMessage && (
@@ -694,7 +459,6 @@ const Profile = () => {
         </Alert>
       )}
 
-      {/* Show/Hide Audio Files Button */}
       <Button
         variant="contained"
         sx={{ mt: 4 }}
@@ -705,109 +469,15 @@ const Profile = () => {
       </Button>
 
       {showAudioFiles && (
-        <TableContainer
-          component={Paper}
-          sx={{
-            mt: 4,
-            borderRadius: 2,
-            boxShadow: 3,
-            overflow: "hidden", // hides any corner overlap
-          }}
-        >
-          <Table sx={{ minWidth: 600 }}>
-            {/* Table Head with a background color */}
-            <TableHead sx={{ backgroundColor: "primary.main" }}>
-              <TableRow>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  FILE NAME
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  BPM
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  GENRE
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  KEY
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  ACTIONS
-                </TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {audioFiles.map((file, index) => (
-                <StyledTableRow key={file.key} striped={index % 2 === 0}>
-                  <TableCell>
-                    {editingFile?.key === file.key ? (
-                      <TextField
-                        label="New File Name"
-                        variant="outlined"
-                        size="small"
-                        className="custom-text-field"
-                        value={newFileName}
-                        onChange={(e) => setNewFileName(e.target.value)}
-                        fullWidth
-                      />
-                    ) : (
-                      <Typography variant="body1" fontWeight="500">
-                        {file.name}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {file.bpm} bpm
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={file.genre}
-                      color="secondary"
-                      size="small"
-                      icon={<MusicNoteIcon />}
-                      sx={{ fontWeight: 500 }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={file.musicalKey}
-                      variant="outlined"
-                      color="primary"
-                      size="small"
-                      icon={<PianoIcon />}
-                      sx={{ fontWeight: 500 }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {editingFile?.key === file.key ? (
-                      <Tooltip title="Save">
-                        <IconButton onClick={handleSaveEdit} color="success">
-                          <SaveIcon />
-                        </IconButton>
-                      </Tooltip>
-                    ) : (
-                      <Tooltip title="Edit">
-                        <IconButton onClick={() => handleEditFile(file)}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    <Tooltip title="Delete">
-                      <IconButton
-                        onClick={() => handleDeleteFile(file.key)}
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <AudioFilesTable
+          audioFiles={audioFiles}
+          editingFile={editingFile}
+          newFileName={newFileName}
+          setNewFileName={setNewFileName}
+          handleEditFile={handleEditFile}
+          handleSaveEdit={handleSaveEdit}
+          handleDeleteFile={handleDeleteFile}
+        />
       )}
     </Box>
   );
