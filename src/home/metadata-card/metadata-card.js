@@ -1,35 +1,54 @@
 import React from "react";
 import { Grid, Typography } from "@mui/material";
-import './metadata-card.css'
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import KeyIcon from "@mui/icons-material/Key";
+import EqualizerIcon from "@mui/icons-material/Equalizer";
+import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
+import './metadata-card.css';
 
 const Metadata = ({ duration, musicalKey, bpm, genre }) => {
+  const boxStyle = {
+    border: "1px solid #ccc",
+    padding: "4px 6px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    whiteSpace: "nowrap"
+  };
+
+  const iconStyle = { marginRight: "4px" };
+
   return (
-    <Grid container spacing={2} style={{ marginTop: "8px" }}>
+    <Grid container spacing={1} style={{ marginTop: "4px" }}>
       <Grid item xs={3}>
-        <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
-          <Typography variant="body2" color="textSecondary">
-            Duration: {duration}
+        <div className="metadata-box" style={boxStyle}>
+          <AccessTimeIcon fontSize="small" style={iconStyle} />
+          <Typography variant="caption" color="textSecondary">
+            {duration}
           </Typography>
         </div>
       </Grid>
       <Grid item xs={3}>
-        <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
-          <Typography variant="body2" color="textSecondary">
-            Key: {musicalKey}
+        <div className="metadata-box" style={boxStyle}>
+          <KeyIcon fontSize="small" style={iconStyle} />
+          <Typography variant="caption" color="textSecondary">
+            {musicalKey}
           </Typography>
         </div>
       </Grid>
       <Grid item xs={3}>
-        <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
-          <Typography variant="body2" color="textSecondary">
-            BPM: {bpm}
+        <div className="metadata-box" style={boxStyle}>
+          <EqualizerIcon fontSize="small" style={iconStyle} />
+          <Typography variant="caption" color="textSecondary">
+            {bpm} BPM
           </Typography>
         </div>
       </Grid>
       <Grid item xs={3}>
-        <div className="metadata-box" style={{ border: "1px solid black", padding: "8px" }}>
-          <Typography variant="body2" color="textSecondary">
-            Genre: {genre}
+        <div className="metadata-box" style={boxStyle}>
+          <LibraryMusicIcon fontSize="small" style={iconStyle} />
+          <Typography variant="caption" color="textSecondary">
+            {genre}
           </Typography>
         </div>
       </Grid>
