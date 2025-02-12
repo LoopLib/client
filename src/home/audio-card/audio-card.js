@@ -275,9 +275,6 @@ const AudioCard = ({
               </Typography>
             )}
 
-              {/* Conditionally Render Stats */}
-              {showStats && <Stats likes={likes} downloads={downloads} />}
-
             <div className="waveform-wrapper">
               {/* Live Key Display */}
               <div className="live-key-display">
@@ -291,7 +288,9 @@ const AudioCard = ({
               <div id={`waveform-${index}`} className="waveform-container"></div>
             </div>
 
-
+            {/* Conditionally Render Stats */}
+            {showStats && <Stats likes={likes} downloads={downloads} />}
+            
             {/* Pass Duration to Metadata */}
             <Metadata
               duration={duration}
