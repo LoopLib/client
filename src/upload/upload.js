@@ -238,13 +238,13 @@ const FileUpload = () => {
 
             {selectedFile && (
                 <>
-                    <Box
-                    >
+                    <Box>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={handleUploadAndAnalyze}
-                            startIcon={<UploadFileIcon />} // Upload icon
+                            startIcon={<UploadFileIcon />}
+                            disabled={isLoading}  // Disable button while processing
                         >
                             Analyze
                         </Button>
@@ -253,13 +253,11 @@ const FileUpload = () => {
                             color="primary"
                             onClick={handleOpenDialog}
                             startIcon={<PublishIcon />}
+                            disabled={isLoading}  // Disable button while processing
                         >
                             Publish
                         </Button>
-
                     </Box>
-
-
                 </>
             )}
             <Dialog open={openDialog} onClose={handleCloseDialog}>
