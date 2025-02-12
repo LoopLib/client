@@ -7,10 +7,11 @@ const Stats = ({ likes, downloads }) => {
   return (
     <Box
       sx={{
-        display: "flex",
         position: "absolute",
-        top: '60px',
-        right: '330px',
+        top: 0,
+        right: 0,
+        transform: "translateY(-100%)", // positions it just above the container
+        display: "flex",
         alignItems: "center",
         gap: 1,
         p: 1,
@@ -20,12 +21,12 @@ const Stats = ({ likes, downloads }) => {
       <Typography variant="body2" sx={{ fontSize: { xs: "16px", md: "16px" } }}>
         {likes}
       </Typography>
-
       <CloudDownloadIcon sx={{ fontSize: { xs: 16, md: 18 } }} />
       <Typography variant="body2" sx={{ fontSize: { xs: "16px", md: "16px" } }}>
         {downloads}
       </Typography>
     </Box>
+
   );
 };
 
