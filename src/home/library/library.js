@@ -1,12 +1,11 @@
+// Updated Library.js
 import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Typography,
-  CircularProgress,
   List,
   Menu,
   MenuItem,
-  Button,
   Pagination,
 } from "@mui/material";
 import AWS from "aws-sdk";
@@ -96,13 +95,53 @@ const Library = ({ ownerUid = null }) => {
     }
   };
 
-  const handleSearchChange = (query) => {
+  const handleSearchChange = (filters) => {
+    const { query, genre, mode, key, bpmRange, publishedDate } = filters;
     const lowerCaseQuery = query.toLowerCase();
-    const filtered = audioFiles.filter((file) =>
-      file.name.toLowerCase().includes(lowerCaseQuery)
-    );
+    const filtered = audioFiles.filter((file) => {
+      const matchesQuery =
+        lowerCaseQuery === "" ||
+        file.name.toLowerCase().includes(lowerCaseQuery) ||
+        (file.genre && file.genre.toLowerCase().includes(lowerCaseQuery)) ||
+        (file.musicalKey && file.musicalKey.toLowerCase().includes(lowerCaseQuery));
+  
+      const matchesGenre =
+        genre === "" ||
+        (file.genre && file.genre.toLowerCase() === genre.toLowerCase());
+  
+      let matchesKey = true;
+      if (mode && key) {
+        const storedMode = mode === "minor" ? "min" : mode === "major" ? "maj" : mode;
+        matchesKey =
+          file.musicalKey &&
+          file.musicalKey.toLowerCase() === `${key}${storedMode}`.toLowerCase();
+      } else if (mode && !key) {
+        const storedMode = mode === "minor" ? "min" : mode === "major" ? "maj" : mode;
+        matchesKey =
+          file.musicalKey &&
+          file.musicalKey.toLowerCase().endsWith(storedMode);
+      }
+  
+      let matchesBpm = true;
+      if (bpmRange.min || bpmRange.max) {
+        const fileBpm = Number(file.bpm);
+        if (isNaN(fileBpm)) {
+          matchesBpm = false;
+        } else {
+          if (bpmRange.min && fileBpm < Number(bpmRange.min)) {
+            matchesBpm = false;
+          }
+          if (bpmRange.max && fileBpm > Number(bpmRange.max)) {
+            matchesBpm = false;
+          }
+        }
+      }
+  
+      // Note: publishedDate filtering is not applied as file metadata doesn't include a published date.
+      return matchesQuery && matchesGenre && matchesKey && matchesBpm;
+    });
     setFilteredFiles(filtered);
-    setCurrentPage(1); // Reset to the first page when search changes
+    setCurrentPage(1);
   };
 
   const handlePageChange = (event, value) => {
@@ -111,12 +150,6 @@ const Library = ({ ownerUid = null }) => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filteredFiles.slice(startIndex, startIndex + itemsPerPage);
-
-  const formatDuration = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
 
   const handleRightClick = (event, file) => {
     event.preventDefault();
