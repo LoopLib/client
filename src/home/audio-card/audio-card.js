@@ -275,6 +275,8 @@ const AudioCard = ({
               </Typography>
             )}
 
+              {/* Conditionally Render Stats */}
+              {showStats && <Stats likes={likes} downloads={downloads} />}
 
             <div className="waveform-wrapper">
               {/* Live Key Display */}
@@ -307,8 +309,7 @@ const AudioCard = ({
                 setDownloads={setDownloads}
               />
             )}
-            {/* Conditionally Render Stats */}
-            {showStats && <Stats likes={likes} downloads={downloads} />}
+          
 
             {/* Conditionally Render Like Button */}
             {showLikeButton && (
