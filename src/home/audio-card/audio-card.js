@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import Metadata from "../metadata-card/metadata-card";
+import Metadata from "./metadata-card";
 import WaveSurfer from "wavesurfer.js";
 import { getAuth } from "firebase/auth";
 import { fetchPublisherData, fetchStats, fetchUserLikedStatus } from "./fetch-data"; // Import functions

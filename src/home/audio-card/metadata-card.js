@@ -4,7 +4,6 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import KeyIcon from "@mui/icons-material/Key";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
-import './metadata-card.css';
 
 
 const formatMusicalKey = (key) => {
