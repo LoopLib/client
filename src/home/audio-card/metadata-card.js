@@ -19,15 +19,16 @@ const formatMusicalKey = (key) => {
 
 const Metadata = ({ duration, musicalKey, bpm, genre }) => {
   const boxStyle = {
-    border: "1px solid #ccc",
-    padding: "4px 6px",
+    border: "3px solid #ccc",
+    borderRadius: "10px",
+    padding: "4px 10px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     whiteSpace: "nowrap"
   };
 
-  const iconStyle = { marginRight: "4px" };
+  const iconStyle = { marginRight: "4px", fontSize: "1.5rem" };
 
   return (
     <Grid container spacing={1} style={{ marginTop: "4px" }}>
