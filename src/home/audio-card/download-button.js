@@ -52,6 +52,7 @@ const DownloadButton = ({ fileUrl, statsKey, s3, downloads, setDownloads }) => {
         right: "20px",
         bottom: "20px",
         display: "flex",
+        border: "3px solid #000",
         justifyContent: "center",
         alignItems: "center",
         width: "40px",

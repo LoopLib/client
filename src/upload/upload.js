@@ -37,7 +37,7 @@ const FileUpload = () => {
 
     const waveSurferRefs = useRef([]);
     const [activeIndexes, setActiveIndexes] = useState([]);
-
+    
     const [fileName, setFileName] = useState(""); // Added state for file name
     const [openDialog, setOpenDialog] = useState(false); // State for dialog visibility
 
