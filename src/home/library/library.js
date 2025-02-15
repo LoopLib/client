@@ -1,4 +1,3 @@
-// Updated Library.js
 import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
@@ -50,11 +49,11 @@ const Library = ({ ownerUid = null }) => {
 
       const data = await s3.listObjectsV2(params).promise();
 
-      const audioFiles = data.Contents.filter((file) => file.Key.includes("/audio/"));
+      const audioFilesList = data.Contents.filter((file) => file.Key.includes("/audio/"));
       const metadataFiles = data.Contents.filter((file) => file.Key.includes("/metadata/"));
 
       const files = await Promise.all(
-        audioFiles.map(async (audioFile) => {
+        audioFilesList.map(async (audioFile) => {
           const metadataKey = audioFile.Key.replace("/audio/", "/metadata/") + ".metadata.json";
           const metadataFile = metadataFiles.find((file) => file.Key === metadataKey);
 
@@ -80,6 +79,8 @@ const Library = ({ ownerUid = null }) => {
             musicalKey: metadata.key || "Unknown",
             genre: metadata.genre || "Unknown",
             ownerUid: uid,
+            // Save the upload timestamp from metadata
+            uploadTimestamp: metadata.uploadTimestamp || null,
           };
         })
       );
@@ -96,7 +97,7 @@ const Library = ({ ownerUid = null }) => {
   };
 
   const handleSearchChange = (filters) => {
-    const { query, genre, mode, key, bpmRange, publishedDate } = filters;
+    const { query, genre, mode, key, bpmRange, timeRange } = filters;
     const lowerCaseQuery = query.toLowerCase();
     const filtered = audioFiles.filter((file) => {
       const matchesQuery =
@@ -104,11 +105,11 @@ const Library = ({ ownerUid = null }) => {
         file.name.toLowerCase().includes(lowerCaseQuery) ||
         (file.genre && file.genre.toLowerCase().includes(lowerCaseQuery)) ||
         (file.musicalKey && file.musicalKey.toLowerCase().includes(lowerCaseQuery));
-  
+
       const matchesGenre =
         genre === "" ||
         (file.genre && file.genre.toLowerCase() === genre.toLowerCase());
-  
+
       let matchesKey = true;
       if (mode && key) {
         const storedMode = mode === "minor" ? "min" : mode === "major" ? "maj" : mode;
@@ -121,7 +122,7 @@ const Library = ({ ownerUid = null }) => {
           file.musicalKey &&
           file.musicalKey.toLowerCase().endsWith(storedMode);
       }
-  
+
       let matchesBpm = true;
       if (bpmRange.min || bpmRange.max) {
         const fileBpm = Number(file.bpm);
@@ -136,9 +137,44 @@ const Library = ({ ownerUid = null }) => {
           }
         }
       }
-  
-      // Note: publishedDate filtering is not applied as file metadata doesn't include a published date.
-      return matchesQuery && matchesGenre && matchesKey && matchesBpm;
+
+      // Time range filtering based on file.uploadTimestamp
+      let matchesTime = true;
+      if (timeRange) {
+        if (!file.uploadTimestamp) {
+          matchesTime = false;
+        } else {
+          const fileDate = new Date(file.uploadTimestamp);
+          const now = new Date();
+          const timeDiff = now - fileDate; // difference in ms
+          let thresholdMs = 0;
+          switch (timeRange) {
+            case "24h":
+              thresholdMs = 24 * 60 * 60 * 1000;
+              break;
+            case "48h":
+              thresholdMs = 48 * 60 * 60 * 1000;
+              break;
+            case "7d":
+              thresholdMs = 7 * 24 * 60 * 60 * 1000;
+              break;
+            case "1m":
+              thresholdMs = 30 * 24 * 60 * 60 * 1000;
+              break;
+            case "3m":
+              thresholdMs = 90 * 24 * 60 * 60 * 1000;
+              break;
+            case "6m":
+              thresholdMs = 180 * 24 * 60 * 60 * 1000;
+              break;
+            default:
+              thresholdMs = 0;
+          }
+          matchesTime = timeDiff <= thresholdMs;
+        }
+      }
+
+      return matchesQuery && matchesGenre && matchesKey && matchesBpm && matchesTime;
     });
     setFilteredFiles(filtered);
     setCurrentPage(1);

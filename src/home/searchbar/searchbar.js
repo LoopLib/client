@@ -1,4 +1,3 @@
-// Updated SearchBar.js
 import React, { useState } from "react";
 import {
   TextField,
@@ -20,7 +19,8 @@ const SearchBar = ({ onSearchChange }) => {
   const [mode, setMode] = useState("");
   const [key, setKey] = useState("");
   const [bpmRange, setBpmRange] = useState({ min: "", max: "" });
-  const [publishedDate, setPublishedDate] = useState("");
+  // Replacing publishedDate with timeRange for time-based filtering
+  const [timeRange, setTimeRange] = useState("");
 
   const handleGenreChange = (event) => setGenre(event.target.value);
   const handleModeChange = (event) => {
@@ -34,8 +34,8 @@ const SearchBar = ({ onSearchChange }) => {
   };
 
   const handleSearchClick = () => {
-    onSearchChange({ query, genre, mode, key, bpmRange, publishedDate });
-    console.log("Filters Applied:", { query, genre, mode, key, bpmRange, publishedDate });
+    onSearchChange({ query, genre, mode, key, bpmRange, timeRange });
+    console.log("Filters Applied:", { query, genre, mode, key, bpmRange, timeRange });
   };
 
   // Define key options
@@ -65,22 +65,29 @@ const SearchBar = ({ onSearchChange }) => {
         <Box className="filters-container" sx={{ display: "flex", flexWrap: "wrap", gap: 2, padding: 2 }}>
           {/* Row 1 */}
           <Box sx={{ display: "flex", flex: "1 1 100%", gap: 2, justifyContent: "space-between" }}>
-            {/* Published Date */}
-            <TextField
-              type="date"
-              label="Published Date"
-              value={publishedDate}
-              onChange={(e) => setPublishedDate(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              className="filter-item"
-              sx={{ flex: 1 }}
-              inputProps={{ max: new Date().toISOString().split("T")[0] }}
-            />
-
+            {/* Time Range Selection */}
+            <FormControl className="filter-item" sx={{ flex: 1 }}>
+              <InputLabel>Published Within</InputLabel>
+              <Select value={timeRange}
+                      onChange={(e) => setTimeRange(e.target.value)}
+                      label="Published Within">
+                <MenuItem value="">-</MenuItem>
+                <MenuItem value="24h">24 hours</MenuItem>
+                <MenuItem value="48h">48 hours</MenuItem>
+                <MenuItem value="7d">7 days</MenuItem>
+                <MenuItem value="1m">1 month</MenuItem>
+                <MenuItem value="3m">3 months</MenuItem>
+                <MenuItem value="6m">6 months</MenuItem>
+              </Select>
+            </FormControl>
+        
             {/* Genre */}
             <FormControl className="filter-item" sx={{ flex: 1 }}>
               <InputLabel>Genre</InputLabel>
-              <Select value={genre} onChange={handleGenreChange} variant="outlined" className="filter-select">
+              <Select value={genre} 
+                      onChange={handleGenreChange}
+                      label="Genre"
+                      className="filter-select">
                 <MenuItem value="">-</MenuItem>
                 <MenuItem value="pop">Pop</MenuItem>
                 <MenuItem value="rock">Rock</MenuItem>
@@ -96,7 +103,7 @@ const SearchBar = ({ onSearchChange }) => {
             {/* Mode Selection */}
             <FormControl className="filter-item" sx={{ flex: 1 }}>
               <InputLabel>Mode</InputLabel>
-              <Select value={mode} onChange={handleModeChange} variant="outlined" className="filter-select">
+              <Select value={mode} onChange={handleModeChange} variant="outlined" className="filter-select" label="Mode">
                 <MenuItem value="">-</MenuItem>
                 <MenuItem value="major">Major</MenuItem>
                 <MenuItem value="minor">Minor</MenuItem>
@@ -107,7 +114,7 @@ const SearchBar = ({ onSearchChange }) => {
             {mode && (
               <FormControl className="filter-item" sx={{ flex: 1 }}>
                 <InputLabel>Key</InputLabel>
-                <Select value={key} onChange={handleKeyChange} variant="outlined" className="filter-select">
+                <Select value={key} onChange={handleKeyChange} variant="outlined" className="filter-select" label="Key">  
                   <MenuItem value="">-</MenuItem>
                   {keyOptions.map((note) => (
                     <MenuItem key={note} value={note}>
