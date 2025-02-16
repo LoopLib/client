@@ -22,6 +22,7 @@ import LoadingPage from "../loading/loading";
 import ProfileLeftSection from "./profile-left";
 import ProfileRightSection from "./profile-right";
 import AudioFilesTable from "./audio-table";
+import { fetchLikedAudioFiles } from "./fetchLikedAudioFiles";
 import "./profile.css";
 
 const Container = styled(Box)({
@@ -52,6 +53,9 @@ const Profile = () => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+  const [showLikedAudio, setShowLikedAudio] = useState(false);
+  const [likedAudioFiles, setLikedAudioFiles] = useState([]);
   // For error messages:
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -410,6 +414,14 @@ const Profile = () => {
     }
   };
 
+  const handleShowLikedAudio = async () => {
+    if (!showLikedAudio) {
+      const likedFiles = await fetchLikedAudioFiles();
+      setLikedAudioFiles(likedFiles);
+    }
+    setShowLikedAudio(!showLikedAudio);
+  };
+
   if (loading) {
     return <LoadingPage />;
   }
@@ -458,6 +470,24 @@ const Profile = () => {
           {errorMessage}
         </Alert>
       )}
+
+      <Box className="profile-container">
+        <Button
+          variant="contained"
+          sx={{ mt: 4 }}
+          onClick={handleShowLikedAudio}
+          endIcon={showLikedAudio ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        >
+          {showLikedAudio ? "Hide Liked Audio" : "Show Liked Audio"}
+        </Button>
+
+        {showLikedAudio && (
+          <AudioFilesTable
+            audioFiles={likedAudioFiles}
+            showLikeButton={false} // Hide the like button since these are already liked
+          />
+        )}
+      </Box>
 
       <Button
         variant="contained"

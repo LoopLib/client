@@ -18,8 +18,21 @@ import { styled } from "@mui/material/styles";
 
 const RightSectionCard = styled(Card)(({ theme }) => ({
   flexGrow: 1,
-  boxShadow: theme.shadows[1],
-  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[3],
+  borderRadius: theme.shape.borderRadius * 2,
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.background.paper,
+}));
+
+const ProfileCard = styled(Card)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius * 2,
+  boxShadow: theme.shadows[2],
+  maxWidth: 400,
+  margin: "auto",
+  transition: "box-shadow 0.3s ease-in-out",
+  "&:hover": {
+    boxShadow: theme.shadows[6],
+  },
 }));
 
 const ProfileRightSection = ({
@@ -43,31 +56,18 @@ const ProfileRightSection = ({
         {user ? (
           <Box mt={2}>
             {!editMode ? (
-              <Card
-                sx={{
-                  borderRadius: 2,
-                  boxShadow: 3,
-                  maxWidth: 400,
-                  margin: "auto",
-                }}
-              >
+              <ProfileCard>
                 <CardContent>
-                  <Stack spacing={1}>
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                  <Stack spacing={2}>
+                    <Typography variant="h5" fontWeight="bold">
                       {profileData?.displayName}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body1" color="text.secondary">
                       {profileData?.email}
                     </Typography>
                   </Stack>
                 </CardContent>
-                <CardActions
-                  sx={{
-                    justifyContent: "flex-end",
-                    paddingX: 2,
-                    paddingBottom: 2,
-                  }}
-                >
+                <CardActions sx={{ justifyContent: "flex-end", p: 2 }}>
                   <Tooltip title="Edit Profile">
                     <IconButton
                       color="primary"
@@ -86,14 +86,14 @@ const ProfileRightSection = ({
                     </IconButton>
                   </Tooltip>
                 </CardActions>
-              </Card>
+              </ProfileCard>
             ) : (
               <Box
                 mt={2}
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: 2,
+                  gap: 3,
                   maxWidth: 400,
                   margin: "auto",
                 }}
@@ -123,6 +123,7 @@ const ProfileRightSection = ({
                   color="primary"
                   startIcon={<SaveIcon />}
                   onClick={saveProfileData}
+                  sx={{ mt: 2 }}
                 >
                   Save
                 </Button>
@@ -131,11 +132,12 @@ const ProfileRightSection = ({
 
             <Box mt={5} textAlign="center">
               <Button
-                variant="contained"
+                variant="outlined"
                 color="primary"
                 onClick={() => setShowPasswordFields(!showPasswordFields)}
+                sx={{ mb: 2 }}
               >
-                Change Password
+                {showPasswordFields ? "Cancel" : "Change Password"}
               </Button>
               {showPasswordFields && (
                 <Box
@@ -145,6 +147,7 @@ const ProfileRightSection = ({
                     margin: "0 auto",
                     display: "flex",
                     flexDirection: "column",
+                    gap: 2,
                   }}
                 >
                   <TextField
@@ -154,7 +157,6 @@ const ProfileRightSection = ({
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     fullWidth
-                    margin="normal"
                   />
                   <TextField
                     label="Confirm Password"
@@ -163,13 +165,11 @@ const ProfileRightSection = ({
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
                     fullWidth
-                    margin="normal"
                   />
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={handlePasswordUpdate}
-                    sx={{ mt: 2 }}
                   >
                     Update Password
                   </Button>
@@ -178,7 +178,7 @@ const ProfileRightSection = ({
             </Box>
           </Box>
         ) : (
-          <Typography variant="body1" color="error">
+          <Typography variant="body1" color="error" align="center">
             No user is logged in.
           </Typography>
         )}
