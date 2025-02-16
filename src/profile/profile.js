@@ -23,6 +23,7 @@ import ProfileLeftSection from "./profile-left";
 import ProfileRightSection from "./profile-right";
 import AudioFilesTable from "./audio-table";
 import { fetchLikedAudioFiles } from "./fetchLikedAudioFiles";
+import LikedAudioCarousel from "./audio-carousel";
 import "./profile.css";
 
 const Container = styled(Box)({
@@ -471,23 +472,18 @@ const Profile = () => {
         </Alert>
       )}
 
-      <Box className="profile-container">
-        <Button
-          variant="contained"
-          sx={{ mt: 4 }}
-          onClick={handleShowLikedAudio}
-          endIcon={showLikedAudio ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        >
-          {showLikedAudio ? "Hide Liked Audio" : "Show Liked Audio"}
-        </Button>
+<Box>
+      <Button
+        variant="contained"
+        sx={{ mt: 4 }}
+        onClick={handleShowLikedAudio}
+        endIcon={showLikedAudio ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+      >
+        {showLikedAudio ? "Hide Liked Audio" : "Show Liked Audio"}
+      </Button>
 
-        {showLikedAudio && (
-          <AudioFilesTable
-            audioFiles={likedAudioFiles}
-            showLikeButton={false} // Hide the like button since these are already liked
-          />
-        )}
-      </Box>
+      {showLikedAudio && <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />}
+    </Box>
 
       <Button
         variant="contained"
