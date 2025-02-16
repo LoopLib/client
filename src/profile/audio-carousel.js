@@ -36,32 +36,31 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
     return () => ref && ref.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -250, behavior: "smooth" });
-    }
-  };
+  useEffect(() => {
+    likedAudioFiles.forEach((file, index) => {
+      if (!waveSurferRefs.current[index]) {
+        waveSurferRefs.current[index] = WaveSurfer.create({
+          container: `#waveform-${index}`,
+          waveColor: "#6a11cb",
+          progressColor: "#000000",
+          cursorColor: "#000000",
+          barWidth: 2,
+          height: 40,
+          responsive: true,
+          backend: "MediaElement",
+        });
+        waveSurferRefs.current[index].load(file.url);
+      }
+    });
 
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 250, behavior: "smooth" });
-    }
-  };
+    return () => {
+      waveSurferRefs.current.forEach((ws) => ws && ws.destroy());
+      waveSurferRefs.current = [];
+    };
+  }, [likedAudioFiles]);
 
-  const togglePlay = (index, fileUrl) => {
-    if (!waveSurferRefs.current[index]) {
-      waveSurferRefs.current[index] = WaveSurfer.create({
-        container: `#waveform-${index}`,
-        waveColor: "#6a11cb",
-        progressColor: "#000000",
-        cursorColor: "#000000",
-        barWidth: 2,
-        height: 40,
-        responsive: true,
-        backend: "MediaElement",
-      });
-      waveSurferRefs.current[index].load(fileUrl);
-    }
+  const togglePlay = (index) => {
+    if (!waveSurferRefs.current[index]) return;
 
     if (playingIndex === index) {
       waveSurferRefs.current[index].pause();
@@ -77,15 +76,15 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
 
   return (
     <Box sx={{ width: "100%", mt: 4, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <Typography variant="subtitle3" align="center" sx={{ mb: 2 }}>
+      <Typography variant="h6" align="center" sx={{ mb: 2 }}>
         ❤️ Your Liked Audio Files
       </Typography>
 
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", maxWidth: "800px", position: "relative" }}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", maxWidth: "900px", position: "relative" }}>
         
         {/* Scroll Left Button */}
         <IconButton
-          onClick={scrollLeft}
+          onClick={() => carouselRef.current?.scrollBy({ left: -250, behavior: "smooth" })}
           disabled={!canScrollLeft}
           sx={{
             position: "absolute",
@@ -96,7 +95,6 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
             color: "#333",
             border: "3px solid #333",
             zIndex: 2,
-            boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.2)",
             opacity: canScrollLeft ? 1 : 0.5,
             pointerEvents: canScrollLeft ? "auto" : "none",
           }}
@@ -115,17 +113,18 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
             scrollSnapType: "x mandatory",
             padding: "10px",
             width: "100%",
-            maxWidth: "700px",
+            maxWidth: "900px",
             justifyContent: "center",
             "&::-webkit-scrollbar": { display: "none" },
+            scrollPaddingLeft: "10px",
           }}
         >
           {likedAudioFiles.map((file, index) => (
             <Card
               key={index}
               sx={{
-                minWidth: "180px",
-                maxWidth: "180px",
+                flex: "0 0 calc(20% - 10px)", // Display 5 items at a time
+                maxWidth: "160px",
                 height: "160px",
                 display: "flex",
                 flexDirection: "column",
@@ -133,6 +132,7 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
                 textAlign: "center",
                 padding: "10px",
                 boxShadow: 3,
+                border: "3px solid #ddd",
                 borderRadius: "12px",
                 scrollSnapAlign: "start",
                 backgroundColor: "#ffffff",
@@ -141,7 +141,7 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
             >
               <CardContent sx={{ padding: "10px" }}>
                 <Typography
-                  variant="subtitle3"
+                  variant="subtitle2"
                   sx={{
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -164,9 +164,9 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
                 />
 
                 {/* Buttons */}
-                <Box sx={{ display: "flex", justifyContent: "center", gap: "8px", mt: 1 }}>
+                <Box sx={{ display: "flex", justifyContent: "start", gap: "8px", mt: 4 }}>
                   <IconButton
-                    onClick={() => togglePlay(index, file.url)}
+                    onClick={() => togglePlay(index)}
                     sx={{
                       backgroundColor: "#6a11cb",
                       color: "#fff",
@@ -192,7 +192,7 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
 
         {/* Scroll Right Button */}
         <IconButton
-          onClick={scrollRight}
+          onClick={() => carouselRef.current?.scrollBy({ left: 250, behavior: "smooth" })}
           disabled={!canScrollRight}
           sx={{
             position: "absolute",
