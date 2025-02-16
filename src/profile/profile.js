@@ -24,6 +24,7 @@ import ProfileRightSection from "./profile-right";
 import AudioFilesTable from "./audio-table";
 import { fetchLikedAudioFiles } from "./fetchLikedAudioFiles";
 import LikedAudioCarousel from "./audio-carousel";
+import Statistics from "./statistics";
 import "./profile.css";
 
 const Container = styled(Box)({
@@ -150,14 +151,14 @@ const Profile = () => {
               musicalKey: "Unknown",
             };
           }
-      
+
           // Generate a signed URL for the audio file
           const fileUrl = s3.getSignedUrl("getObject", {
             Bucket: params.Bucket,
             Key: file.Key,
             Expires: 60, // URL valid for 60 seconds (adjust as needed)
           });
-      
+
           return {
             name: file.Key.split("/").pop(),
             key: file.Key,
@@ -168,7 +169,7 @@ const Profile = () => {
           };
         })
       );
-      
+
 
       setAudioFiles(files);
     } catch (error) {
@@ -317,7 +318,7 @@ const Profile = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-  
+
       // Delete the audio file
       await s3
         .deleteObject({
@@ -325,10 +326,10 @@ const Profile = () => {
           Key: fileKey,
         })
         .promise();
-  
+
       // Construct the metadata file's key
       const metadataKey = fileKey.replace("/audio/", "/metadata/") + ".metadata.json";
-  
+
       // Delete the metadata file
       await s3
         .deleteObject({
@@ -336,10 +337,10 @@ const Profile = () => {
           Key: metadataKey,
         })
         .promise();
-  
+
       // Construct the stats file's key
       const statsKey = fileKey.replace("/audio/", "/stats/") + ".stats.json";
-  
+
       // Delete the stats file
       await s3
         .deleteObject({
@@ -347,7 +348,7 @@ const Profile = () => {
           Key: statsKey,
         })
         .promise();
-  
+
       // Remove the file from the state
       setAudioFiles((prevFiles) => prevFiles.filter((f) => f.key !== fileKey));
       alert("Audio file, metadata, and stats deleted successfully!");
@@ -358,7 +359,7 @@ const Profile = () => {
       setOperationInProgress(false);
     }
   };
-  
+
 
   const handleInputChange = (field, value) => {
     setProfileData((prev) => ({
@@ -486,26 +487,29 @@ const Profile = () => {
           handleImageChange={handleImageChange}
           handleProfilePictureUpload={handleProfilePictureUpload}
         />
-        <ProfileRightSection
-  user={user}
-  editMode={editMode}
-  setEditMode={setEditMode}
-  profileData={profileData}
-  handleInputChange={handleInputChange}
-  saveProfileData={saveProfileData}
-  showPasswordFields={showPasswordFields}
-  setShowPasswordFields={setShowPasswordFields}
-  newPassword={newPassword}
-  setNewPassword={setNewPassword}
-  confirmNewPassword={confirmNewPassword}
-  setConfirmNewPassword={setConfirmNewPassword}
-  handlePasswordUpdate={handlePasswordUpdate}
-  audioFilesCount={audioFiles.length} // Existing prop
-  audioFiles={audioFiles} // New prop for additional statistics
-/>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+          <ProfileRightSection
+            user={user}
+            editMode={editMode}
+            setEditMode={setEditMode}
+            profileData={profileData}
+            handleInputChange={handleInputChange}
+            saveProfileData={saveProfileData}
+            showPasswordFields={showPasswordFields}
+            setShowPasswordFields={setShowPasswordFields}
+            newPassword={newPassword}
+            setNewPassword={setNewPassword}
+            confirmNewPassword={confirmNewPassword}
+            setConfirmNewPassword={setConfirmNewPassword}
+            handlePasswordUpdate={handlePasswordUpdate}
+          />
 
+        </Box>
 
       </Container>
+      <Box sx={{ mt: 4 }}>
+      <Statistics audioFiles={audioFiles} audioFilesCount={audioFiles.length} />
+        </Box>
 
       {errorMessage && (
         <Alert
