@@ -76,10 +76,17 @@ const ProfileLeftSection = ({
   // Use the provided profile picture or fallback to the default picture.
   const imageSrc = profilePictureUrl || defaultPictureUrl;
 
+  const defaultAvatar = "https://cdn.pixabay.com/photo/2021/07/02/04/48/user-6380868_1280.png";
+
+
   return (
     <LeftSectionContainer>
       <AvatarWrapper>
-        <img src={imageSrc} alt="Profile" />
+        <img
+          src={imageSrc || defaultAvatar}
+          alt="Profile"
+          onError={(e) => (e.target.src = defaultAvatar)}
+        />
         <ChangeOverlay className="overlay">Change</ChangeOverlay>
       </AvatarWrapper>
 
