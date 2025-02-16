@@ -19,9 +19,9 @@ const SearchBar = ({ onSearchChange }) => {
   const [mode, setMode] = useState("");
   const [key, setKey] = useState("");
   const [bpmRange, setBpmRange] = useState({ min: "", max: "" });
-  // Replacing publishedDate with timeRange for time-based filtering
-  const [timeRange, setTimeRange] = useState("");
 
+  const [timeRange, setTimeRange] = useState("");
+  const [sortOption, setSortOption] = useState("");
   const handleGenreChange = (event) => setGenre(event.target.value);
   const handleModeChange = (event) => {
     setMode(event.target.value);
@@ -36,6 +36,8 @@ const SearchBar = ({ onSearchChange }) => {
   const handleSearchClick = () => {
     onSearchChange({ query, genre, mode, key, bpmRange, timeRange });
     console.log("Filters Applied:", { query, genre, mode, key, bpmRange, timeRange });
+    onSearchChange({ query, genre, mode, key, bpmRange, timeRange, sortOption });
+    console.log("Filters Applied:", { query, genre, mode, key, bpmRange, timeRange, sortOption });
   };
 
   // Define key options
@@ -69,8 +71,8 @@ const SearchBar = ({ onSearchChange }) => {
             <FormControl className="filter-item" sx={{ flex: 1 }}>
               <InputLabel>Published Within</InputLabel>
               <Select value={timeRange}
-                      onChange={(e) => setTimeRange(e.target.value)}
-                      label="Published Within">
+                onChange={(e) => setTimeRange(e.target.value)}
+                label="Published Within">
                 <MenuItem value="">-</MenuItem>
                 <MenuItem value="24h">24 hours</MenuItem>
                 <MenuItem value="48h">48 hours</MenuItem>
@@ -80,14 +82,14 @@ const SearchBar = ({ onSearchChange }) => {
                 <MenuItem value="6m">6 months</MenuItem>
               </Select>
             </FormControl>
-        
+
             {/* Genre */}
             <FormControl className="filter-item" sx={{ flex: 1 }}>
               <InputLabel>Genre</InputLabel>
-              <Select value={genre} 
-                      onChange={handleGenreChange}
-                      label="Genre"
-                      className="filter-select">
+              <Select value={genre}
+                onChange={handleGenreChange}
+                label="Genre"
+                className="filter-select">
                 <MenuItem value="">-</MenuItem>
                 <MenuItem value="pop">Pop</MenuItem>
                 <MenuItem value="rock">Rock</MenuItem>
@@ -114,7 +116,7 @@ const SearchBar = ({ onSearchChange }) => {
             {mode && (
               <FormControl className="filter-item" sx={{ flex: 1 }}>
                 <InputLabel>Key</InputLabel>
-                <Select value={key} onChange={handleKeyChange} variant="outlined" className="filter-select" label="Key">  
+                <Select value={key} onChange={handleKeyChange} variant="outlined" className="filter-select" label="Key">
                   <MenuItem value="">-</MenuItem>
                   {keyOptions.map((note) => (
                     <MenuItem key={note} value={note}>
@@ -164,6 +166,21 @@ const SearchBar = ({ onSearchChange }) => {
                 sx={{ flex: 1 }}
               />
             </Box>
+          </Box>
+          {/* Row 4 - Sort Options */}        
+          <Box sx={{ display: "flex", flex: "1 1 100%", gap: 2, justifyContent: "space-between" }}>
+            <FormControl className="filter-item" sx={{ flex: 1 }}>
+              <InputLabel>Sort By</InputLabel>
+              <Select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                label="Sort By"
+              >
+                <MenuItem value="">Default</MenuItem>
+                <MenuItem value="likes">Likes</MenuItem>
+                <MenuItem value="downloads">Downloads</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
 
           {/* Apply Filters Button */}
