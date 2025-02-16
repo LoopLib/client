@@ -59,11 +59,14 @@ const ProfileRightSection = ({
               <ProfileCard>
                 <CardContent>
                   <Stack spacing={2}>
-                    <Typography variant="h5" fontWeight="bold">
+                    <Typography variant="h4" fontWeight="bold">
                       {profileData?.displayName}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
                       {profileData?.email}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      {profileData?.username}
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -116,6 +119,15 @@ const ProfileRightSection = ({
                   size="small"
                   value={profileData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
+                  fullWidth
+                />
+                  <TextField
+                  label="Username"
+                  type="username"
+                  variant="outlined"
+                  size="small"
+                  value={profileData.username}
+                  onChange={(e) => handleInputChange("username", e.target.value)}
                   fullWidth
                 />
                 <Button

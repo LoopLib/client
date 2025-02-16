@@ -472,28 +472,28 @@ const Profile = () => {
         </Alert>
       )}
 
-<Box>
-      <Button
-        variant="contained"
-        sx={{ mt: 4 }}
-        onClick={handleShowLikedAudio}
-        endIcon={showLikedAudio ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      >
-        {showLikedAudio ? "Hide Liked Audio" : "Show Liked Audio"}
-      </Button>
+      <Box>
+        <Button
+          variant="contained"
+          sx={{ mt: 4 }}
+          onClick={handleShowLikedAudio}
+          endIcon={showLikedAudio ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        >
+          {showLikedAudio ? "Hide Liked Audio" : "Show Liked Audio"}
+        </Button>
 
-      {showLikedAudio && <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />}
-    </Box>
+        {showLikedAudio && <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />}
 
-      <Button
-        variant="contained"
-        sx={{ mt: 4 }}
-        onClick={() => setShowAudioFiles(!showAudioFiles)}
-        endIcon={showAudioFiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      >
-        {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
-      </Button>
 
+        <Button
+          variant="contained"
+          sx={{ mt: 4 }}
+          onClick={() => setShowAudioFiles(!showAudioFiles)}
+          endIcon={showAudioFiles ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        >
+          {showAudioFiles ? "Hide Audio Files" : "Show Audio Files"}
+        </Button>
+      </Box>
       {showAudioFiles && (
         <AudioFilesTable
           audioFiles={audioFiles}

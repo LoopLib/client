@@ -77,7 +77,7 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
 
   return (
     <Box sx={{ width: "100%", mt: 4, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <Typography variant="h5" align="center" sx={{ mb: 2 }}>
+      <Typography variant="subtitle3" align="center" sx={{ mb: 2 }}>
         ❤️ Your Liked Audio Files
       </Typography>
 
@@ -141,7 +141,7 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
             >
               <CardContent sx={{ padding: "10px" }}>
                 <Typography
-                  variant="subtitle2"
+                  variant="subtitle3"
                   sx={{
                     whiteSpace: "nowrap",
                     overflow: "hidden",
