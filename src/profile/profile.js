@@ -456,21 +456,23 @@ const Profile = () => {
           handleProfilePictureUpload={handleProfilePictureUpload}
         />
         <ProfileRightSection
-          user={user}
-          editMode={editMode}
-          setEditMode={setEditMode}
-          profileData={profileData}
-          handleInputChange={handleInputChange}
-          saveProfileData={saveProfileData}
-          showPasswordFields={showPasswordFields}
-          setShowPasswordFields={setShowPasswordFields}
-          newPassword={newPassword}
-          setNewPassword={setNewPassword}
-          confirmNewPassword={confirmNewPassword}
-          setConfirmNewPassword={setConfirmNewPassword}
-          handlePasswordUpdate={handlePasswordUpdate}
-          audioFilesCount={audioFiles.length} // New prop for statistics
-        />
+  user={user}
+  editMode={editMode}
+  setEditMode={setEditMode}
+  profileData={profileData}
+  handleInputChange={handleInputChange}
+  saveProfileData={saveProfileData}
+  showPasswordFields={showPasswordFields}
+  setShowPasswordFields={setShowPasswordFields}
+  newPassword={newPassword}
+  setNewPassword={setNewPassword}
+  confirmNewPassword={confirmNewPassword}
+  setConfirmNewPassword={setConfirmNewPassword}
+  handlePasswordUpdate={handlePasswordUpdate}
+  audioFilesCount={audioFiles.length} // Existing prop
+  audioFiles={audioFiles} // New prop for additional statistics
+/>
+
 
       </Container>
 

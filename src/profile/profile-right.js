@@ -10,7 +10,7 @@ import {
   Stack,
   IconButton,
   Tooltip,
-  Grid
+  Grid,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -49,8 +49,39 @@ const ProfileRightSection = ({
   confirmNewPassword,
   setConfirmNewPassword,
   handlePasswordUpdate,
-  audioFilesCount, // New prop
+  audioFilesCount,
+  audioFiles, // New prop
 }) => {
+  // Compute additional statistics
+  const totalFiles = audioFiles ? audioFiles.length : 0;
+  const validBpmFiles = audioFiles
+    ? audioFiles.filter((file) => !isNaN(parseFloat(file.bpm)))
+    : [];
+  const averageBpm =
+    validBpmFiles.length > 0
+      ? (
+          validBpmFiles.reduce((acc, file) => acc + parseFloat(file.bpm), 0) /
+          validBpmFiles.length
+        ).toFixed(1)
+      : "N/A";
+  const genreCounts = audioFiles
+    ? audioFiles.reduce((acc, file) => {
+        if (file.genre && file.genre !== "Unknown") {
+          acc[file.genre] = (acc[file.genre] || 0) + 1;
+        }
+        return acc;
+      }, {})
+    : {};
+  const uniqueMusicalKeys = audioFiles
+    ? Array.from(
+        new Set(
+          audioFiles
+            .map((file) => file.musicalKey)
+            .filter((key) => key && key !== "Unknown")
+        )
+      )
+    : [];
+
   return (
     <RightSectionCard>
       <CardContent>
@@ -203,7 +234,33 @@ const ProfileRightSection = ({
                 <Typography variant="body1">
                   Uploaded Audio Files: {audioFilesCount}
                 </Typography>
-                {/* Add other statistics as needed */}
+                <Typography variant="body1">
+                  Average BPM: {averageBpm}
+                </Typography>
+                <Typography variant="body1">
+                  Unique Musical Keys:{" "}
+                  {uniqueMusicalKeys.length > 0
+                    ? uniqueMusicalKeys.join(", ")
+                    : "N/A"}
+                </Typography>
+                <Box mt={2}>
+                  <Typography variant="body1">Genre Distribution:</Typography>
+                  {Object.keys(genreCounts).length > 0 ? (
+                    <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
+                      {Object.entries(genreCounts).map(([genre, count]) => (
+                        <Box component="li" key={genre}>
+                          <Typography variant="body2">
+                            {genre}: {count}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2">
+                      No genre data available.
+                    </Typography>
+                  )}
+                </Box>
               </Box>
             </Grid>
           </Grid>
