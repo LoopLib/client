@@ -473,9 +473,16 @@ const Profile = () => {
       )}
 
 <Box>
-      
+      <Button
+        variant="contained"
+        sx={{ mt: 4 }}
+        onClick={handleShowLikedAudio}
+        endIcon={showLikedAudio ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+      >
+        {showLikedAudio ? "Hide Liked Audio" : "Show Liked Audio"}
+      </Button>
 
-      <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />
+      {showLikedAudio && <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />}
     </Box>
 
       <Button
