@@ -1,17 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  Box,
-  Typography,
-  List,
-  Menu,
-  MenuItem,
-  Pagination,
-} from "@mui/material";
+import { Box, Typography, List, Menu, MenuItem, Pagination } from "@mui/material";
 import AWS from "aws-sdk";
 import { useNavigate } from "react-router-dom";
 import AudioCard from "../audio-card/audio-card";
 import SearchBar from "../searchbar/searchbar";
 import LoadingPage from "../../loading/loading";
+import axios from "axios";
 import "./library.css";
 
 const Library = ({ ownerUid = null }) => {
@@ -68,9 +62,11 @@ const Library = ({ ownerUid = null }) => {
           }
 
           const uid = audioFile.Key.split("/")[1];
+          const fileName = audioFile.Key.split("/").pop();
 
-          return {
-            name: audioFile.Key.split("/").pop(),
+          // Create the basic file object
+          const fileObj = {
+            name: fileName,
             url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${audioFile.Key}`,
             uid,
             publisher: "Anonymous Publisher",
@@ -79,9 +75,28 @@ const Library = ({ ownerUid = null }) => {
             musicalKey: metadata.key || "Unknown",
             genre: metadata.genre || "Unknown",
             ownerUid: uid,
-            // Save the upload timestamp from metadata
             uploadTimestamp: metadata.uploadTimestamp || null,
           };
+
+          // Fetch the stats (likes & downloads)
+          try {
+            const statsKey = `users/${uid}/stats/${fileName}.stats.json`;
+            const statsUrl = s3.getSignedUrl("getObject", {
+              Bucket: params.Bucket,
+              Key: statsKey,
+            });
+            const response = await axios.get(statsUrl);
+            const statsData = response.data;
+            // Ensure that likes and downloads are numbers
+            fileObj.likes = Number(statsData.likes) || 0;
+            fileObj.downloads = Number(statsData.downloads) || 0;
+          } catch (error) {
+            console.error(`Error fetching stats for ${fileName}:`, error.message);
+            fileObj.likes = 0;
+            fileObj.downloads = 0;
+          }
+
+          return fileObj;
         })
       );
 
@@ -97,7 +112,7 @@ const Library = ({ ownerUid = null }) => {
   };
 
   const handleSearchChange = (filters) => {
-    const { query, genre, mode, key, bpmRange, timeRange } = filters;
+    const { query, genre, mode, key, bpmRange, timeRange, sortOption } = filters;
     const lowerCaseQuery = query.toLowerCase();
     const filtered = audioFiles.filter((file) => {
       const matchesQuery =
@@ -107,8 +122,7 @@ const Library = ({ ownerUid = null }) => {
         (file.musicalKey && file.musicalKey.toLowerCase().includes(lowerCaseQuery));
 
       const matchesGenre =
-        genre === "" ||
-        (file.genre && file.genre.toLowerCase() === genre.toLowerCase());
+        genre === "" || (file.genre && file.genre.toLowerCase() === genre.toLowerCase());
 
       let matchesKey = true;
       if (mode && key) {
@@ -138,7 +152,6 @@ const Library = ({ ownerUid = null }) => {
         }
       }
 
-      // Time range filtering based on file.uploadTimestamp
       let matchesTime = true;
       if (timeRange) {
         if (!file.uploadTimestamp) {
@@ -146,7 +159,7 @@ const Library = ({ ownerUid = null }) => {
         } else {
           const fileDate = new Date(file.uploadTimestamp);
           const now = new Date();
-          const timeDiff = now - fileDate; // difference in ms
+          const timeDiff = now - fileDate;
           let thresholdMs = 0;
           switch (timeRange) {
             case "24h":
@@ -176,58 +189,25 @@ const Library = ({ ownerUid = null }) => {
 
       return matchesQuery && matchesGenre && matchesKey && matchesBpm && matchesTime;
     });
+
+    // Sort based on the chosen option (likes or downloads)
+    if (sortOption) {
+      filtered.sort((a, b) => (b[sortOption] || 0) - (a[sortOption] || 0));
+    }
+
     setFilteredFiles(filtered);
     setCurrentPage(1);
-  };
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = filteredFiles.slice(startIndex, startIndex + itemsPerPage);
-
-  const handleRightClick = (event, file) => {
-    event.preventDefault();
-    setSelectedFile(file);
-    setContextMenu(
-      contextMenu === null
-        ? {
-            mouseX: event.clientX + 2,
-            mouseY: event.clientY - 6,
-          }
-        : null
-    );
-  };
-
-  const closeContextMenu = () => {
-    setContextMenu(null);
-    setSelectedFile(null);
-  };
-
-  const handleOptionSelect = (option) => {
-    if (option === "edit") {
-      alert(`Editing ${selectedFile.name}`);
-      navigate("/edit", { state: { file: selectedFile } });
-    } else if (option === "delete") {
-      alert(`Deleting ${selectedFile.name}`);
-    }
-    closeContextMenu();
   };
 
   if (loading) {
     return <LoadingPage />;
   }
 
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = filteredFiles.slice(startIndex, startIndex + itemsPerPage);
+
   return (
-    <Box
-      className="all-audio-container"
-      sx={{
-        width: "80%",
-        maxWidth: "none",
-        margin: "20px auto",
-      }}
-    >
+    <Box className="all-audio-container" sx={{ width: "80%", maxWidth: "none", margin: "20px auto" }}>
       <SearchBar onSearchChange={handleSearchChange} />
       <List>
         {currentItems.length > 0 ? (
@@ -239,7 +219,14 @@ const Library = ({ ownerUid = null }) => {
               activeIndexes={activeIndexes}
               setActiveIndexes={setActiveIndexes}
               waveSurferRefs={waveSurferRefs}
-              onContextMenu={(event) => handleRightClick(event, file)}
+              onContextMenu={(event) => {
+                event.preventDefault();
+                setSelectedFile(file);
+                setContextMenu({
+                  mouseX: event.clientX + 2,
+                  mouseY: event.clientY - 6,
+                });
+              }}
             />
           ))
         ) : (
@@ -251,24 +238,34 @@ const Library = ({ ownerUid = null }) => {
       <Pagination
         count={Math.ceil(filteredFiles.length / itemsPerPage)}
         page={currentPage}
-        onChange={handlePageChange}
+        onChange={(event, value) => setCurrentPage(value)}
         sx={{ display: "flex", justifyContent: "center", mt: 2 }}
       />
       <Menu
         open={contextMenu !== null}
-        onClose={closeContextMenu}
+        onClose={() => setContextMenu(null)}
         anchorReference="anchorPosition"
         anchorPosition={
           contextMenu !== null
             ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
             : undefined
         }
-        classes={{ paper: "custom-context-menu" }}
       >
-        <MenuItem onClick={() => handleOptionSelect("edit")} className="custom-menu-item">
+        <MenuItem
+          onClick={() => {
+            alert(`Editing ${selectedFile.name}`);
+            navigate("/edit", { state: { file: selectedFile } });
+            setContextMenu(null);
+          }}
+        >
           Edit
         </MenuItem>
-        <MenuItem onClick={() => handleOptionSelect("delete")} className="custom-menu-item">
+        <MenuItem
+          onClick={() => {
+            alert(`Deleting ${selectedFile.name}`);
+            setContextMenu(null);
+          }}
+        >
           Delete
         </MenuItem>
       </Menu>

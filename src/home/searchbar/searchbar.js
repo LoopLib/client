@@ -126,20 +126,9 @@ const SearchBar = ({ onSearchChange }) => {
                 </Select>
               </FormControl>
             )}
-          </Box>
 
-          {/* Row 3 - BPM Range */}
-          <Box
-            sx={{
-              display: "flex",
-              flex: "1 1 100%",
-              gap: 2,
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            {/* BPM Range */}
-            <Box className="filter-item bpm-range-container" sx={{ display: "flex", gap: 1, alignItems: "center", flex: 1 }}>
+             {/* BPM Range */}
+             <Box className="filter-item bpm-range-container" sx={{ display: "flex", gap: 1, alignItems: "center", flex: 1 }}>
               <TextField
                 type="number"
                 label="Min BPM"
@@ -166,6 +155,19 @@ const SearchBar = ({ onSearchChange }) => {
                 sx={{ flex: 1 }}
               />
             </Box>
+          </Box>
+
+          {/* Row 3 - BPM Range */}
+          <Box
+            sx={{
+              display: "flex",
+              flex: "1 1 100%",
+              gap: 2,
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+           
           </Box>
           {/* Row 4 - Sort Options */}        
           <Box sx={{ display: "flex", flex: "1 1 100%", gap: 2, justifyContent: "space-between" }}>
