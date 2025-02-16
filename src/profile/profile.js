@@ -469,7 +469,9 @@ const Profile = () => {
           confirmNewPassword={confirmNewPassword}
           setConfirmNewPassword={setConfirmNewPassword}
           handlePasswordUpdate={handlePasswordUpdate}
+          audioFilesCount={audioFiles.length} // New prop for statistics
         />
+
       </Container>
 
       {errorMessage && (
