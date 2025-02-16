@@ -318,7 +318,7 @@ const AudioCard = ({
                   position: "absolute",
                   right: "80px",
                   bottom: "20px",
-                  border: "3px solid #000", // Always show the blue border
+                  border: "3px solid blue", // Always show the blue border
                   borderRadius: "50%", // Make it a circle
                   padding: "5px", // Add some padding
                 }}
