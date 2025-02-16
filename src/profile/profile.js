@@ -87,6 +87,17 @@ const Profile = () => {
     }
   }, [errorMessage]);
 
+  useEffect(() => {
+    const fetchLikedAudio = async () => {
+      const likedFiles = await fetchLikedAudioFiles();
+      setLikedAudioFiles(likedFiles);
+      setShowLikedAudio(true); // Automatically show liked audio
+    };
+
+    fetchLikedAudio();
+  }, []);
+
+
   // FUNCTIONS
 
   const fetchProfileData = async (userId) => {
@@ -473,18 +484,7 @@ const Profile = () => {
       )}
 
       <Box>
-        <Button
-          variant="contained"
-          sx={{ mt: 4 }}
-          onClick={handleShowLikedAudio}
-          endIcon={showLikedAudio ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        >
-          {showLikedAudio ? "Hide Liked Audio" : "Show Liked Audio"}
-        </Button>
-
-        {showLikedAudio && <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />}
-
-
+        <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />
         <Button
           variant="contained"
           sx={{ mt: 4 }}

@@ -23,7 +23,7 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
         setCanScrollLeft(carouselRef.current.scrollLeft > 0);
         setCanScrollRight(
           carouselRef.current.scrollLeft <
-            carouselRef.current.scrollWidth - carouselRef.current.clientWidth
+          carouselRef.current.scrollWidth - carouselRef.current.clientWidth
         );
       }
     };
@@ -76,12 +76,24 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
 
   return (
     <Box sx={{ width: "100%", mt: 4, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontFamily: "'Poppins', sans-serif", // Modern font
+          fontWeight: 600,
+          color: "black",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 1,
+          letterSpacing: 1,
+        }}
+      >
         ❤️ Your Liked Audio Files
       </Typography>
 
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", maxWidth: "900px", position: "relative" }}>
-        
+
         {/* Scroll Left Button */}
         <IconButton
           onClick={() => carouselRef.current?.scrollBy({ left: -250, behavior: "smooth" })}
@@ -182,7 +194,7 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
                     statsKey={`users/${file.uid}/stats/${file.name}.stats.json`}
                     s3={s3}
                     downloads={file.downloads || 0}
-                    setDownloads={() => {}}
+                    setDownloads={() => { }}
                   />
                 </Box>
               </CardContent>
