@@ -16,6 +16,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { styled } from "@mui/material/styles";
 
+// Import Chart components
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend } from "chart.js";
+ChartJS.register(ArcElement, ChartTooltip, Legend);
+
 const RightSectionCard = styled(Card)(({ theme }) => ({
   flexGrow: 1,
   boxShadow: theme.shadows[3],
@@ -64,6 +69,8 @@ const ProfileRightSection = ({
           validBpmFiles.length
         ).toFixed(1)
       : "N/A";
+
+  // Genre Distribution Data
   const genreCounts = audioFiles
     ? audioFiles.reduce((acc, file) => {
         if (file.genre && file.genre !== "Unknown") {
@@ -72,15 +79,60 @@ const ProfileRightSection = ({
         return acc;
       }, {})
     : {};
-  const uniqueMusicalKeys = audioFiles
-    ? Array.from(
-        new Set(
-          audioFiles
-            .map((file) => file.musicalKey)
-            .filter((key) => key && key !== "Unknown")
-        )
-      )
-    : [];
+  const genreLabels = Object.keys(genreCounts);
+  const genreData = Object.values(genreCounts);
+  const genreChartData = {
+    labels: genreLabels,
+    datasets: [
+      {
+        label: "Genre Distribution",
+        data: genreData,
+        backgroundColor: [
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#8A2BE2",
+          "#00FA9A",
+          "#FF4500",
+          "#1E90FF",
+        ],
+        borderColor: "#fff",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  // Musical Key Distribution Data
+  const musicalKeyCounts = audioFiles
+    ? audioFiles.reduce((acc, file) => {
+        if (file.musicalKey && file.musicalKey !== "Unknown") {
+          acc[file.musicalKey] = (acc[file.musicalKey] || 0) + 1;
+        }
+        return acc;
+      }, {})
+    : {};
+  const keyLabels = Object.keys(musicalKeyCounts);
+  const keyData = Object.values(musicalKeyCounts);
+  const keyChartData = {
+    labels: keyLabels,
+    datasets: [
+      {
+        label: "Musical Key Distribution",
+        data: keyData,
+        backgroundColor: [
+          "#36A2EB",
+          "#FF6384",
+          "#FFCE56",
+          "#8A2BE2",
+          "#00FA9A",
+          "#FF4500",
+          "#1E90FF",
+        ],
+        borderColor: "#fff",
+        borderWidth: 2,
+      },
+    ],
+  };
 
   return (
     <RightSectionCard>
@@ -225,7 +277,7 @@ const ProfileRightSection = ({
               </Box>
             </Grid>
 
-            {/* Right Side: Statistics */}
+            {/* Right Side: Statistics & Charts */}
             <Grid item xs={12} md={6}>
               <Box mt={2} textAlign="center">
                 <Typography variant="h6" fontWeight="bold">
@@ -239,29 +291,55 @@ const ProfileRightSection = ({
                 </Typography>
                 <Typography variant="body1">
                   Unique Musical Keys:{" "}
-                  {uniqueMusicalKeys.length > 0
-                    ? uniqueMusicalKeys.join(", ")
-                    : "N/A"}
+                  {keyLabels.length > 0 ? keyLabels.join(", ") : "N/A"}
                 </Typography>
-                <Box mt={2}>
-                  <Typography variant="body1">Genre Distribution:</Typography>
-                  {Object.keys(genreCounts).length > 0 ? (
-                    <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
-                      {Object.entries(genreCounts).map(([genre, count]) => (
-                        <Box component="li" key={genre}>
-                          <Typography variant="body2">
-                            {genre}: {count}
-                          </Typography>
-                        </Box>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography variant="body2">
-                      No genre data available.
-                    </Typography>
-                  )}
-                </Box>
               </Box>
+              <Grid container spacing={2} sx={{ mt: 2 }}>
+                {/* Genre Distribution Chart */}
+                <Grid item xs={12} md={6}>
+                  <Box
+                    sx={{
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: 2,
+                      p: 2,
+                      boxShadow: 2,
+                    }}
+                  >
+                    <Typography variant="subtitle1" gutterBottom>
+                      Genre Distribution
+                    </Typography>
+                    {genreLabels.length > 0 ? (
+                      <Pie data={genreChartData} />
+                    ) : (
+                      <Typography variant="body2">
+                        No genre data available.
+                      </Typography>
+                    )}
+                  </Box>
+                </Grid>
+                {/* Musical Key Distribution Chart */}
+                <Grid item xs={12} md={6}>
+                  <Box
+                    sx={{
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: 2,
+                      p: 2,
+                      boxShadow: 2,
+                    }}
+                  >
+                    <Typography variant="subtitle1" gutterBottom>
+                      Musical Key Distribution
+                    </Typography>
+                    {keyLabels.length > 0 ? (
+                      <Pie data={keyChartData} />
+                    ) : (
+                      <Typography variant="body2">
+                        No musical key data available.
+                      </Typography>
+                    )}
+                  </Box>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         ) : (

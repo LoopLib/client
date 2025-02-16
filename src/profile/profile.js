@@ -143,26 +143,32 @@ const Profile = () => {
               ? JSON.parse(metadataObject.Body.toString())
               : {};
           } catch (error) {
-            console.warn(
-              `Metadata not found for ${file.Key}: ${error.message}`
-            );
+            console.warn(`Metadata not found for ${file.Key}: ${error.message}`);
             metadata = {
               bpm: "Unknown",
               genre: "Unknown",
               musicalKey: "Unknown",
             };
           }
-
+      
+          // Generate a signed URL for the audio file
+          const fileUrl = s3.getSignedUrl("getObject", {
+            Bucket: params.Bucket,
+            Key: file.Key,
+            Expires: 60, // URL valid for 60 seconds (adjust as needed)
+          });
+      
           return {
             name: file.Key.split("/").pop(),
             key: file.Key,
-            url: `https://${params.Bucket}.s3.${s3.config.region}.amazonaws.com/${file.Key}`,
+            url: fileUrl,
             bpm: metadata?.bpm || "Unknown",
             genre: metadata?.genre || "Unknown",
             musicalKey: metadata?.key || "Unknown",
           };
         })
       );
+      
 
       setAudioFiles(files);
     } catch (error) {
@@ -311,16 +317,40 @@ const Profile = () => {
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
         region: process.env.REACT_APP_AWS_REGION,
       });
-
+  
+      // Delete the audio file
       await s3
         .deleteObject({
           Bucket: "looplib-audio-bucket",
           Key: fileKey,
         })
         .promise();
-
+  
+      // Construct the metadata file's key
+      const metadataKey = fileKey.replace("/audio/", "/metadata/") + ".metadata.json";
+  
+      // Delete the metadata file
+      await s3
+        .deleteObject({
+          Bucket: "looplib-audio-bucket",
+          Key: metadataKey,
+        })
+        .promise();
+  
+      // Construct the stats file's key
+      const statsKey = fileKey.replace("/audio/", "/stats/") + ".stats.json";
+  
+      // Delete the stats file
+      await s3
+        .deleteObject({
+          Bucket: "looplib-audio-bucket",
+          Key: statsKey,
+        })
+        .promise();
+  
+      // Remove the file from the state
       setAudioFiles((prevFiles) => prevFiles.filter((f) => f.key !== fileKey));
-      alert("File deleted successfully!");
+      alert("Audio file, metadata, and stats deleted successfully!");
     } catch (error) {
       console.error("Error deleting file:", error.message);
       alert("Failed to delete the file.");
@@ -328,6 +358,7 @@ const Profile = () => {
       setOperationInProgress(false);
     }
   };
+  
 
   const handleInputChange = (field, value) => {
     setProfileData((prev) => ({
