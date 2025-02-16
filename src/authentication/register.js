@@ -9,6 +9,8 @@ import ErrorIcon from "@mui/icons-material/Error";
 import "./authentication.css";
 
 const Register = () => {
+    const [name, setName] = useState("");
+    const [secondName, setSecondName] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -48,6 +50,8 @@ const Register = () => {
             const userDocRef = doc(db, "users", user.uid); // Create a document reference
             await setDoc(userDocRef, {
                 username: username,
+                name: name,
+                secondName: secondName,
                 email: email,
                 createdAt: new Date(), // Store creation timestamp
                 uid: user.uid // User's unique ID
@@ -98,6 +102,22 @@ const Register = () => {
                     R E G I S T E R
                 </Typography>
             </Paper>
+            <TextField
+                label="Name"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+                label="Second Name"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={secondName}
+                onChange={(e) => setSecondName(e.target.value)}
+            />
             <TextField
                 label="Username"
                 variant="outlined"
