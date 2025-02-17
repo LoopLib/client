@@ -472,41 +472,42 @@ const Profile = () => {
 
   return (
     <Box
-      className="all-audio-container"
-      sx={{
-        width: "80%",
-        maxWidth: "none",
-        margin: "20px auto",
-      }}
-    >
-      <Container>
-        <ProfileLeftSection
-          profilePictureUrl={profilePictureUrl}
-          selectedImage={selectedImage}
-          uploading={uploading}
-          handleImageChange={handleImageChange}
-          handleProfilePictureUpload={handleProfilePictureUpload}
-        />
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-          <ProfileRightSection
-            user={user}
-            editMode={editMode}
-            setEditMode={setEditMode}
-            profileData={profileData}
-            handleInputChange={handleInputChange}
-            saveProfileData={saveProfileData}
-            showPasswordFields={showPasswordFields}
-            setShowPasswordFields={setShowPasswordFields}
-            newPassword={newPassword}
-            setNewPassword={setNewPassword}
-            confirmNewPassword={confirmNewPassword}
-            setConfirmNewPassword={setConfirmNewPassword}
-            handlePasswordUpdate={handlePasswordUpdate}
-          />
+    className="all-audio-container"
+    sx={{
+      width: "80%",
+      maxWidth: "none",
+      margin: "20px auto",
+    }}
+  >
+    <Container>
+  <Box sx={{ flex: 1 }}>
+    <ProfileLeftSection
+      profilePictureUrl={profilePictureUrl}
+      selectedImage={selectedImage}
+      uploading={uploading}
+      handleImageChange={handleImageChange}
+      handleProfilePictureUpload={handleProfilePictureUpload}
+    />
+  </Box>
+  <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+    <ProfileRightSection
+      user={user}
+      editMode={editMode}
+      setEditMode={setEditMode}
+      profileData={profileData}
+      handleInputChange={handleInputChange}
+      saveProfileData={saveProfileData}
+      showPasswordFields={showPasswordFields}
+      setShowPasswordFields={setShowPasswordFields}
+      newPassword={newPassword}
+      setNewPassword={setNewPassword}
+      confirmNewPassword={confirmNewPassword}
+      setConfirmNewPassword={setConfirmNewPassword}
+      handlePasswordUpdate={handlePasswordUpdate}
+    />
+  </Box>
+</Container>
 
-        </Box>
-
-      </Container>
       <Box sx={{ mt: 4 }}>
       <Statistics audioFiles={audioFiles} audioFilesCount={audioFiles.length} />
         </Box>

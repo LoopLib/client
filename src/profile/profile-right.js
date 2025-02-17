@@ -16,21 +16,45 @@ import SaveIcon from "@mui/icons-material/Save";
 import { styled } from "@mui/material/styles";
 
 const RightSectionCard = styled(Card)(({ theme }) => ({
-  flexGrow: 1,
-  boxShadow: theme.shadows[3],
-  borderRadius: theme.shape.borderRadius * 2,
-  padding: theme.spacing(3),
-  backgroundColor: theme.palette.background.paper,
+  width: "100%",
+  maxWidth: 1200,
+  margin: "16px 0",
+  boxSizing: "border-box",
+  background: "#fff",
+  border: "5px solid #1976D2",
+  borderRadius: "16px",
+  position: "relative",
+  overflow: "hidden",
+  zIndex: 0,
+  padding: "16px",
+  boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: "-8px",
+    left: "-8px",
+    right: "-8px",
+    bottom: "-8px",
+    background: "transparent",
+    border: "8px solid rgba(25, 118, 210, 0.5)",
+    borderRadius: "24px",
+    zIndex: -1,
+    pointerEvents: "none",
+  },
+  "&:hover": {
+    boxShadow: "10px 6px 20px rgba(106, 17, 203, 0.15)",
+  },
 }));
 
 const ProfileCard = styled(Card)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius * 2,
-  boxShadow: theme.shadows[2],
+  borderRadius: "16px",
+  boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
   maxWidth: 400,
   margin: "auto",
-  transition: "box-shadow 0.3s ease-in-out",
+  transition: "box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out",
   "&:hover": {
-    boxShadow: theme.shadows[6],
+    boxShadow: "0 12px 24px rgba(0, 0, 0, 0.2)",
+    transform: "translateY(-4px)",
   },
 }));
 
@@ -60,13 +84,13 @@ const ProfileRightSection = ({
                 <CardContent>
                   <Stack spacing={2}>
                     <Typography variant="h4" fontWeight="bold">
-                      {profileData?.displayName}
+                      {profileData?.username}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
                       {profileData?.email}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                      {profileData?.username}
+                      {profileData?.name} {profileData?.secondName} 
                     </Typography>
                   </Stack>
                 </CardContent>
