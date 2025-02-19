@@ -37,10 +37,11 @@ const FileUpload = () => {
 
     const waveSurferRefs = useRef([]);
     const [activeIndexes, setActiveIndexes] = useState([]);
-    
+
     const [fileName, setFileName] = useState(""); // Added state for file name
     const [openDialog, setOpenDialog] = useState(false); // State for dialog visibility
 
+    const [fingerprint, setFingerprint] = useState(null);
 
     const handleFileChange = (event) => {
         const newFile = event.target.files[0];
@@ -87,12 +88,11 @@ const FileUpload = () => {
             const response = await axios.post(
                 "http://localhost:5000/upload",
                 formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" },
-                }
+                { headers: { "Content-Type": "multipart/form-data" } }
             );
             setBpm(response.data.bpm);
             setKey(response.data.key);
+            setFingerprint(response.data.fingerprint); // Save fingerprint
         } catch (error) {
             console.error("Error uploading file:", error);
         } finally {
@@ -146,6 +146,7 @@ const FileUpload = () => {
                 lastModified: selectedFile.lastModified,
                 bpm: bpm || null,
                 key: key || null,
+                fingerprint: fingerprint || null,
                 uploadTimestamp: new Date().toISOString(),
             };
             const metadataParams = {
