@@ -19,7 +19,7 @@ import axios from "axios";
 import AWS from "aws-sdk";
 import "./upload.css";
 import AudioCard from "../home/audio-card/audio-card";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import BrowseFiles from "./browse-files/browse-files";
@@ -32,25 +32,24 @@ const FileUpload = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [bpm, setBpm] = useState(null);
     const [key, setKey] = useState(null);
+    const [fingerprint, setFingerprint] = useState(null); // New state for fingerprint
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const waveSurferRefs = useRef([]);
     const [activeIndexes, setActiveIndexes] = useState([]);
 
-    const [fileName, setFileName] = useState(""); // Added state for file name
-    const [openDialog, setOpenDialog] = useState(false); // State for dialog visibility
-
-    const [fingerprint, setFingerprint] = useState(null);
+    const [fileName, setFileName] = useState("");
+    const [openDialog, setOpenDialog] = useState(false);
 
     const handleFileChange = (event) => {
         const newFile = event.target.files[0];
         if (newFile) {
-            // Reset previous file state
             setSelectedFile(newFile);
             setBpm(null);
             setKey(null);
-            setFileName(""); // Reset file name field in the dialog
+            setFingerprint(null); // Reset fingerprint when a new file is chosen
+            setFileName("");
         }
     };
 
@@ -60,14 +59,13 @@ const FileUpload = () => {
 
         const newFile = event.dataTransfer.files[0];
         if (newFile) {
-            // Reset previous file state
             setSelectedFile(newFile);
             setBpm(null);
             setKey(null);
-            setFileName(""); // Reset file name field in the dialog
+            setFingerprint(null);
+            setFileName("");
         }
     };
-
 
     const handleDragOver = (event) => {
         event.preventDefault();
@@ -77,6 +75,7 @@ const FileUpload = () => {
     const handleDragLeave = () => {
         setIsDragging(false);
     };
+
     const handleUploadAndAnalyze = async () => {
         if (!selectedFile) return;
 
@@ -88,13 +87,16 @@ const FileUpload = () => {
             const response = await axios.post(
                 "http://localhost:5000/upload",
                 formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
             );
             setBpm(response.data.bpm);
             setKey(response.data.key);
-            setFingerprint(response.data.fingerprint); // Save fingerprint
+            setFingerprint(response.data.fingerprint); // Capture the fingerprint from the server
         } catch (error) {
             console.error("Error uploading file:", error);
+            setError("Error uploading file. " + error.response?.data?.details || error.message);
         } finally {
             setIsLoading(false);
         }
@@ -110,26 +112,92 @@ const FileUpload = () => {
             return;
         }
 
-        handleCloseDialog();
-        setIsLoading(true);
+        if (!fingerprint) {
+            setError("No fingerprint available. Please analyze the file first.");
+            return;
+        }
+
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user) {
+            setError("User not authenticated.");
+            return;
+        }
+        const uid = user.uid;
+
+        const s3 = new AWS.S3({
+            region: process.env.REACT_APP_AWS_REGION,
+            accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+        });
 
         try {
-            const auth = getAuth();
-            const user = auth.currentUser;
+            // Debug: Log the current fingerprint
+            console.log("Current fingerprint:", fingerprint);
 
-            if (!user) {
-                throw new Error("User not authenticated");
+            // List metadata files for this user
+            const listParams = {
+                Bucket: "looplib-audio-bucket",
+                Prefix: `users/${uid}/metadata/`
+            };
+            const metadataList = await s3.listObjectsV2(listParams).promise();
+
+            if (metadataList.Contents && metadataList.Contents.length > 0) {
+                console.log("Metadata files found:", metadataList.Contents.length);
+                // Loop over each metadata file
+                for (const obj of metadataList.Contents) {
+                    const normalizeFingerprint = (fp) => {
+                        return String(fp)
+                          .trim()
+                          .replace(/^["']+|["']+$/g, "")
+                          .toLowerCase();
+                      };
+                      
+                      try {
+                        // List metadata files in S3 under the user's metadata folder
+                        const listParams = {
+                          Bucket: "looplib-audio-bucket",
+                          Prefix: `users/${uid}/metadata/`
+                        };
+                        const metadataList = await s3.listObjectsV2(listParams).promise();
+                      
+                        if (metadataList.Contents && metadataList.Contents.length > 0) {
+                          console.log("Metadata files found:", metadataList.Contents.length);
+                          // Loop over each metadata file
+                          for (const obj of metadataList.Contents) {
+                            const getParams = {
+                              Bucket: "looplib-audio-bucket",
+                              Key: obj.Key
+                            };
+                      
+                            const data = await s3.getObject(getParams).promise();
+                            const metadataJson = JSON.parse(data.Body.toString('utf-8'));
+                      
+                            // Normalize both the stored and current fingerprints before comparing
+                            const normalizedStored = normalizeFingerprint(metadataJson.fingerprint);
+                            const normalizedCurrent = normalizeFingerprint(fingerprint);
+                            console.log(`Comparing stored fingerprint "${normalizedStored}" with current fingerprint "${normalizedCurrent}"`);
+                      
+                            if (normalizedStored === normalizedCurrent) {
+                              setError("Same audio file already exists");
+                              return; // Stop the publish process
+                            }
+                          }
+                        }
+                      } catch (error) {
+                        console.error("Error checking duplicates:", error);
+                        setError("Error checking duplicates in S3");
+                        return;
+                      }
+                }
+
             }
 
-            const uid = user.uid;
+            // No duplicate found, proceed with publishing
+            handleCloseDialog();
+            setIsLoading(true);
 
-            const s3 = new AWS.S3({
-                region: process.env.REACT_APP_AWS_REGION,
-                accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-                secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
-            });
-
-            // Audio Upload
+            // Upload audio file
             const audioParams = {
                 Bucket: "looplib-audio-bucket",
                 Key: `users/${uid}/audio/${fileName}`,
@@ -138,7 +206,7 @@ const FileUpload = () => {
             };
             await s3.upload(audioParams).promise();
 
-            // Metadata Upload
+            // Prepare metadata with the fingerprint
             const metadata = {
                 name: fileName,
                 type: selectedFile.type,
@@ -157,7 +225,7 @@ const FileUpload = () => {
             };
             await s3.upload(metadataParams).promise();
 
-            // Stats Upload (Likes and Downloads)
+            // Upload stats
             const statsParams = {
                 Bucket: "looplib-audio-bucket",
                 Key: `users/${uid}/stats/${fileName}.stats.json`,
@@ -165,6 +233,7 @@ const FileUpload = () => {
                 ContentType: "application/json",
             };
             await s3.upload(statsParams).promise();
+
             setError(null);
         } catch (error) {
             console.error("Error publishing file:", error);
@@ -175,7 +244,6 @@ const FileUpload = () => {
             navigate("/homepage");
         }
     };
-
 
     const handleOpenDialog = () => {
         setOpenDialog(true);
@@ -216,13 +284,12 @@ const FileUpload = () => {
                     activeIndexes={activeIndexes}
                     setActiveIndexes={setActiveIndexes}
                     waveSurferRefs={waveSurferRefs}
-                    showExtras={false} // Show key and BPM
-                    showAvatar={false} // Hide avatar
-                    showLikeButton={false} // Hide like button
-                    showStats={false} // Show likes and downloads
+                    showExtras={false}
+                    showAvatar={false}
+                    showLikeButton={false}
+                    showStats={false}
                 />
             )}
-
 
             {isLoading && (
                 <Box className="loading-overlay">
@@ -244,7 +311,7 @@ const FileUpload = () => {
                             color="primary"
                             onClick={handleUploadAndAnalyze}
                             startIcon={<UploadFileIcon />}
-                            disabled={isLoading}  // Disable button while processing
+                            disabled={isLoading}
                         >
                             Analyze
                         </Button>
@@ -253,7 +320,7 @@ const FileUpload = () => {
                             color="primary"
                             onClick={handleOpenDialog}
                             startIcon={<PublishIcon />}
-                            disabled={isLoading}  // Disable button while processing
+                            disabled={isLoading}
                         >
                             Publish
                         </Button>
@@ -287,7 +354,6 @@ const FileUpload = () => {
                 </DialogActions>
             </Dialog>
         </Box>
-
     );
 };
 
