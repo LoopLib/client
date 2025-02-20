@@ -17,7 +17,7 @@ const formatMusicalKey = (key) => {
   return key;
 };
 
-const Metadata = ({ duration, musicalKey, bpm, genre }) => {
+const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
   const boxStyle = {
     border: "3px solid #ccc",
     borderRadius: "10px",
@@ -61,6 +61,14 @@ const Metadata = ({ duration, musicalKey, bpm, genre }) => {
           <LibraryMusicIcon fontSize="small" style={iconStyle} />
           <Typography variant="caption" color="textSecondary">
             {genre}
+          </Typography>
+        </div>
+      </Grid>
+      <Grid item xs={3}>
+        <div className="metadata-box" style={boxStyle}>
+          <LibraryMusicIcon fontSize="small" style={iconStyle} />
+          <Typography variant="caption" color="textSecondary">
+            {instrument}
           </Typography>
         </div>
       </Grid>

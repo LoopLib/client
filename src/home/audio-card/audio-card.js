@@ -296,6 +296,7 @@ const AudioCard = ({
               musicalKey={file.musicalKey}
               bpm={file.bpm}
               genre={file.genre}
+              instrument={file.instrument}
             />
 
             {showExtras && (
