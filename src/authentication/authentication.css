@@ -23,6 +23,7 @@ body {
     text-align: center;
     background: inherit;
     border-radius: 30px;
+    border: 5px solid rgba(0, 0, 0, 0.23);
     background-color: #ffffff;
 
 }
