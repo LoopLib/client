@@ -95,6 +95,7 @@ const FileUpload = () => {
             );
             setBpm(response.data.bpm);
             setKey(response.data.key);
+            setInstrument(response.data.instrument);
             setFingerprint(response.data.fingerprint);
 
             // Check for duplicate fingerprint right after analysis

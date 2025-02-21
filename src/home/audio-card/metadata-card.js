@@ -1,10 +1,10 @@
 import React from "react";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Box } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import KeyIcon from "@mui/icons-material/Key";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
-
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
 
 const formatMusicalKey = (key) => {
   if (!key) return key;
@@ -19,62 +19,47 @@ const formatMusicalKey = (key) => {
 
 const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
   const boxStyle = {
-    border: "3px solid #ccc",
+    border: "2px solid #ccc",
     borderRadius: "10px",
     padding: "4px 10px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    whiteSpace: "nowrap"
+    minWidth: 0, // Prevents text overflow
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    flex: "1 1 auto", // Ensures flexible width for responsiveness
   };
 
-  const iconStyle = { marginRight: "4px", fontSize: "1.5rem" };
+  const iconStyle = { marginRight: "6px", fontSize: "1.5rem" };
 
   return (
-    <Grid container spacing={1} style={{ marginTop: "4px" }}>
-      <Grid item xs={3}>
-        <div className="metadata-box" style={boxStyle}>
-          <AccessTimeIcon fontSize="small" style={iconStyle} />
-          <Typography variant="caption" color="textSecondary">
-            {duration}
-          </Typography>
-        </div>
-      </Grid>
-      <Grid item xs={3}>
-        <div className="metadata-box" style={boxStyle}>
-          <KeyIcon fontSize="small" style={iconStyle} />
-          <Typography variant="caption" color="textSecondary">
-            {formatMusicalKey(musicalKey)}
-          </Typography>
-        </div>
-      </Grid>
-      <Grid item xs={3}>
-        <div className="metadata-box" style={boxStyle}>
-          <EqualizerIcon fontSize="small" style={iconStyle} />
-          <Typography variant="caption" color="textSecondary">
-            {bpm} BPM
-          </Typography>
-        </div>
-      </Grid>
-      <Grid item xs={3}>
-        <div className="metadata-box" style={boxStyle}>
-          <LibraryMusicIcon fontSize="small" style={iconStyle} />
-          <Typography variant="caption" color="textSecondary">
-            {genre}
-          </Typography>
-        </div>
-      </Grid>
-      <Grid item xs={3}>
-        <div className="metadata-box" style={boxStyle}>
-          <LibraryMusicIcon fontSize="small" style={iconStyle} />
-          <Typography variant="caption" color="textSecondary">
-            {instrument}
-          </Typography>
-        </div>
-      </Grid>
+    <Grid
+      container
+      spacing={1}
+      sx={{
+        display: "flex",
+        flexWrap: "wrap", // Ensures wrapping if necessary
+        justifyContent: "space-between",
+      }}
+    >
+      {[{ icon: <AccessTimeIcon />, text: duration },
+        { icon: <KeyIcon />, text: formatMusicalKey(musicalKey) },
+        { icon: <EqualizerIcon />, text: `${bpm} BPM` },
+        { icon: <LibraryMusicIcon />, text: genre },
+        { icon: <MusicNoteIcon />, text: instrument }]
+        .map((item, index) => (
+          <Grid item xs={12 / 5} key={index} sx={{ display: "flex", flexGrow: 1, minWidth: 0 }}>
+            <Box sx={boxStyle}>
+              {React.cloneElement(item.icon, { fontSize: "small", style: iconStyle })}
+              <Typography variant="caption" color="textSecondary" noWrap>
+                {item.text}
+              </Typography>
+            </Box>
+          </Grid>
+        ))}
     </Grid>
   );
 };
-
 
 export default Metadata;
