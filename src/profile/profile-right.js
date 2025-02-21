@@ -126,13 +126,24 @@ const ProfileRightSection = ({
                 }}
               >
                 <TextField
-                  label="Name"
+                  label="First Name"
                   type="text"
                   variant="outlined"
                   size="small"
-                  value={profileData.displayName}
+                  value={profileData.name}
                   onChange={(e) =>
-                    handleInputChange("displayName", e.target.value)
+                    handleInputChange("name", e.target.value)
+                  }
+                  fullWidth
+                />
+                 <TextField
+                  label="Second Name"
+                  type="text"
+                  variant="outlined"
+                  size="small"
+                  value={profileData.secondName}
+                  onChange={(e) =>
+                    handleInputChange("secondName", e.target.value)
                   }
                   fullWidth
                 />

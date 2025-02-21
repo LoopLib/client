@@ -14,6 +14,7 @@ const Register = () => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState(""); 
     const [errorMessage, setErrorMessage] = useState(""); // Error state
     const navigate = useNavigate();
 
@@ -30,6 +31,12 @@ const Register = () => {
         // Basic validation
         if (!username || !email || !password) {
             setErrorMessage("All fields are required.");
+            return;
+        }
+
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            setErrorMessage("Passwords do not match.");
             return;
         }
 
@@ -103,7 +110,7 @@ const Register = () => {
                 </Typography>
             </Paper>
             <TextField
-                label="Name"
+                label="First Name"
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -144,6 +151,16 @@ const Register = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
+             <TextField
+                label="Confirm Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+
 
             <Button
                 variant="contained"
