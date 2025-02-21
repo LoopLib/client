@@ -23,6 +23,7 @@ const SearchBar = ({ onSearchChange, instrumentOptions }) => {
 
   const [timeRange, setTimeRange] = useState("");
   const [sortOption, setSortOption] = useState("");
+
   const handleGenreChange = (event) => setGenre(event.target.value);
   const handleModeChange = (event) => {
     setMode(event.target.value);
@@ -34,6 +35,23 @@ const SearchBar = ({ onSearchChange, instrumentOptions }) => {
     setBpmRange((prevRange) => ({ ...prevRange, [name]: value }));
   };
 
+  const handleInstrumentChange = (event) => {
+    const newInstrument = event.target.value;
+    setInstrument(newInstrument);
+    onSearchChange({
+      query,
+      genre,
+      mode,
+      key,
+      bpmRange,
+      timeRange,
+      sortOption,
+      instrument: newInstrument,
+    });
+  };
+
+
+
   const handleSearchClick = () => {
     onSearchChange({
       query,
@@ -43,7 +61,7 @@ const SearchBar = ({ onSearchChange, instrumentOptions }) => {
       bpmRange,
       timeRange,
       sortOption,
-      instrument, // added instrument
+      instrument,
     });
     console.log("Filters Applied:", { query, genre, mode, key, bpmRange, timeRange, sortOption, instrument });
   };
@@ -136,8 +154,10 @@ const SearchBar = ({ onSearchChange, instrumentOptions }) => {
               </FormControl>
             )}
 
-             {/* BPM Range */}
-             <Box className="filter-item bpm-range-container" sx={{ display: "flex", gap: 1, alignItems: "center", flex: 1 }}>
+
+
+            {/* BPM Range */}
+            <Box className="filter-item bpm-range-container" sx={{ display: "flex", gap: 1, alignItems: "center", flex: 1 }}>
               <TextField
                 type="number"
                 label="Min BPM"
@@ -176,10 +196,32 @@ const SearchBar = ({ onSearchChange, instrumentOptions }) => {
               alignItems: "center",
             }}
           >
-           
+
           </Box>
-          {/* Row 4 - Sort Options */}        
+          {/* Row 4 - Sort Options */}
           <Box sx={{ display: "flex", flex: "1 1 100%", gap: 2, justifyContent: "space-between" }}>
+
+
+            <FormControl className="filter-item" sx={{ flex: 1 }}>
+              <InputLabel id="instrument-label">Instrument</InputLabel>
+              <Select
+                labelId="instrument-label"
+                value={instrument}
+                onChange={(e) => setInstrument(e.target.value)}
+                label="Instrument"
+              >
+                <MenuItem value="">-</MenuItem>
+                {instrumentOptions &&
+                  instrumentOptions.map((inst) => (
+                    <MenuItem key={inst} value={inst}>
+                      {inst}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+
+
+
             <FormControl className="filter-item" sx={{ flex: 1 }}>
               <InputLabel>Sort By</InputLabel>
               <Select
@@ -192,6 +234,7 @@ const SearchBar = ({ onSearchChange, instrumentOptions }) => {
                 <MenuItem value="downloads">Downloads</MenuItem>
               </Select>
             </FormControl>
+
           </Box>
 
           {/* Apply Filters Button */}

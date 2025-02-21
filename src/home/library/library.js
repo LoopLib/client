@@ -25,9 +25,12 @@ const Library = ({ ownerUid = null }) => {
   useEffect(() => {
     fetchAudioFilesFromAWS();
     return () => {
-      Object.values(waveSurferRefs.current).forEach((waveSurfer) => waveSurfer.destroy());
+      Object.values(waveSurferRefs.current)
+        .filter(waveSurfer => waveSurfer && typeof waveSurfer.destroy === "function")
+        .forEach(waveSurfer => waveSurfer.destroy());
     };
   }, [ownerUid]);
+  
 
   const fetchAudioFilesFromAWS = async () => {
     setLoading(true);
@@ -113,7 +116,7 @@ const Library = ({ ownerUid = null }) => {
   };
 
   const handleSearchChange = (filters) => {
-    const { query, genre, mode, key, bpmRange, timeRange, sortOption } = filters;
+    const { query, genre, mode, key, bpmRange, timeRange, sortOption, instrument } = filters;
     const lowerCaseQuery = query.toLowerCase();
     const filtered = audioFiles.filter((file) => {
       const matchesQuery =
@@ -121,10 +124,10 @@ const Library = ({ ownerUid = null }) => {
         file.name.toLowerCase().includes(lowerCaseQuery) ||
         (file.genre && file.genre.toLowerCase().includes(lowerCaseQuery)) ||
         (file.musicalKey && file.musicalKey.toLowerCase().includes(lowerCaseQuery));
-
+  
       const matchesGenre =
         genre === "" || (file.genre && file.genre.toLowerCase() === genre.toLowerCase());
-
+  
       let matchesKey = true;
       if (mode && key) {
         const storedMode = mode === "minor" ? "min" : mode === "major" ? "maj" : mode;
@@ -137,7 +140,7 @@ const Library = ({ ownerUid = null }) => {
           file.musicalKey &&
           file.musicalKey.toLowerCase().endsWith(storedMode);
       }
-
+  
       let matchesBpm = true;
       if (bpmRange.min || bpmRange.max) {
         const fileBpm = Number(file.bpm);
@@ -152,7 +155,7 @@ const Library = ({ ownerUid = null }) => {
           }
         }
       }
-
+  
       let matchesTime = true;
       if (timeRange) {
         if (!file.uploadTimestamp) {
@@ -187,18 +190,25 @@ const Library = ({ ownerUid = null }) => {
           matchesTime = timeDiff <= thresholdMs;
         }
       }
-
-      return matchesQuery && matchesGenre && matchesKey && matchesBpm && matchesTime;
+  
+      let matchesInstrument = true;
+      if (instrument) {
+        matchesInstrument =
+          file.instrument &&
+          file.instrument.toLowerCase() === instrument.toLowerCase();
+      }
+  
+      return matchesQuery && matchesGenre && matchesKey && matchesBpm && matchesTime && matchesInstrument;
     });
-
-    // Sort based on the chosen option (likes or downloads)
+  
     if (sortOption) {
       filtered.sort((a, b) => (b[sortOption] || 0) - (a[sortOption] || 0));
     }
-
+  
     setFilteredFiles(filtered);
     setCurrentPage(1);
   };
+  
 
   if (loading) {
     return <LoadingPage />;
@@ -207,9 +217,14 @@ const Library = ({ ownerUid = null }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filteredFiles.slice(startIndex, startIndex + itemsPerPage);
 
+  const instrumentOptions = Array.from(
+    new Set(audioFiles.map((file) => file.instrument).filter((inst) => inst && inst !== "Unknown"))
+  );
+  
+
   return (
     <Box className="all-audio-container" sx={{ width: "80%", maxWidth: "none", margin: "20px auto" }}>
-      <SearchBar onSearchChange={handleSearchChange} />
+      <SearchBar onSearchChange={handleSearchChange} instrumentOptions={instrumentOptions} />
       <List>
         {currentItems.length > 0 ? (
           currentItems.map((file, index) => (
