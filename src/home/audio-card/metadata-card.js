@@ -47,8 +47,9 @@ const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
       spacing={1}
       sx={{
         display: "flex",
-        flexWrap: "wrap", // Ensures wrapping if necessary
+        flexWrap: "wrap",
         justifyContent: "space-between",
+        mt: 0.5, 
       }}
     >
       {items.map((item, index) => (
@@ -73,6 +74,7 @@ const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
       ))}
     </Grid>
   );
+  
 };
 
 export default Metadata;
