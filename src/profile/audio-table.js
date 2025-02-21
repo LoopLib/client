@@ -20,6 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PianoIcon from "@mui/icons-material/Piano";
+import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 
 const StyledTableRow = styled(TableRow)(({ theme, striped }) => ({
   backgroundColor: striped ? theme.palette.action.hover : "inherit",
@@ -54,10 +55,13 @@ const AudioFilesTable = ({
               FILE NAME
             </TableCell>
             <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>BPM</TableCell>
+            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>KEY</TableCell>
             <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
               GENRE
             </TableCell>
-            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>KEY</TableCell>
+            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+              INSTRUMENT
+            </TableCell>
             <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
               ACTIONS
             </TableCell>
@@ -100,6 +104,16 @@ const AudioFilesTable = ({
               <TableCell>
                 <Chip
                   label={file.musicalKey}
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  icon={<LibraryMusicIcon />}
+                  sx={{ fontWeight: 500 }}
+                />
+              </TableCell>
+              <TableCell>
+                <Chip
+                  label={file.instrument}
                   variant="outlined"
                   color="primary"
                   size="small"

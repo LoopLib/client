@@ -165,6 +165,7 @@ const Profile = () => {
             url: fileUrl,
             bpm: metadata?.bpm || "Unknown",
             genre: metadata?.genre || "Unknown",
+            instrument: metadata?.instrument || "Unknown",
             musicalKey: metadata?.key || "Unknown",
           };
         })

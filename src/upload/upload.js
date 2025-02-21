@@ -22,7 +22,7 @@ import AudioCard from "../home/audio-card/audio-card";
 import { getAuth } from "firebase/auth";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import BrowseFiles from "./browse-files/browse-files";
+import BrowseFiles from "./browse-files";
 import { useNavigate } from 'react-router-dom';
 import Snackbar from "@mui/material/Snackbar";
 
