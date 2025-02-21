@@ -13,11 +13,12 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import "./searchbar.css";
 
-const SearchBar = ({ onSearchChange }) => {
+const SearchBar = ({ onSearchChange, instrumentOptions }) => {
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState("");
   const [mode, setMode] = useState("");
   const [key, setKey] = useState("");
+  const [instrument, setInstrument] = useState("");
   const [bpmRange, setBpmRange] = useState({ min: "", max: "" });
 
   const [timeRange, setTimeRange] = useState("");
@@ -34,11 +35,19 @@ const SearchBar = ({ onSearchChange }) => {
   };
 
   const handleSearchClick = () => {
-    onSearchChange({ query, genre, mode, key, bpmRange, timeRange });
-    console.log("Filters Applied:", { query, genre, mode, key, bpmRange, timeRange });
-    onSearchChange({ query, genre, mode, key, bpmRange, timeRange, sortOption });
-    console.log("Filters Applied:", { query, genre, mode, key, bpmRange, timeRange, sortOption });
+    onSearchChange({
+      query,
+      genre,
+      mode,
+      key,
+      bpmRange,
+      timeRange,
+      sortOption,
+      instrument, // added instrument
+    });
+    console.log("Filters Applied:", { query, genre, mode, key, bpmRange, timeRange, sortOption, instrument });
   };
+
 
   // Define key options
   const keyOptions = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
