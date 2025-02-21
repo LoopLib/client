@@ -25,7 +25,8 @@
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1",
     "wavesurfer.js": "^7.8.9",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zxcvbn": "^4.4.2"
   },
   "scripts": {
     "start": "react-scripts start",
