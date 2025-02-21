@@ -73,6 +73,7 @@ const Library = ({ ownerUid = null }) => {
             duration: metadata.duration || "Unknown",
             bpm: metadata.bpm || "Unknown",
             musicalKey: metadata.key || "Unknown",
+            instrument: metadata.instrument || "Unknown",
             genre: metadata.genre || "Unknown",
             ownerUid: uid,
             uploadTimestamp: metadata.uploadTimestamp || null,

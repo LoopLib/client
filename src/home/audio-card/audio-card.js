@@ -290,7 +290,6 @@ const AudioCard = ({
               {showStats && <Stats likes={likes} downloads={downloads} />}
             </div>
 
-            {/* Pass Duration to Metadata */}
             <Metadata
               duration={duration}
               musicalKey={file.musicalKey}

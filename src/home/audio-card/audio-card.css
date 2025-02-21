@@ -3,7 +3,6 @@
   max-width: 1200px;
   margin: 16px 0;
   box-sizing: border-box;
-  background: #fff;
   border: 5px solid #1976D2;
   border-radius: 16px;
   position: relative;
@@ -20,7 +19,7 @@
   left: -8px;
   right: -8px;
   bottom: -8px;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.03);
   border: 8px solid rgba(25, 118, 210, 0.5);
   border-radius: 24px;
   z-index: -1;

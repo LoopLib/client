@@ -38,7 +38,7 @@ const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
     { icon: <KeyIcon />, text: formatMusicalKey(musicalKey) },
     { icon: <EqualizerIcon />, text: `${bpm} BPM` },
     { icon: <LibraryMusicIcon />, text: genre },
-    { icon: <MusicNoteIcon />, text: instrument }
+    { icon: <MusicNoteIcon />, text: instrument}
   ];
 
   return (
