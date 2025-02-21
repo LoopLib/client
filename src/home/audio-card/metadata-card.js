@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Typography, Box } from "@mui/material";
+import { Grid, Typography, Box, Tooltip } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import KeyIcon from "@mui/icons-material/Key";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
@@ -33,6 +33,14 @@ const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
 
   const iconStyle = { marginRight: "6px", fontSize: "1.5rem" };
 
+  const items = [
+    { icon: <AccessTimeIcon />, text: duration },
+    { icon: <KeyIcon />, text: formatMusicalKey(musicalKey) },
+    { icon: <EqualizerIcon />, text: `${bpm} BPM` },
+    { icon: <LibraryMusicIcon />, text: genre },
+    { icon: <MusicNoteIcon />, text: instrument }
+  ];
+
   return (
     <Grid
       container
@@ -43,21 +51,26 @@ const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
         justifyContent: "space-between",
       }}
     >
-      {[{ icon: <AccessTimeIcon />, text: duration },
-        { icon: <KeyIcon />, text: formatMusicalKey(musicalKey) },
-        { icon: <EqualizerIcon />, text: `${bpm} BPM` },
-        { icon: <LibraryMusicIcon />, text: genre },
-        { icon: <MusicNoteIcon />, text: instrument }]
-        .map((item, index) => (
-          <Grid item xs={12 / 5} key={index} sx={{ display: "flex", flexGrow: 1, minWidth: 0 }}>
+      {items.map((item, index) => (
+        <Grid
+          item
+          xs={12 / 5}
+          key={index}
+          sx={{ display: "flex", flexGrow: 1, minWidth: 0 }}
+        >
+          <Tooltip title={item.text} arrow>
             <Box sx={boxStyle}>
-              {React.cloneElement(item.icon, { fontSize: "small", style: iconStyle })}
+              {React.cloneElement(item.icon, {
+                fontSize: "small",
+                style: iconStyle,
+              })}
               <Typography variant="caption" color="textSecondary" noWrap>
                 {item.text}
               </Typography>
             </Box>
-          </Grid>
-        ))}
+          </Tooltip>
+        </Grid>
+      ))}
     </Grid>
   );
 };
