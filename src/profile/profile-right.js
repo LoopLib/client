@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -10,12 +10,14 @@ import {
   Stack,
   IconButton,
   Tooltip,
+  Snackbar,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
+import MuiAlert from '@mui/material/Alert';
 import { styled } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 
@@ -58,7 +60,6 @@ const ProfileCard = styled(Card)(({ theme }) => ({
   transition: "box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out",
   "&:hover": {
     boxShadow: "0 12px 24px rgba(0, 0, 0, 0.2)",
-    transform: "translateY(-4px)",
   },
 }));
 
@@ -79,6 +80,30 @@ const ProfileRightSection = ({
 }) => {
   const theme = useTheme();
 
+  const [openNotification, setOpenNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [severity, setSeverity] = useState("success");
+
+  const handleNotificationOpen = (message, type = "success") => {
+    setNotificationMessage(message);
+    setSeverity(type);
+    setOpenNotification(true);
+  };
+
+  const handleNotificationClose = () => {
+    setOpenNotification(false);
+  };
+
+  const handleProfileSave = () => {
+    saveProfileData();
+    handleNotificationOpen("Profile details updated successfully!");
+  };
+
+  const handlePasswordSave = () => {
+    handlePasswordUpdate();
+    handleNotificationOpen("Password updated successfully!");
+  };
+
   return (
     <RightSectionCard>
       <CardContent>
@@ -91,38 +116,41 @@ const ProfileRightSection = ({
                   <Stack spacing={3}>
                     {/* Username with Larger Font and Icon */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Typography variant="h5" fontWeight="bold" color="primary.main" sx={{ fontSize: "1.5rem", lineHeight: "1.2" }}>
-                        {profileData?.username}
-                      </Typography>
                       <Tooltip title="Username" arrow>
                         <IconButton size="small" sx={{ color: "primary.main", "&:hover": { backgroundColor: "rgba(25, 118, 210, 0.1)" } }}>
                           <AccountCircleIcon />
                         </IconButton>
                       </Tooltip>
+                      <Typography variant="h5" fontWeight="bold" color="primary.main" sx={{ fontSize: "1.5rem", lineHeight: "1.2" }}>
+                        {profileData?.username}
+                      </Typography>
+
                     </Box>
 
                     {/* Email with an Icon */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Typography variant="body1" color="text.secondary" sx={{ fontSize: "1rem" }}>
-                        {profileData?.email}
-                      </Typography>
                       <Tooltip title="Email" arrow>
                         <IconButton size="small" sx={{ color: "text.secondary", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.1)" } }}>
                           <EmailIcon />
                         </IconButton>
                       </Tooltip>
+                      <Typography variant="body1" color="text.secondary" sx={{ fontSize: "1rem" }}>
+                        {profileData?.email}
+                      </Typography>
+
                     </Box>
 
                     {/* Full Name with smaller text and icon */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.9rem", fontStyle: "italic" }}>
-                        {profileData?.name} {profileData?.secondName}
-                      </Typography>
                       <Tooltip title="Full Name" arrow>
                         <IconButton size="small" sx={{ color: "text.secondary", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.1)" } }}>
                           <PersonIcon />
                         </IconButton>
                       </Tooltip>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.9rem", fontStyle: "italic" }}>
+                        {profileData?.name} {profileData?.secondName}
+                      </Typography>
+
                     </Box>
                   </Stack>
                 </CardContent>
@@ -203,7 +231,7 @@ const ProfileRightSection = ({
                   variant="contained"
                   color="primary"
                   startIcon={<SaveIcon />}
-                  onClick={saveProfileData}
+                  onClick={handleProfileSave}
                   sx={{ mt: 2, borderRadius: "20px", padding: "10px 20px" }}
                 >
                   Save
@@ -256,7 +284,7 @@ const ProfileRightSection = ({
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={handlePasswordUpdate}
+                    onClick={handlePasswordSave}
                     sx={{
                       padding: "10px 20px",
                       borderRadius: "20px",
@@ -275,6 +303,22 @@ const ProfileRightSection = ({
           </Typography>
         )}
       </CardContent>
+
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={openNotification}
+        autoHideDuration={4000}
+        onClose={handleNotificationClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MuiAlert
+          onClose={handleNotificationClose}
+          severity={severity}
+          sx={{ width: "100%" }}
+        >
+          {notificationMessage}
+        </MuiAlert>
+      </Snackbar>
     </RightSectionCard>
   );
 };

@@ -357,7 +357,6 @@ const Profile = () => {
       alert("Audio file, metadata, and stats deleted successfully!");
     } catch (error) {
       console.error("Error deleting file:", error.message);
-      alert("Failed to delete the file.");
     } finally {
       setOperationInProgress(false);
     }
@@ -397,7 +396,6 @@ const Profile = () => {
 
         setUser({ ...user, ...profileData });
         setEditMode(false);
-        alert("Profile updated successfully!");
       }
     } catch (error) {
       console.error("Error saving profile data:", error.message);
@@ -440,7 +438,6 @@ const Profile = () => {
       }
 
       await updatePassword(currentUser, newPassword);
-      alert("Password updated successfully!");
       setNewPassword("");
       setConfirmNewPassword("");
       setShowPasswordFields(false);
