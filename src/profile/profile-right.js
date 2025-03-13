@@ -83,14 +83,14 @@ const ProfileRightSection = ({
               <ProfileCard>
                 <CardContent>
                   <Stack spacing={2}>
-                    <Typography variant="h4" fontWeight="bold">
+                    <Typography variant="p" fontWeight="bold">
                       {profileData?.username}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="p" color="text.secondary">
                       {profileData?.email}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
-                      {profileData?.name} {profileData?.secondName} 
+                    <Typography variant="p" color="text.secondary">
+                      {profileData?.name} {profileData?.secondName}
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -123,6 +123,7 @@ const ProfileRightSection = ({
                   gap: 3,
                   maxWidth: 400,
                   margin: "auto",
+                  fontFamily: "'Roboto', sans-serif", // Change this to your desired font
                 }}
               >
                 <TextField
@@ -131,20 +132,16 @@ const ProfileRightSection = ({
                   variant="outlined"
                   size="small"
                   value={profileData.name}
-                  onChange={(e) =>
-                    handleInputChange("name", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                   fullWidth
                 />
-                 <TextField
+                <TextField
                   label="Second Name"
                   type="text"
                   variant="outlined"
                   size="small"
                   value={profileData.secondName}
-                  onChange={(e) =>
-                    handleInputChange("secondName", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("secondName", e.target.value)}
                   fullWidth
                 />
                 <TextField
@@ -162,9 +159,7 @@ const ProfileRightSection = ({
                   variant="outlined"
                   size="small"
                   value={profileData.username}
-                  onChange={(e) =>
-                    handleInputChange("username", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("username", e.target.value)}
                   fullWidth
                 />
                 <Button
@@ -177,6 +172,7 @@ const ProfileRightSection = ({
                   Save
                 </Button>
               </Box>
+
             )}
             {/* Password Update Section */}
             <Box mt={5} textAlign="center">

@@ -33,12 +33,17 @@ const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
 
   const iconStyle = { marginRight: "6px", fontSize: "1.5rem" };
 
+  // If instrument is an array, join its values by commas; otherwise, use it directly.
+  const instrumentDisplay = Array.isArray(instrument)
+    ? instrument.join(", ")
+    : instrument;
+
   const items = [
     { icon: <AccessTimeIcon />, text: duration },
     { icon: <KeyIcon />, text: formatMusicalKey(musicalKey) },
     { icon: <EqualizerIcon />, text: `${bpm} BPM` },
     { icon: <LibraryMusicIcon />, text: genre },
-    { icon: <MusicNoteIcon />, text: instrument}
+    { icon: <MusicNoteIcon />, text: instrumentDisplay },
   ];
 
   return (
@@ -49,7 +54,7 @@ const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "space-between",
-        mt: 0.5, 
+        mt: 0.5,
       }}
     >
       {items.map((item, index) => (
@@ -74,7 +79,6 @@ const Metadata = ({ duration, musicalKey, bpm, genre, instrument }) => {
       ))}
     </Grid>
   );
-  
 };
 
 export default Metadata;

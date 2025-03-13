@@ -24,6 +24,8 @@ import ProfileRightSection from "./profile-right";
 import AudioFilesTable from "./audio-table";
 import { fetchLikedAudioFiles } from "./fetchLikedAudioFiles";
 import LikedAudioCarousel from "./audio-carousel";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
 import Statistics from "./statistics";
 import "./profile.css";
 
@@ -55,7 +57,7 @@ const Profile = () => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-
+  const [showRightSection, setShowRightSection] = useState(false);
   const [showLikedAudio, setShowLikedAudio] = useState(false);
   const [likedAudioFiles, setLikedAudioFiles] = useState([]);
   // For error messages:
@@ -480,7 +482,7 @@ const Profile = () => {
       margin: "20px auto",
     }}
   >
-    <Container>
+ <Container>
   <Box sx={{ flex: 1 }}>
     <ProfileLeftSection
       profilePictureUrl={profilePictureUrl}
@@ -490,7 +492,22 @@ const Profile = () => {
       handleProfilePictureUpload={handleProfilePictureUpload}
     />
   </Box>
-  <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+  <Box
+    sx={{
+      flex: 1,
+      position: "relative",
+      display: "flex",
+      flexDirection: "column",
+      gap: 2,
+    }}
+  >
+    <IconButton
+      onClick={() => setEditMode(!editMode)}
+      sx={{ position: "absolute", top: 10, right: 10 }}
+      aria-label="Toggle Edit Mode"
+    >
+      <EditIcon />
+    </IconButton>
     <ProfileRightSection
       user={user}
       editMode={editMode}
@@ -508,7 +525,6 @@ const Profile = () => {
     />
   </Box>
 </Container>
-
       <Box sx={{ mt: 4 }}>
       <Statistics audioFiles={audioFiles} audioFilesCount={audioFiles.length} />
         </Box>
