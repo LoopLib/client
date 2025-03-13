@@ -13,6 +13,9 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import EmailIcon from '@mui/icons-material/Email';
+import PersonIcon from '@mui/icons-material/Person';
 import { styled } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 
@@ -85,18 +88,45 @@ const ProfileRightSection = ({
             {!editMode ? (
               <ProfileCard>
                 <CardContent>
-                  <Stack spacing={2}>
-                    <Typography variant="h6" fontWeight="bold" color="primary.main">
-                      {profileData?.username}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {profileData?.email}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {profileData?.name} {profileData?.secondName}
-                    </Typography>
+                  <Stack spacing={3}>
+                    {/* Username with Larger Font and Icon */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography variant="h5" fontWeight="bold" color="primary.main" sx={{ fontSize: "1.5rem", lineHeight: "1.2" }}>
+                        {profileData?.username}
+                      </Typography>
+                      <Tooltip title="Username" arrow>
+                        <IconButton size="small" sx={{ color: "primary.main", "&:hover": { backgroundColor: "rgba(25, 118, 210, 0.1)" } }}>
+                          <AccountCircleIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+
+                    {/* Email with an Icon */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography variant="body1" color="text.secondary" sx={{ fontSize: "1rem" }}>
+                        {profileData?.email}
+                      </Typography>
+                      <Tooltip title="Email" arrow>
+                        <IconButton size="small" sx={{ color: "text.secondary", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.1)" } }}>
+                          <EmailIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+
+                    {/* Full Name with smaller text and icon */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.9rem", fontStyle: "italic" }}>
+                        {profileData?.name} {profileData?.secondName}
+                      </Typography>
+                      <Tooltip title="Full Name" arrow>
+                        <IconButton size="small" sx={{ color: "text.secondary", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.1)" } }}>
+                          <PersonIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </Stack>
                 </CardContent>
+
                 <CardActions sx={{ justifyContent: "flex-end", p: 2 }}>
                   <Tooltip title="Edit Profile">
                     <IconButton
@@ -126,7 +156,7 @@ const ProfileRightSection = ({
                   gap: 3,
                   maxWidth: 400,
                   margin: "auto",
-                  fontFamily: "'Roboto', sans-serif", 
+                  fontFamily: "'Roboto', sans-serif",
                 }}
               >
                 <TextField

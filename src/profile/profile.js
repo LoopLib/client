@@ -526,9 +526,6 @@ const Profile = () => {
   </Box>
 </Container>
       <Box sx={{ mt: 4 }}>
-      <Statistics audioFiles={audioFiles} audioFilesCount={audioFiles.length} />
-        </Box>
-
       {errorMessage && (
         <Alert
           severity="error"
@@ -539,6 +536,10 @@ const Profile = () => {
           {errorMessage}
         </Alert>
       )}
+      <Statistics audioFiles={audioFiles} audioFilesCount={audioFiles.length} />
+        </Box>
+
+      
 
       <Box>
         <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />
