@@ -14,6 +14,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { styled } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 
 const RightSectionCard = styled(Card)(({ theme }) => ({
   width: "100%",
@@ -73,6 +74,8 @@ const ProfileRightSection = ({
   setConfirmNewPassword,
   handlePasswordUpdate,
 }) => {
+  const theme = useTheme();
+
   return (
     <RightSectionCard>
       <CardContent>
@@ -83,13 +86,13 @@ const ProfileRightSection = ({
               <ProfileCard>
                 <CardContent>
                   <Stack spacing={2}>
-                    <Typography variant="p" fontWeight="bold">
+                    <Typography variant="h6" fontWeight="bold" color="primary.main">
                       {profileData?.username}
                     </Typography>
-                    <Typography variant="p" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary">
                       {profileData?.email}
                     </Typography>
-                    <Typography variant="p" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary">
                       {profileData?.name} {profileData?.secondName}
                     </Typography>
                   </Stack>
@@ -123,7 +126,7 @@ const ProfileRightSection = ({
                   gap: 3,
                   maxWidth: 400,
                   margin: "auto",
-                  fontFamily: "'Roboto', sans-serif", // Change this to your desired font
+                  fontFamily: "'Roboto', sans-serif", 
                 }}
               >
                 <TextField
@@ -134,6 +137,7 @@ const ProfileRightSection = ({
                   value={profileData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   fullWidth
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                 />
                 <TextField
                   label="Second Name"
@@ -143,6 +147,7 @@ const ProfileRightSection = ({
                   value={profileData.secondName}
                   onChange={(e) => handleInputChange("secondName", e.target.value)}
                   fullWidth
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                 />
                 <TextField
                   label="Email"
@@ -152,27 +157,28 @@ const ProfileRightSection = ({
                   value={profileData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   fullWidth
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                 />
                 <TextField
                   label="Username"
-                  type="username"
+                  type="text"
                   variant="outlined"
                   size="small"
                   value={profileData.username}
                   onChange={(e) => handleInputChange("username", e.target.value)}
                   fullWidth
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                 />
                 <Button
                   variant="contained"
                   color="primary"
                   startIcon={<SaveIcon />}
                   onClick={saveProfileData}
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 2, borderRadius: "20px", padding: "10px 20px" }}
                 >
                   Save
                 </Button>
               </Box>
-
             )}
             {/* Password Update Section */}
             <Box mt={5} textAlign="center">
@@ -180,7 +186,11 @@ const ProfileRightSection = ({
                 variant="outlined"
                 color="primary"
                 onClick={() => setShowPasswordFields(!showPasswordFields)}
-                sx={{ mb: 2 }}
+                sx={{
+                  mb: 2,
+                  borderRadius: "20px",
+                  padding: "8px 20px",
+                }}
               >
                 {showPasswordFields ? "Cancel" : "Change Password"}
               </Button>
@@ -202,6 +212,7 @@ const ProfileRightSection = ({
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     fullWidth
+                    sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                   />
                   <TextField
                     label="Confirm Password"
@@ -210,11 +221,17 @@ const ProfileRightSection = ({
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
                     fullWidth
+                    sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                   />
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={handlePasswordUpdate}
+                    sx={{
+                      padding: "10px 20px",
+                      borderRadius: "20px",
+                      mt: 2,
+                    }}
                   >
                     Update Password
                   </Button>
