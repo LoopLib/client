@@ -69,9 +69,7 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
     datasets: [{
       label: "Genre Distribution",
       data: genreData,
-      backgroundColor: [
-        "#FF6384", "#36A2EB", "#FFCE56", "#8A2BE2", "#00FA9A", "#FF4500", "#1E90FF",
-      ],
+      backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#8A2BE2", "#00FA9A", "#FF4500", "#1E90FF"],
       borderColor: "#fff",
       borderWidth: 2,
     }],
@@ -93,9 +91,29 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
     datasets: [{
       label: "Musical Key Distribution",
       data: keyData,
-      backgroundColor: [
-        "#36A2EB", "#FF6384", "#FFCE56", "#8A2BE2", "#00FA9A", "#FF4500", "#1E90FF",
-      ],
+      backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#8A2BE2", "#00FA9A", "#FF4500", "#1E90FF"],
+      borderColor: "#fff",
+      borderWidth: 2,
+    }],
+  };
+
+  // **Instrument Distribution Data**
+  const instrumentCounts = audioFiles
+    ? audioFiles.reduce((acc, file) => {
+      if (file.instrument && file.instrument !== "Unknown") {
+        acc[file.instrument] = (acc[file.instrument] || 0) + 1;
+      }
+      return acc;
+    }, {})
+    : {};
+  const instrumentLabels = Object.keys(instrumentCounts);
+  const instrumentData = Object.values(instrumentCounts);
+  const instrumentChartData = {
+    labels: instrumentLabels,
+    datasets: [{
+      label: "Instrument Distribution",
+      data: instrumentData,
+      backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#8A2BE2", "#00FA9A", "#FF4500", "#1E90FF"],
       borderColor: "#fff",
       borderWidth: 2,
     }],
@@ -126,7 +144,7 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
     <AdvancedCard>
       <CardHeader 
         title="Statistics"
-        titleTypographyProps={{ variant: "h5", fontWeight: "700", fontFamily: "Roboto, sans-serif" }}
+        titleTypographyProps={{ variant: "p", fontWeight: "700", fontFamily: "Roboto, sans-serif" }}
         sx={{
           background: "linear-gradient(135deg, #1976D2 0%, #42A5F5 100%)",
           color: "#fff",
@@ -158,22 +176,12 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
                 </Typography>
               </StatBox>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <StatBox>
-                <Typography variant="subtitle2" fontWeight="600" color="textSecondary">
-                  Unique Keys
-                </Typography>
-                <Typography variant="h6" fontWeight="700">
-                  {keyLabels.length > 0 ? keyLabels.join(", ") : "N/A"}
-                </Typography>
-              </StatBox>
-            </Grid>
           </Grid>
         </Box>
 
         {/* Charts Section */}
         <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={4}>
             <Box>
               <Typography variant="h6" textAlign="center" sx={{ mb: 2, color: theme.palette.primary.main, fontWeight: 500 }}>
                 Genre Distribution
@@ -182,14 +190,12 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
                 {genreLabels.length > 0 ? (
                   <Pie data={genreChartData} options={chartOptions} />
                 ) : (
-                  <Typography variant="body2" textAlign="center">
-                    No genre data available.
-                  </Typography>
+                  <Typography variant="body2" textAlign="center">No genre data available.</Typography>
                 )}
               </ChartContainer>
             </Box>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={4}>
             <Box>
               <Typography variant="h6" textAlign="center" sx={{ mb: 2, color: theme.palette.primary.main, fontWeight: 500 }}>
                 Musical Key Distribution
@@ -198,9 +204,21 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
                 {keyLabels.length > 0 ? (
                   <Pie data={keyChartData} options={chartOptions} />
                 ) : (
-                  <Typography variant="body2" textAlign="center">
-                    No musical key data available.
-                  </Typography>
+                  <Typography variant="body2" textAlign="center">No musical key data available.</Typography>
+                )}
+              </ChartContainer>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Box>
+              <Typography variant="h6" textAlign="center" sx={{ mb: 2, color: theme.palette.primary.main, fontWeight: 500 }}>
+                Instrument Distribution
+              </Typography>
+              <ChartContainer>
+                {instrumentLabels.length > 0 ? (
+                  <Pie data={instrumentChartData} options={chartOptions} />
+                ) : (
+                  <Typography variant="body2" textAlign="center">No instrument data available.</Typography>
                 )}
               </ChartContainer>
             </Box>
