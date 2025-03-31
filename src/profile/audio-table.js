@@ -94,7 +94,7 @@ const AudioFilesTable = ({
               </TableCell>
               <TableCell>
                 <Chip
-                  label={file.genre}
+                  label={file.musicalKey}
                   color="secondary"
                   size="small"
                   icon={<MusicNoteIcon />}
@@ -103,7 +103,7 @@ const AudioFilesTable = ({
               </TableCell>
               <TableCell>
                 <Chip
-                  label={file.musicalKey}
+                  label={file.genre}
                   variant="outlined"
                   color="primary"
                   size="small"
