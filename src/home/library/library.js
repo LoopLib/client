@@ -221,10 +221,14 @@ const Library = ({ ownerUid = null }) => {
     new Set(audioFiles.map((file) => file.instrument).filter((inst) => inst && inst !== "Unknown"))
   );
   
+  const visibleGenres = Array.from(
+    new Set(filteredFiles.map((file) => file.genre).filter((genre) => genre && genre !== "Unknown"))
+  );
+  
 
   return (
     <Box className="all-audio-container" sx={{ width: "80%", maxWidth: "none", margin: "20px auto" }}>
-      <SearchBar onSearchChange={handleSearchChange} instrumentOptions={instrumentOptions} />
+      <SearchBar onSearchChange={handleSearchChange} instrumentOptions={instrumentOptions}  genreOptions={visibleGenres}/>
       <List>
         {currentItems.length > 0 ? (
           currentItems.map((file, index) => (

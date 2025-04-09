@@ -13,7 +13,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import "./searchbar.css";
 
-const SearchBar = ({ onSearchChange, instrumentOptions }) => {
+const SearchBar = ({ onSearchChange, instrumentOptions, genreOptions }) => {
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState("");
   const [mode, setMode] = useState("");
@@ -49,8 +49,6 @@ const SearchBar = ({ onSearchChange, instrumentOptions }) => {
       instrument: newInstrument,
     });
   };
-
-
 
   const handleSearchClick = () => {
     onSearchChange({
@@ -118,11 +116,13 @@ const SearchBar = ({ onSearchChange, instrumentOptions }) => {
                 label="Genre"
                 className="filter-select">
                 <MenuItem value="">-</MenuItem>
-                <MenuItem value="pop">Pop</MenuItem>
-                <MenuItem value="rock">Rock</MenuItem>
-                <MenuItem value="hip-hop">Hip-Hop</MenuItem>
-                <MenuItem value="electronic">Electronic</MenuItem>
-                <MenuItem value="jazz">Jazz</MenuItem>
+                {genreOptions &&
+                  genreOptions.map((g) => (
+                    <MenuItem key={g} value={g}>
+                      {g}
+                    </MenuItem>
+                  ))}
+
               </Select>
             </FormControl>
           </Box>
