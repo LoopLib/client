@@ -31,6 +31,7 @@ const FileUpload = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [bpm, setBpm] = useState(null);
     const [key, setKey] = useState(null);
+    const [genre, setGenre] = useState(null);
     const [instrument, setInstrument] = useState(null);
     const [fingerprint, setFingerprint] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -49,6 +50,7 @@ const FileUpload = () => {
             setSelectedFile(newFile);
             setBpm(null);
             setKey(null);
+            setGenre(null);
             setInstrument(null);
             setFingerprint(null);
             setFileName("");
@@ -64,6 +66,7 @@ const FileUpload = () => {
             setSelectedFile(newFile);
             setBpm(null);
             setKey(null);
+            setGenre(null);
             setFingerprint(null);
             setFileName("");
         }
@@ -93,6 +96,7 @@ const FileUpload = () => {
             );
             setBpm(response.data.bpm);
             setKey(response.data.key);
+            setGenre(response.data.genre);
             setInstrument(response.data.instrument);
             setFingerprint(response.data.fingerprint);
 
@@ -158,6 +162,7 @@ const FileUpload = () => {
                 lastModified: selectedFile.lastModified,
                 bpm: bpm || null,
                 key: key || null,
+                genre: genre || null,
                 instrument: instrument || null,
                 fingerprint: fingerprint || null,
                 uploadTimestamp: new Date().toISOString(),
@@ -270,7 +275,7 @@ const FileUpload = () => {
                         musicalKey: key ? String(key) : "N/A",
                         bpm: bpm || "N/A",
                         instrument: instrument || "N/A",
-                        genre: "N/A",
+                        genre: genre || "N/A",
                         publisher: "You",
                         likes: 0,
                         downloads: 0,
@@ -327,7 +332,6 @@ const FileUpload = () => {
                     </Button>
                 </Box>
             )}
-
 
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>Enter File Name</DialogTitle>

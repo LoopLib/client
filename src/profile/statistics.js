@@ -21,14 +21,15 @@ const AdvancedCard = styled(Card)(({ theme }) => ({
   border: "none",
 }));
 
-// Container for each pie chart with responsive height
+// Container for each pie chart with fixed height
 const ChartContainer = styled(Box)(({ theme }) => ({
-  height: 260,
+  height: 300, // Set a consistent height
   position: "relative",
-  [theme.breakpoints.down("md")]: {
-    height: 280,
-  },
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
 }));
+
 
 // Styled box for each summary statistic
 const StatBox = styled(Paper)(({ theme }) => ({
@@ -55,13 +56,14 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
 
   // Genre Distribution Data
   const genreCounts = audioFiles
-    ? audioFiles.reduce((acc, file) => {
+  ? audioFiles.reduce((acc, file) => {
       if (file.genre && file.genre !== "Unknown") {
         acc[file.genre] = (acc[file.genre] || 0) + 1;
       }
       return acc;
     }, {})
-    : {};
+  : {};
+
   const genreLabels = Object.keys(genreCounts);
   const genreData = Object.values(genreCounts);
   const genreChartData = {
@@ -119,26 +121,30 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
     }],
   };
 
-  // Chart options with smooth animations and theme-based styling
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-      animateScale: true,
-      animateRotate: true,
-    },
-    plugins: {
-      legend: {
-        labels: {
-          color: theme.palette.text.primary,
-          font: {
-            size: 13,
-            family: "Roboto, sans-serif",
-          },
+// Chart options with consistent layout
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: {
+    animateScale: true,
+    animateRotate: true,
+  },
+  plugins: {
+    legend: {
+      position: "bottom", // Keep legend at the bottom
+      labels: {
+        color: theme.palette.text.primary,
+        font: {
+          size: 13,
+          family: "Roboto, sans-serif",
         },
+        boxWidth: 15, // Smaller boxes to keep the layout consistent
+        padding: 10,
       },
     },
-  };
+  },
+};
+
 
   return (
     <AdvancedCard>
@@ -184,7 +190,7 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
           <Grid item xs={12} md={4}>
             <Box>
               <Typography variant="h6" textAlign="center" sx={{ mb: 2, color: theme.palette.primary.main, fontWeight: 500 }}>
-                Genre Distribution
+                Genre
               </Typography>
               <ChartContainer>
                 {genreLabels.length > 0 ? (
@@ -198,7 +204,7 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
           <Grid item xs={12} md={4}>
             <Box>
               <Typography variant="h6" textAlign="center" sx={{ mb: 2, color: theme.palette.primary.main, fontWeight: 500 }}>
-                Musical Key Distribution
+                Key
               </Typography>
               <ChartContainer>
                 {keyLabels.length > 0 ? (
@@ -212,7 +218,7 @@ const Statistics = ({ audioFiles, audioFilesCount }) => {
           <Grid item xs={12} md={4}>
             <Box>
               <Typography variant="h6" textAlign="center" sx={{ mb: 2, color: theme.palette.primary.main, fontWeight: 500 }}>
-                Instrument Distribution
+                Instrument
               </Typography>
               <ChartContainer>
                 {instrumentLabels.length > 0 ? (
