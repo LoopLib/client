@@ -10,7 +10,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    Snackbar,
+    Alert,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import PublishIcon from "@mui/icons-material/Publish";
@@ -60,7 +60,6 @@ const FileUpload = () => {
     const handleDrop = (event) => {
         event.preventDefault();
         setIsDragging(false);
-
         const newFile = event.dataTransfer.files[0];
         if (newFile) {
             setSelectedFile(newFile);
@@ -249,7 +248,7 @@ const FileUpload = () => {
 
     return (
         <Box className="file-upload-container">
-            {/* Conditionally render the upload area or the cancel button */}
+            {/* Upload Area */}
             {!selectedFile ? (
                 <BrowseFiles
                     onFileChange={handleFileChange}
@@ -266,6 +265,16 @@ const FileUpload = () => {
                 </Box>
             )}
 
+            {/* Display informational note under the upload area if a file is uploaded */}
+            {selectedFile && (
+                <Box mt={2}>
+                    <Alert severity="info">
+                        Genre detection achieves best accuracy if the audio file is longer than 30 seconds and has more than 1 instrument (e.g., drums and similar). Instrument detection may not be accurate if the audio file has more instruments.
+                    </Alert>
+                </Box>
+            )}
+
+            {/* Audio preview if file is selected */}
             {selectedFile && (
                 <AudioCard
                     file={{
@@ -291,12 +300,14 @@ const FileUpload = () => {
                 />
             )}
 
-            <Snackbar
-                open={duplicateSnackbarOpen}
-                autoHideDuration={6000}
-                onClose={() => setDuplicateSnackbarOpen(false)}
-                message="Duplicate audio fingerprint found. This file already exists."
-            />
+            {/* Duplicate fingerprint alert (Snackbar remains as before) */}
+            {duplicateSnackbarOpen && (
+                <Box mt={2}>
+                    <Alert severity="warning" onClose={() => setDuplicateSnackbarOpen(false)}>
+                        Duplicate audio fingerprint found. This file already exists.
+                    </Alert>
+                </Box>
+            )}
 
             {isLoading && (
                 <Box className="loading-overlay">
