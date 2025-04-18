@@ -332,17 +332,20 @@ const FileUpload = () => {
                     >
                         Analyze
                     </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleOpenDialog}
-                        startIcon={<PublishIcon />}
-                        disabled={isLoading}
-                    >
-                        Publish
-                    </Button>
+                    {fingerprint && !duplicateSnackbarOpen && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleOpenDialog}
+                            startIcon={<PublishIcon />}
+                            disabled={isLoading}
+                        >
+                            Publish
+                        </Button>
+                    )}
                 </Box>
             )}
+
 
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>Enter File Name</DialogTitle>
