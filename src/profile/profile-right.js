@@ -1,3 +1,4 @@
+// React and MUI imports
 import React, { useState } from "react";
 import {
   Box,
@@ -12,6 +13,8 @@ import {
   Tooltip,
   Snackbar,
 } from "@mui/material";
+
+// Icons used throughout the UI
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -21,6 +24,7 @@ import MuiAlert from '@mui/material/Alert';
 import { styled } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 
+// Styled card for the right section of the profile page
 const RightSectionCard = styled(Card)(({ theme }) => ({
   width: "100%",
   maxWidth: 1200,
@@ -52,6 +56,7 @@ const RightSectionCard = styled(Card)(({ theme }) => ({
   },
 }));
 
+// Styled card for displaying user profile details
 const ProfileCard = styled(Card)(({ theme }) => ({
   borderRadius: "16px",
   boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
@@ -63,42 +68,48 @@ const ProfileCard = styled(Card)(({ theme }) => ({
   },
 }));
 
+// Main component for the right section of the profile page
 const ProfileRightSection = ({
-  user,
-  editMode,
-  setEditMode,
-  profileData,
-  handleInputChange,
-  saveProfileData,
-  showPasswordFields,
-  setShowPasswordFields,
-  newPassword,
-  setNewPassword,
-  confirmNewPassword,
-  setConfirmNewPassword,
-  handlePasswordUpdate,
+  user,                         // User object from auth
+  editMode,                     // Boolean flag for edit mode
+  setEditMode,                  // Function to toggle edit mode
+  profileData,                  // Object containing profile information
+  handleInputChange,           // Handler for input field changes
+  saveProfileData,             // Function to save profile changes
+  showPasswordFields,          // Boolean flag to show/hide password fields
+  setShowPasswordFields,       // Toggle function for password fields
+  newPassword,                 // New password value
+  setNewPassword,              // Setter for new password
+  confirmNewPassword,          // Confirm password value
+  setConfirmNewPassword,       // Setter for confirm password
+  handlePasswordUpdate,        // Function to save password changes
 }) => {
   const theme = useTheme();
 
+  // Notification snackbar state
   const [openNotification, setOpenNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [severity, setSeverity] = useState("success");
 
+  // Open snackbar with custom message and severity
   const handleNotificationOpen = (message, type = "success") => {
     setNotificationMessage(message);
     setSeverity(type);
     setOpenNotification(true);
   };
 
+  // Close snackbar
   const handleNotificationClose = () => {
     setOpenNotification(false);
   };
 
+  // Save profile handler
   const handleProfileSave = () => {
     saveProfileData();
     handleNotificationOpen("Profile details updated successfully!");
   };
 
+  // Save password handler
   const handlePasswordSave = () => {
     handlePasswordUpdate();
     handleNotificationOpen("Password updated successfully!");
@@ -109,12 +120,12 @@ const ProfileRightSection = ({
       <CardContent>
         {user ? (
           <Box>
-            {/* User Info */}
+            {/* Show view mode if not editing */}
             {!editMode ? (
               <ProfileCard>
                 <CardContent>
                   <Stack spacing={3}>
-                    {/* Username with Larger Font and Icon */}
+                    {/* Username section */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <Tooltip title="Username" arrow>
                         <IconButton size="small" sx={{ color: "primary.main", "&:hover": { backgroundColor: "rgba(25, 118, 210, 0.1)" } }}>
@@ -124,10 +135,9 @@ const ProfileRightSection = ({
                       <Typography variant="h5" fontWeight="bold" color="primary.main" sx={{ fontSize: "1.5rem", lineHeight: "1.2" }}>
                         {profileData?.username}
                       </Typography>
-
                     </Box>
 
-                    {/* Email with an Icon */}
+                    {/* Email section */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <Tooltip title="Email" arrow>
                         <IconButton size="small" sx={{ color: "text.secondary", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.1)" } }}>
@@ -137,10 +147,9 @@ const ProfileRightSection = ({
                       <Typography variant="body1" color="text.secondary" sx={{ fontSize: "1rem" }}>
                         {profileData?.email}
                       </Typography>
-
                     </Box>
 
-                    {/* Full Name with smaller text and icon */}
+                    {/* Full name section */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <Tooltip title="Full Name" arrow>
                         <IconButton size="small" sx={{ color: "text.secondary", "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.1)" } }}>
@@ -150,11 +159,11 @@ const ProfileRightSection = ({
                       <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.9rem", fontStyle: "italic" }}>
                         {profileData?.name} {profileData?.secondName}
                       </Typography>
-
                     </Box>
                   </Stack>
                 </CardContent>
 
+                {/* Edit button */}
                 <CardActions sx={{ justifyContent: "flex-end", p: 2 }}>
                   <Tooltip title="Edit Profile">
                     <IconButton
@@ -176,6 +185,7 @@ const ProfileRightSection = ({
                 </CardActions>
               </ProfileCard>
             ) : (
+              // Edit mode UI
               <Box
                 mt={2}
                 sx={{
@@ -187,6 +197,7 @@ const ProfileRightSection = ({
                   fontFamily: "'Roboto', sans-serif",
                 }}
               >
+                {/* Editable fields */}
                 <TextField
                   label="First Name"
                   type="text"
@@ -227,6 +238,7 @@ const ProfileRightSection = ({
                   fullWidth
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                 />
+                {/* Save profile button */}
                 <Button
                   variant="contained"
                   color="primary"
@@ -238,20 +250,19 @@ const ProfileRightSection = ({
                 </Button>
               </Box>
             )}
-            {/* Password Update Section */}
+
+            {/* Password update section */}
             <Box mt={5} textAlign="center">
               <Button
                 variant="outlined"
                 color="primary"
                 onClick={() => setShowPasswordFields(!showPasswordFields)}
-                sx={{
-                  mb: 2,
-                  borderRadius: "20px",
-                  padding: "8px 20px",
-                }}
+                sx={{ mb: 2, borderRadius: "20px", padding: "8px 20px" }}
               >
                 {showPasswordFields ? "Cancel" : "Change Password"}
               </Button>
+
+              {/* Conditionally rendered password fields */}
               {showPasswordFields && (
                 <Box
                   mt={2}
@@ -285,11 +296,7 @@ const ProfileRightSection = ({
                     variant="contained"
                     color="primary"
                     onClick={handlePasswordSave}
-                    sx={{
-                      padding: "10px 20px",
-                      borderRadius: "20px",
-                      mt: 2,
-                    }}
+                    sx={{ padding: "10px 20px", borderRadius: "20px", mt: 2 }}
                   >
                     Update Password
                   </Button>
@@ -298,13 +305,14 @@ const ProfileRightSection = ({
             </Box>
           </Box>
         ) : (
+          // Fallback message when no user is logged in
           <Typography variant="body1" color="error" align="center">
             No user is logged in.
           </Typography>
         )}
       </CardContent>
 
-      {/* Notification Snackbar */}
+      {/* Snackbar for notifications */}
       <Snackbar
         open={openNotification}
         autoHideDuration={4000}

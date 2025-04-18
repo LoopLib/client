@@ -22,8 +22,12 @@ import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PianoIcon from "@mui/icons-material/Piano";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 
+// Create a styled version of the TableRow component using MUI's styled utility
 const StyledTableRow = styled(TableRow)(({ theme, striped }) => ({
+  // Set background color based on the 'striped' prop
   backgroundColor: striped ? theme.palette.action.hover : "inherit",
+
+  // Define a hover style for the table row
   "&:hover": {
     backgroundColor: theme.palette.action.selected,
   },

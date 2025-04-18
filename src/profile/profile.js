@@ -41,29 +41,25 @@ const Container = styled(Box)({
 
 const Profile = () => {
   // STATE VARIABLES
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
-  const [showAudioFiles, setShowAudioFiles] = useState(false);
-  const [profileData, setProfileData] = useState({ displayName: "", email: "" });
-  const [audioFiles, setAudioFiles] = useState([]);
-  const [editingFile, setEditingFile] = useState(null);
-  const [newFileName, setNewFileName] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
-  const [operationInProgress, setOperationInProgress] = useState(false);
-  // For password change:
-  const [showPasswordFields, setShowPasswordFields] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [showRightSection, setShowRightSection] = useState(false);
-  const [showLikedAudio, setShowLikedAudio] = useState(false);
-  const [likedAudioFiles, setLikedAudioFiles] = useState([]);
-  // For error messages:
-  const [errorMessage, setErrorMessage] = useState("");
-
-  // EFFECTS
+  const [user, setUser] = useState(null); // Stores the current authenticated user
+  const [loading, setLoading] = useState(true); // Indicates if data is still loading
+  const [editMode, setEditMode] = useState(false); // Controls whether profile is in edit mode
+  const [showAudioFiles, setShowAudioFiles] = useState(false); // Toggles audio files section visibility
+  const [profileData, setProfileData] = useState({ displayName: "", email: "" }); // Stores user's profile data
+  const [audioFiles, setAudioFiles] = useState([]); // Holds list of uploaded audio files
+  const [editingFile, setEditingFile] = useState(null); // File currently being edited
+  const [newFileName, setNewFileName] = useState(""); // New name entered for renaming audio file
+  const [selectedImage, setSelectedImage] = useState(null); // Temporarily holds selected profile picture
+  const [uploading, setUploading] = useState(false); // Indicates whether image upload is in progress
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null); // Stores profile picture URL
+  const [operationInProgress, setOperationInProgress] = useState(false); // Tracks audio file operations
+  const [showPasswordFields, setShowPasswordFields] = useState(false); // Controls password update UI
+  const [newPassword, setNewPassword] = useState(""); // New password input
+  const [confirmNewPassword, setConfirmNewPassword] = useState(""); // Confirm new password input
+  const [showRightSection, setShowRightSection] = useState(false); // Controls visibility of right panel (UI)
+  const [showLikedAudio, setShowLikedAudio] = useState(false); // Toggles liked audio section visibility
+  const [likedAudioFiles, setLikedAudioFiles] = useState([]); // Stores liked audio files
+  const [errorMessage, setErrorMessage] = useState(""); // Displays error messages to the user
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -99,9 +95,6 @@ const Profile = () => {
 
     fetchLikedAudio();
   }, []);
-
-
-  // FUNCTIONS
 
   const fetchProfileData = async (userId) => {
     try {
@@ -535,8 +528,6 @@ const Profile = () => {
       )}
       <Statistics audioFiles={audioFiles} audioFilesCount={audioFiles.length} />
         </Box>
-
-      
 
       <Box>
         <LikedAudioCarousel likedAudioFiles={likedAudioFiles} />

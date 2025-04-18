@@ -11,15 +11,22 @@ import DownloadButton from "../home/audio-card/download-button";
 import WaveSurfer from "wavesurfer.js";
 
 const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
+  // Reference to the carousel container
   const carouselRef = useRef(null);
+  // Array of WaveSurfer instances for each audio file
   const waveSurferRefs = useRef([]);
+  // Track which audio is currently playing
   const [playingIndex, setPlayingIndex] = useState(null);
+  // Track if user can scroll carousel to the left
   const [canScrollLeft, setCanScrollLeft] = useState(false);
+  // Track if user can scroll carousel to the right
   const [canScrollRight, setCanScrollRight] = useState(true);
 
+  // Effect to handle scroll buttons state (left/right scroll availability)
   useEffect(() => {
     const handleScroll = () => {
       if (carouselRef.current) {
+        // Update scroll state based on current scroll position
         setCanScrollLeft(carouselRef.current.scrollLeft > 0);
         setCanScrollRight(
           carouselRef.current.scrollLeft <
@@ -30,45 +37,59 @@ const LikedAudioCarousel = ({ likedAudioFiles, s3 }) => {
 
     const ref = carouselRef.current;
     if (ref) {
+      // Attach scroll listener when component mounts
       ref.addEventListener("scroll", handleScroll);
+      // Call immediately to set initial state
       handleScroll();
     }
+
+    // Cleanup: remove event listener when component unmounts
     return () => ref && ref.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Effect to initialize WaveSurfer instances when likedAudioFiles changes
   useEffect(() => {
     likedAudioFiles.forEach((file, index) => {
+      // Only create a new instance if it doesn't already exist
       if (!waveSurferRefs.current[index]) {
         waveSurferRefs.current[index] = WaveSurfer.create({
-          container: `#waveform-${index}`,
-          waveColor: "#6a11cb",
-          progressColor: "#000000",
-          cursorColor: "#000000",
-          barWidth: 2,
-          height: 40,
-          responsive: true,
-          backend: "MediaElement",
+          container: `#waveform-${index}`, // Container for waveform
+          waveColor: "#6a11cb",            // Wave color
+          progressColor: "#000000",        // Played portion color
+          cursorColor: "#000000",          // Playback cursor color
+          barWidth: 2,                     // Width of waveform bars
+          height: 40,                      // Height of waveform
+          responsive: true,                // Adjust to container size
+          backend: "MediaElement",         // Use HTML5 audio backend
         });
+
+        // Load the audio file into the waveform
         waveSurferRefs.current[index].load(file.url);
       }
     });
 
+    // Cleanup: destroy all WaveSurfer instances when component unmounts or files change
     return () => {
       waveSurferRefs.current.forEach((ws) => ws && ws.destroy());
       waveSurferRefs.current = [];
     };
   }, [likedAudioFiles]);
 
+  // Function to toggle play/pause for a specific audio file
   const togglePlay = (index) => {
     if (!waveSurferRefs.current[index]) return;
 
     if (playingIndex === index) {
+      // Pause if currently playing
       waveSurferRefs.current[index].pause();
       setPlayingIndex(null);
     } else {
+      // Pause any other playing audio
       waveSurferRefs.current.forEach((ws, i) => {
         if (ws && i !== index) ws.pause();
       });
+
+      // Play the selected audio and update playing index
       waveSurferRefs.current[index].play();
       setPlayingIndex(index);
     }
