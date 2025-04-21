@@ -89,10 +89,11 @@ const FileUpload = () => {
         setIsLoading(true);
         try {
             const response = await axios.post(
-                "http://localhost:5000/upload",
+                `${process.env.REACT_APP_BACKEND_URL}/upload`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
-            );
+              );
+              
             setBpm(response.data.bpm);
             setKey(response.data.key);
             setGenre(response.data.genre);
