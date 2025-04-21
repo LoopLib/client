@@ -1,14 +1,11 @@
 import React, { useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Box, Typography, IconButton, Button, Divider } from "@mui/material";
+import { useLocation } from "react-router-dom";
+import { Box, Typography, Button, Divider } from "@mui/material";
 import AudioCard from "../home/audio-card/audio-card";
 import "./edit.css";
 
 const Edit = () => {
   const { state } = useLocation();
-  const navigate = useNavigate();
-
-  // Since AudioCard expects waveSurferRefs and activeIndexes, we set them up here
   const waveSurferRefs = useRef({});
   const [activeIndexes, setActiveIndexes] = useState([]);
 
@@ -27,14 +24,13 @@ const Edit = () => {
 
   const handleContextMenu = (event) => {
     event.preventDefault();
-    // Implement any context menu functionality if needed
   };
 
   return (
     <Box
       className="edit-container"
       sx={{
-        width: "80%", // Adjust as needed
+        width: "80%",
         maxWidth: "1200px",
         margin: "20px auto",
         padding: "20px",
@@ -58,20 +54,18 @@ const Edit = () => {
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Render the AudioCard component */}
       <AudioCard
         file={state.file}
-        index={0} // Since it's a single file, index can be 0
+        index={0}
         activeIndexes={activeIndexes}
         setActiveIndexes={setActiveIndexes}
         waveSurferRefs={waveSurferRefs}
         onContextMenu={handleContextMenu}
       />
 
-      <Box className="edit-actions" mt={4} display="flex" justifyContent="center">
+      <Box mt={4} display="flex" justifyContent="center">
         <Button
           variant="contained"
-          className="edit-button trim"
           onClick={() => alert("Trimming functionality coming soon!")}
           sx={{ mr: 2 }}
         >
@@ -79,7 +73,6 @@ const Edit = () => {
         </Button>
         <Button
           variant="contained"
-          className="edit-button effects"
           onClick={() => alert("Effects functionality coming soon!")}
           sx={{ mr: 2 }}
         >
@@ -87,7 +80,6 @@ const Edit = () => {
         </Button>
         <Button
           variant="contained"
-          className="edit-button save"
           onClick={() => alert("Save functionality coming soon!")}
         >
           Save Changes

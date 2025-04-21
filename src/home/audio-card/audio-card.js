@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Card, CardContent, Typography, Grid, IconButton, Button } from "@mui/material";
+import { Card, CardContent, Typography, Grid, IconButton } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Metadata from "./metadata-card";
@@ -53,16 +53,12 @@ const AudioCard = ({
  // Ref to determine if this audio is currently playing
  const isPlaying = waveSurferRefs.current[index]?.isPlaying();
 
- // Ref to store interval-related logic if needed
- const intervalRef = useRef(null);
-
  // Destructuring live key detection hooks and handlers
  const {
    liveKey,
    liveConfidence,
    startKeyDetection,
    stopKeyDetection,
-   handleTimelineSeek,
  } = useLiveKeyDetection(waveSurferRefs, file.url, index);
 
  useEffect(() => {
