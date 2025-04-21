@@ -14,14 +14,11 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import PublishIcon from "@mui/icons-material/Publish";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import axios from "axios";
 import AWS from "aws-sdk";
 import "./upload.css";
 import AudioCard from "../home/audio-card/audio-card";
-import { getAuth } from "firebase/auth";
-import { db } from "../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";;
 import BrowseFiles from "./browse-files";
 import { useNavigate } from "react-router-dom";
 

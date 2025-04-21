@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Typography, IconButton, Button, Divider } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AudioCard from "../home/audio-card/audio-card";
 import "./edit.css";
 
@@ -25,8 +24,6 @@ const Edit = () => {
       </Box>
     );
   }
-
-  const handleBack = () => navigate(-1);
 
   const handleContextMenu = (event) => {
     event.preventDefault();
