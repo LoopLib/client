@@ -1,75 +1,89 @@
 /* General Container Styling */
 .search-bar-container {
-  padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 16px;
+  padding: 24px;
+  background: linear-gradient(to bottom right, #f5f7fa, #e4ecf4);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Search Input Styling */
+.search-bar-input .MuiOutlinedInput-root {
+  border-radius: 14px;
+  background-color: #fff;
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.search-bar-input .MuiOutlinedInput-root:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Search Bar Styling */
 .search-bar-input {
-  margin-bottom: 16px;
-}
-
-.search-bar-input .MuiOutlinedInput-root {
-  border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
 }
 
 /* Filters Card */
 .filters-card {
-  padding: 16px;
-  border-radius: 16px;
+  padding: 24px;
+  border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
 }
 
+/* Layout and Spacing */
 .filters-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  justify-content: flex-start;
+  gap: 20px;
 }
 
-/* Filter Item Styling */
 .filter-item {
   flex: 1;
-  min-width: 150px;
+  min-width: 180px;
 }
 
 .bpm-range-container {
-  display: flex;
+  gap: 10px;
   align-items: center;
-  gap: 8px;
 }
 
 .bpm-input {
-  max-width: 80px;
+  max-width: 100px;
+  flex: 1;
 }
 
 .bpm-separator {
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: #888;
   margin: 0 4px;
 }
 
-/* Apply Filters Button */
+/* Search Button */
 .filter-button {
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-weight: bold;
-  color: white;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1rem;
+  background-color: #1976d2;
+  transition: background 0.3s ease;
 }
 
-/* Responsive Styling */
+.filter-button:hover {
+  background-color: #1565c0;
+}
+
+/* Responsive Behavior */
 @media (max-width: 768px) {
   .filters-container {
-      flex-direction: column;
-      align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
   }
 
   .bpm-range-container {
-      justify-content: space-between;
+    justify-content: space-between;
+  }
+
+  .filter-button {
+    width: 100%;
   }
 }
