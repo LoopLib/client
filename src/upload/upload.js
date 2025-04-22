@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import PublishIcon from "@mui/icons-material/Publish";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import axios from "axios";
 import AWS from "aws-sdk";
 import "./upload.css";
@@ -88,11 +89,10 @@ const FileUpload = () => {
         setIsLoading(true);
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_BACKEND_URL}/upload`,
+                "http://localhost:5000/upload",
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
-              );
-              
+            );
             setBpm(response.data.bpm);
             setKey(response.data.key);
             setGenre(response.data.genre);
