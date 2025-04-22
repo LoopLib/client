@@ -40,8 +40,14 @@ function Navbar() {
                             <Link to="/profile" className="navbar-link">Profile</Link>
                         </li>
                         <li className="navbar-item navbar-user">
-                            {user.firstName}
+                            <div className="user-info">
+                                <div className="user-avatar">
+                                    {user.firstName.charAt(0).toUpperCase()}
+                                </div>
+                                <span className="user-name">{user.firstName}</span>
+                            </div>
                         </li>
+
                         <li className="navbar-item">
                             <FaSignOutAlt
                                 className="navbar-logout-icon"

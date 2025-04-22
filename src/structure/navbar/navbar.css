@@ -76,6 +76,41 @@ body {
   color: #f00; /* Change color on hover */
 }
 
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f0f0f0;
+  padding: 6px 10px;
+  border-radius: 20px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.user-info:hover {
+  background-color: #e2e2e2;
+  cursor: pointer;
+}
+
+.user-avatar {
+  background-color: #6c63ff;
+  color: white;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+
 
 /* Responsive design */
 @media (max-width: 768px) {
