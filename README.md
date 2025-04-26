@@ -92,18 +92,6 @@ npm test
 
 ---
 
-## 🚀 Deployment
-
-The frontend can be easily deployed using services like **Vercel**, **Netlify**, or **Firebase Hosting**.
-
-### Example Vercel Deployment:
-```bash
-vercel
-```
-Make sure to add your `.env` variables in your deployment platform settings as well.
-
----
-
 ## 📋 Future Improvements
 
 - Multi-language support (i18n)
