@@ -54,14 +54,24 @@ The app will run locally at [http://localhost:3000](http://localhost:3000).
 
 ```
 src/
-├── components/         // Reusable UI components (AudioCard, SearchBar, Navbar, etc.)
-├── pages/              // Main pages (Home, Upload, Profile, Login, Register, Library)
-├── services/           // API service files (fetching data, uploading, authentication)
-├── context/            // React context for managing authentication states
-├── hooks/              // Custom React hooks (optional)
-├── assets/             // Images, icons, and static assets
-├── App.js              // Main app component with route definitions
-└── index.js            // React entry point
+├── authentication/        // Login, Register, and Firebase auth logic
+├── edit/                  // Editing loop metadata
+├── home/                  // Home page and landing components
+├── loading/               // Loading spinners and fallback components
+├── profile/               // Profile page, image upload, stats
+├── structure/             // Layout structure (navbar, footer, wrappers)
+├── upload/                // Upload form and Analyze page
+├── user-library/          // User's personal audio loop library
+├── App.js                 // Main component and route definitions
+├── App.test.js            // Frontend test suite
+├── FileContext.js         // React context for shared file state
+├── firebaseConfig.js      // Firebase initialization and config
+├── index.js               // React DOM entry point
+├── index.css              // Global styles
+├── logo.svg               // App logo asset
+├── reportWebVitals.js     // Performance metrics (optional)
+├── setupTests.js          // Jest testing setup
+
 ```
 
 ---
