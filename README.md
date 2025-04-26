@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+LoopLib - Frontend
+This is the frontend application for LoopLib, a platform designed for musicians and producers to upload, analyze, discover, and manage audio loops more intelligently.
+Built with React.js, the frontend provides a dynamic, user-friendly interface for interacting with the backend API, cloud storage, and authentication services.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+📦 Features
+User Authentication: Secure sign-up and login via Firebase Authentication.
 
-## Available Scripts
+Audio Upload: Drag-and-drop interface for uploading audio loops.
 
-In the project directory, you can run:
+Audio Analysis: Real-time BPM, key, genre, and instrument detection after upload.
 
-### `npm start`
+Audio Library: Browse, search, and filter loops by genre, BPM, key, and instruments.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Profile Management: Update personal details, upload a profile picture, and view personal upload statistics.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Waveform Visualization: Visual preview of uploaded audio files.
 
-### `npm test`
+Responsive Design: Optimized for desktop, tablet, and mobile viewing.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+🛠️ Installation
+Clone the Repository:
 
-### `npm run build`
+bash
+Copy
+Edit
+git clone https://github.com/your-username/looplib-frontend.git
+cd looplib-frontend
+Install Dependencies:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+bash
+Copy
+Edit
+npm install
+Configure Environment Variables:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Create a .env file at the root of the project and add your Firebase project credentials:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+ini
+Copy
+Edit
+REACT_APP_FIREBASE_API_KEY=your-api-key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
+REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+REACT_APP_FIREBASE_APP_ID=your-app-id
+REACT_APP_BACKEND_URL=http://localhost:5000
+Start the Development Server:
 
-### `npm run eject`
+bash
+Copy
+Edit
+npm start
+The app will run locally at http://localhost:3000.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+📂 Project Structure
+less
+Copy
+Edit
+src/
+├── components/         // Reusable UI components (AudioCard, SearchBar, Navbar, etc.)
+├── pages/              // Main pages (Home, Upload, Profile, Login, Register, Library)
+├── services/           // API service files (fetching data, uploading, authentication)
+├── context/            // React context for managing authentication states
+├── hooks/              // Custom React hooks (optional)
+├── assets/             // Images, icons, and static assets
+├── App.js              // Main app component with route definitions
+└── index.js            // React entry point
+🧪 Testing
+Frontend unit and integration testing is implemented using Jest and React Testing Library.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+To run tests:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+bash
+Copy
+Edit
+npm test
+Example tested components:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Register form input validation
 
-## Learn More
+Profile picture upload section
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Audio library card rendering
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+🚀 Deployment
+The frontend can be easily deployed using services like Vercel, Netlify, or Firebase Hosting.
 
-### Code Splitting
+Example Vercel Deployment:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+bash
+Copy
+Edit
+vercel
+Make sure to add your .env variables in your deployment platform as well.
 
-### Analyzing the Bundle Size
+📋 Future Improvements
+Multi-language support (i18n)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Real-time notifications after file processing
 
-### Making a Progressive Web App
+Dark mode theme toggle
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Progressive Web App (PWA) features for offline access
 
-### Advanced Configuration
+🤝 Acknowledgments
+Firebase for authentication and cloud services
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+AWS S3 for storage
 
-### Deployment
+React Community and Create-React-App project for the boilerplate
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Librosa and TensorFlow communities for enabling audio ML research
