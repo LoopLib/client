@@ -20,8 +20,8 @@ This is the frontend application for **LoopLib**, a platform designed for musici
 
 ### Clone the Repository:
 ```bash
-git clone https://github.com/your-username/looplib-frontend.git
-cd looplib-frontend
+git clone https://github.com/LoopLib/client.git
+cd client
 ```
 
 ### Install Dependencies:
