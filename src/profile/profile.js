@@ -299,7 +299,6 @@ const Profile = () => {
 
       setEditingFile(null);
       setNewFileName("");
-      alert("File renamed successfully!");
     } catch (error) {
       console.error("Error renaming file:", error.message);
       alert("Failed to rename the file.");
@@ -347,7 +346,6 @@ const Profile = () => {
 
       // Remove the file from the state
       setAudioFiles((prevFiles) => prevFiles.filter((f) => f.key !== fileKey));
-      alert("Audio file, metadata, and stats deleted successfully!");
     } catch (error) {
       console.error("Error deleting file:", error.message);
     } finally {
