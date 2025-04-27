@@ -1,70 +1,109 @@
-# Getting Started with Create React App
+# LoopLib - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the frontend application for **LoopLib**, a platform designed for musicians and producers to upload, analyze, discover, and manage audio loops more intelligently. Built with **React.js**, the frontend provides a dynamic, user-friendly interface for interacting with the backend API, cloud storage, and authentication services.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📦 Features
 
-### `npm start`
+- **User Authentication**: Secure sign-up and login via Firebase Authentication.
+- **Audio Upload**: Drag-and-drop interface for uploading audio loops.
+- **Audio Analysis**: Real-time BPM, key, genre, and instrument detection after upload.
+- **Audio Library**: Browse, search, and filter loops by genre, BPM, key, and instruments.
+- **Profile Management**: Update personal details, upload a profile picture, and view personal upload statistics.
+- **Waveform Visualization**: Visual preview of uploaded audio files.
+- **Responsive Design**: Optimized for desktop, tablet, and mobile viewing.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Installation
 
-### `npm test`
+### Clone the Repository:
+```bash
+git clone https://github.com/LoopLib/client.git
+cd client
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Install Dependencies:
+```bash
+npm install
+```
 
-### `npm run build`
+### Configure Environment Variables:
+Create a `.env` file at the root of the project and add your Firebase project credentials:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```ini
+REACT_APP_FIREBASE_API_KEY=your-api-key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
+REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+REACT_APP_FIREBASE_APP_ID=your-app-id
+REACT_APP_BACKEND_URL=http://localhost:5000
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Start the Development Server:
+```bash
+npm start
+```
+The app will run locally at [http://localhost:3000](http://localhost:3000).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 📂 Project Structure
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
+src/
+├── authentication/        // Login, Register, and Firebase auth logic
+├── edit/                  // Editing loop metadata
+├── home/                  // Home page and landing components
+├── loading/               // Loading spinners and fallback components
+├── profile/               // Profile page, image upload, stats
+├── structure/             // Layout structure (navbar, footer, wrappers)
+├── upload/                // Upload form and Analyze page
+├── user-library/          // User's personal audio loop library
+├── App.js                 // Main component and route definitions
+├── App.test.js            // Frontend test suite
+├── FileContext.js         // React context for shared file state
+├── firebaseConfig.js      // Firebase initialization and config
+├── index.js               // React DOM entry point
+├── index.css              // Global styles
+├── logo.svg               // App logo asset
+├── reportWebVitals.js     // Performance metrics (optional)
+├── setupTests.js          // Jest testing setup
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🧪 Testing
 
-## Learn More
+Frontend unit and integration testing is implemented using **Jest** and **React Testing Library**.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### To run tests:
+```bash
+npm test
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Example tested components:
+- Register form input validation
+- Profile picture upload section
+- Audio library card rendering
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 📋 Future Improvements
 
-### Analyzing the Bundle Size
+- Multi-language support (i18n)
+- Real-time notifications after file processing
+- Dark mode theme toggle
+- Progressive Web App (PWA) features for offline access
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🤝 Acknowledgments
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Firebase for authentication and cloud services
+- AWS S3 for storage
+- React Community and Create-React-App project for the boilerplate
+- Librosa and TensorFlow communities for enabling audio ML research
